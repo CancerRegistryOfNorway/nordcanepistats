@@ -67,9 +67,20 @@ nordcan_statistics_payload <- function(
   #   functions or elsewhere, let me know
 
 
+  cancer_count_tables <- basicepistats::stat_table_list(
+    fun = nordcanepistats::nordcanstat_count,
+    varying_arg_list = list(
+      by = list(c("sex", "agegroup"), "agegroup")
+    )
+  )
+  cancer_count_dataset <- data.table::rbindlist(cancer_count_tables)
+
+
   payload <- list(
     # fill here also
   )
+
+
   stopifnot(
     c("cancer_case_count_dataset", "cancer_death_count_dataset",
       "cancer_survival_dataset", "cancer_survival_quality_dataset") %in%
