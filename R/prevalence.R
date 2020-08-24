@@ -2,17 +2,24 @@
 
 
 
-nordcanstat_prevalence <- function(
+#' @title Prevalence
+#' @description
+#' Compute numbers of people alive at specific time points who have had
+#' a cancer diagnosis in their past.
+#' @param x see [basicepistats::stat_prevalent_subject_count]
+#' @param by see [basicepistats::stat_prevalent_subject_count]
+#' @param subset see [basicepistats::stat_prevalent_subject_count]
+#' @param subset_style see [basicepistats::stat_prevalent_subject_count]
+#' @export
+#' @importFrom basicepistats stat_prevalent_subject_count
+nordcanstat_prevalent_subject_count <- function(
   x,
-  subject_id_col_nm,
-  prevalence_time_scale_col_nm,
-  prevalence_time_points,
-  prevalence_window_widths,
-  stratum_col_nms = NULL,
-  adjust_col_nms = NULL,
+  by = NULL,
   subset = NULL,
-  adjust_weigths = NULL
+  subset_style = "zeros"
 ) {
-  # use nordcanstat_prevalent_subject_count and then use nordcanstat_rate
-  # TODO: use basicepistats::stat_prevalence_something
+  settings <- nordcanstat_settings("prevalence")
+  arg_list <- c(mget(c("x", "by", "subset", "subset_style")), settings)
+  do.call(basicepistats::stat_prevalent_subject_count, arg_list)
+
 }
