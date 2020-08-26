@@ -28,7 +28,6 @@
 #' )
 #' @export
 
-####functions
 nordcan_statistics_payload <- function(
   datasets=list(
     cancer_death_count_dataset=cancer_death_count_dataset,
