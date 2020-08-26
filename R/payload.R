@@ -28,6 +28,33 @@
 #' )
 #' @export
 
+#installing and uploading packages
+#and uploading data
+# ####working directory
+# setwd("")
+# 
+# ####packages
+# packages=c('data.table','remotes')
+# for (p in packages){
+#   if (!require(p,character.only=T)){install.packages(p,dependencies=T,repos='http://cran.us.r-project.org')}
+#   library(p,character.only=T)    
+# }
+# 
+# packagesgithub=c('easyassertions','basicepistats','nordcanepistats','nordcanpreprocessing')
+# for (p in packagesgithub){
+#   if (!require(p,character.only=T)){install_github("WetRobot/p",force=T)}
+#   library(p,character.only=T)    
+# }
+# 
+# ####data
+# ###mortality
+# cancer_death_count_dataset=data.table::data.table(read.csv("Cancer_death_count_dataset.csv"))
+# cancer_record_dataset=data.table::data.table(read.csv("Cancer_record_dataset.csv"))
+# 
+# ###incidence
+# cancer_case_dataset=data.table::data.table(read.csv("Cancer_case_dataset.csv"))
+
+
 nordcan_statistics_payload <- function(
   datasets=list(
     cancer_death_count_dataset=cancer_death_count_dataset,
