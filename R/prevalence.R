@@ -19,7 +19,7 @@ nordcanstat_prevalent_subject_count <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
-  settings <- nordcanstat_settings("prevalence")
+  settings <- nordcanstat_settings("nordcanstat_prevalent_subject_count")
   arg_list <- c(mget(c("x", "by", "subset", "subset_style")), settings)
   do.call(basicepistats::stat_prevalent_subject_count, arg_list)
 

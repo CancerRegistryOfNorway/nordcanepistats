@@ -6,7 +6,7 @@
 nordcanstat_settings <- function(function_name) {
   stopifnot(
     length(function_name) == 1L,
-    function_name %in% paste0("nordcanstat_", c("prevalent_subject_count"))
+    function_name %in% paste0("nordcanstat_", "prevalent_subject_count")
   )
 
   lexis_col_nms <- nordcancore::nordcan_column_name_set("column_name_set_lexis")
