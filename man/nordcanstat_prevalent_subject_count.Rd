@@ -12,13 +12,13 @@ nordcanstat_prevalent_subject_count(
 )
 }
 \arguments{
-\item{x}{see [basicepistats::stat_prevalent_subject_count]}
+\item{x}{see \link[basicepistats:prevalence]{basicepistats::stat_prevalent_subject_count}}
 
-\item{by}{see [basicepistats::stat_prevalent_subject_count]}
+\item{by}{see \link[basicepistats:prevalence]{basicepistats::stat_prevalent_subject_count}}
 
-\item{subset}{see [basicepistats::stat_prevalent_subject_count]}
+\item{subset}{see \link[basicepistats:prevalence]{basicepistats::stat_prevalent_subject_count}}
 
-\item{subset_style}{see [basicepistats::stat_prevalent_subject_count]}
+\item{subset_style}{see \link[basicepistats:prevalence]{basicepistats::stat_prevalent_subject_count}}
 }
 \description{
 Compute numbers of people alive at specific time points who have had
