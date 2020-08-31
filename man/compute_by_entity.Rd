@@ -35,18 +35,6 @@ then every element is combined into one long \code{data.table} where column
 \code{compute_by_entity} the column \code{"entity"} is created and in the case of
 \code{compute_by_entity_column} each entity column is renamed to \code{"entity"}
 in the entity column-specific results before combining.
-
-\code{fun} is called using \code{arg_list} after the appropriate entity- or
-entity column-specific modification using \verb{[base::do.call]}.
-
-\code{compute_by_entity} modifies an element in \code{arg_list} named
-\code{x}, intended to contain the dataset cancer record. \code{x} is subset into
-each entity number separately before calling \code{fun}.
-
-\code{compute_by_entity_column} modifies or creates \code{arg_list[["by"]]} before
-calling \code{fun}. \code{x} is not subset by this function. Therefore
-\code{compute_by_entity_column} is a more efficient but also less flexible
-version of \code{compute_by_entity}.
 }
 \description{
 Compute statistics by entity number.
@@ -59,4 +47,20 @@ Compute statistics by entity number.
 \code{x}. For each such column, \code{arg_list[["by"]]} is created or modified to have
 (also) the column in question, limited to only those entities supplied in
 \code{entities}.
+
+Both of these two functions are intended to be applied internally
+by the \code{nordcanstat_} family of functions and not by the user.
+
+\code{fun} is called using \code{arg_list} after the appropriate entity- or
+entity column-specific modification using \verb{[base::do.call]}.
+
+\code{compute_by_entity} modifies an element in \code{arg_list} named
+\code{x}, intended to contain the dataset cancer record. \code{x} is subset into
+each entity number separately before calling \code{fun}, i.e.
+\code{arg_list[["x"]] <- x[has_first_entity_no, ]} for the first entity and so on.
+
+\code{compute_by_entity_column} modifies or creates \code{arg_list[["by"]]} before
+calling \code{fun}. \code{x} is not subset by this function. Therefore
+\code{compute_by_entity_column} is a more efficient but also less flexible
+version of \code{compute_by_entity}.
 }

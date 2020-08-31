@@ -3,6 +3,7 @@
 
 
 
+#' @family nordcanstat
 nordcanstat_count <- function(
   x,
   stratum_col_nms = NULL,

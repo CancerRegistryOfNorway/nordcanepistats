@@ -12,6 +12,7 @@
 #' @param subset_style see [basicepistats::stat_prevalent_subject_count]
 #' @export
 #' @importFrom basicepistats stat_prevalent_subject_count
+#' @family nordcanstat
 nordcanstat_prevalent_subject_count <- function(
   x,
   by = NULL,

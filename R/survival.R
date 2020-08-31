@@ -5,6 +5,7 @@
 
 # this function's arguments really depend on what is possible / required
 # by stnet.
+#' @family nordcanstat
 nordcanstat_survival <- function(
   x,
   subject_id_col_nm,

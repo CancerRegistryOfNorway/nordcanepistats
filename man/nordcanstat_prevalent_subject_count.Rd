@@ -24,3 +24,4 @@ nordcanstat_prevalent_subject_count(
 Compute numbers of people alive at specific time points who have had
 a cancer diagnosis in their past.
 }
+\concept{nordcanstat}

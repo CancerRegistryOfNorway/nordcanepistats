@@ -90,6 +90,22 @@ subset_and <- function(
 #'  (also) the column in question, limited to only those entities supplied in
 #'  `entities`.
 #'
+#' Both of these two functions are intended to be applied internally
+#' by the `nordcanstat_` family of functions and not by the user.
+#'
+#' `fun` is called using `arg_list` after the appropriate entity- or
+#' entity column-specific modification using `[base::do.call]`.
+#'
+#' `compute_by_entity` modifies an element in `arg_list` named
+#' `x`, intended to contain the dataset cancer record. `x` is subset into
+#' each entity number separately before calling `fun`, i.e.
+#' `arg_list[["x"]] <- x[has_first_entity_no, ]` for the first entity and so on.
+#'
+#' `compute_by_entity_column` modifies or creates `arg_list[["by"]]` before
+#' calling `fun`. `x` is not subset by this function. Therefore
+#' `compute_by_entity_column` is a more efficient but also less flexible
+#' version of `compute_by_entity`.
+#'
 #' @return
 #' Either a `list` or a `data.table`. Initially results are collected into a
 #' `list` where each element is the set of results for an individual entity
@@ -100,17 +116,6 @@ subset_and <- function(
 #' `compute_by_entity_column` each entity column is renamed to `"entity"`
 #' in the entity column-specific results before combining.
 #'
-#' `fun` is called using `arg_list` after the appropriate entity- or
-#' entity column-specific modification using `[base::do.call]`.
-#'
-#' `compute_by_entity` modifies an element in `arg_list` named
-#' `x`, intended to contain the dataset cancer record. `x` is subset into
-#' each entity number separately before calling `fun`.
-#'
-#' `compute_by_entity_column` modifies or creates `arg_list[["by"]]` before
-#' calling `fun`. `x` is not subset by this function. Therefore
-#' `compute_by_entity_column` is a more efficient but also less flexible
-#' version of `compute_by_entity`.
 #'
 #' @importFrom dbc assert_is_data_table assert_is_function
 #' assert_is_list assert_is_integer_nonNA_vector
