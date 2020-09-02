@@ -28,12 +28,11 @@
 #' )
 #' @export
 
-#installing and uploading packages
-#and uploading data
 # ####working directory
 # setwd("")
 #  
 # ####data
+#
 # ###mortality
 # cancer_death_count_dataset=data.table::data.table(read.csv("Cancer_death_count_dataset.csv"))
 # cancer_record_dataset=data.table::data.table(read.csv("Cancer_record_dataset.csv"))
