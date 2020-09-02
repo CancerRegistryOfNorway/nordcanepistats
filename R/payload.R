@@ -117,7 +117,7 @@ nordcan_statistics_payload <- function(
       fixed_arg_list = list(x = cancer_case_dataset),
       stat_fun_nm = "stat_count"
     )),
-  cancer_prevalence=data.table::as.data.table(
+  prevalent_cancer_patient_count_dataset=data.table::as.data.table(
   nordcanepistats::nordcanstat_prevalent_subject_count(cancer_case_dataset)
   )
   )
