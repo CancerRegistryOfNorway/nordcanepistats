@@ -15,13 +15,13 @@
 #' @family nordcanstat
 nordcanstat_survival_quality <- function(
   x,
-  stratum_col_nms = NULL,
+  by = NULL,
   subset = NULL,
   subset_style = "zeros"
 ) {
 
   if (is.character(by)) {
-    by <- nordcancore::get_column_level_space(stratum_col_nms)
+    by <- nordcancore::get_column_level_space(by)
   }
   count_dt <- basicepstats::stat_count(
     x = x,

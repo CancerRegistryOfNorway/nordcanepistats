@@ -6,7 +6,7 @@
 \usage{
 nordcanstat_survival_quality(
   x,
-  stratum_col_nms = NULL,
+  by = NULL,
   subset = NULL,
   subset_style = "zeros"
 )
@@ -14,11 +14,11 @@ nordcanstat_survival_quality(
 \arguments{
 \item{x}{see \link[basicepistats:counts]{basicepistats::stat_count}}
 
+\item{by}{see \link[basicepistats:counts]{basicepistats::stat_count}}
+
 \item{subset}{see \link[basicepistats:counts]{basicepistats::stat_count}}
 
 \item{subset_style}{see \link[basicepistats:counts]{basicepistats::stat_count}}
-
-\item{by}{see \link[basicepistats:counts]{basicepistats::stat_count}}
 }
 \description{
 Compute basic survival quality statistics.

@@ -138,7 +138,7 @@ compute_by_entity <- function(
   dbc::assert_is_list(arg_list)
   stopifnot("x" %in% names(formals(fun)))
 
-  entities <- unique(entites)
+  entities <- unique(entities)
   results_by_entity <- lapply(entities, function(entity_no) {
     is_entity <- nordcancore::in_entity_set(x = x, entities = entity_no)
     arg_list[["x"]] <- x[is_entity, ]
@@ -146,7 +146,9 @@ compute_by_entity <- function(
   })
 
   if (all(vapply(results_by_entity, data.table::is.data.table, logical(1L)))) {
-    results_by_entity <- lapply(results_by_entity, function(dt) {
+    results_by_entity <- lapply(seq_along(results_by_entity), function(i) {
+      entity_no <- entities[i]
+      dt <- results_by_entity[[i]]
       data.table::set(dt, j = "entity", value = rep(entity_no, nrow(dt)))
       data.table::setcolorder(dt, c("entity", setdiff(names(dt), "entity")))
       return(dt[])
@@ -182,8 +184,8 @@ compute_by_entity_column <- function(
     c("x", "by") %in% names(formals(fun))
   )
 
-  entity_dt <- nordcancore:::nordcan_column_level_space_dt(
-    nordcancore:::nordcan_column_name_set("entity")
+  entity_dt <- nordcancore::nordcan_column_level_space_dt(
+    nordcancore::nordcan_column_name_set("column_name_set_entity")
   )
   in_entity_set <- nordcancore::in_entity_set(entity_dt, entities)
   entity_dt <- entity_dt[in_entity_set, ]
