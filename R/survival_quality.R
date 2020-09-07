@@ -1,0 +1,60 @@
+
+
+
+
+#' @title Survival Quality Statsitics
+#' @description
+#' Compute basic survival quality statistics.
+#' @param x see [basicepistats::stat_count]
+#' @param by see [basicepistats::stat_count]
+#' @param subset see [basicepistats::stat_count]
+#' @param subset_style see [basicepistats::stat_count]
+#' @export
+#' @importFrom basicepistats stat_count
+#' @importFrom data.table :=
+#' @family nordcanstat
+nordcanstat_survival_quality <- function(
+  x,
+  stratum_col_nms = NULL,
+  subset = NULL,
+  subset_style = "zeros"
+) {
+
+  if (is.character(by)) {
+    by <- nordcancore::get_column_level_space(stratum_col_nms)
+  }
+  count_dt <- basicepstats::stat_count(
+    x = x,
+    by = by,
+    subset = subset,
+    subset_style = subset_style
+  )
+  stratum_col_nms <- setdiff(names(count_dt), "N")
+
+  subsets <- list(
+    "percentage excl. due to age 90+" = x[["age"]] > 90.0
+  )
+  lapply(names(subset), function(new_col_nm) {
+    subset <- subset_and(subset, subsets[[new_col_nm]])
+    count_dt_new_col <- basicepstats::stat_count(
+      x = x,
+      by = by,
+      subset = subset,
+      subset_style = subset_style
+    )
+    i.N <- NULL # appease R CMD CHECK
+    count_dt[
+      i = count_dt_new_col,
+      on = stratum_col_nms,
+      j = (new_col_nm) := i.N
+    ]
+    count_dt[
+      j = (new_col_nm) := .SD[[1L]] / .SD[[2L]],
+      .SDcols = c(new_col_nm, "N")
+    ]
+
+  })
+
+  return(count_dt[])
+}
+

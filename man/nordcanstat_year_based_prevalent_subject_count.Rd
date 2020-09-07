@@ -24,4 +24,9 @@ nordcanstat_year_based_prevalent_subject_count(
 Compute numbers of people alive at specific time points who have had
 a cancer diagnosis in their past.
 }
+\seealso{
+Other nordcanstat: 
+\code{\link{nordcanstat_count}()},
+\code{\link{nordcanstat_survival_quality}()}
+}
 \concept{nordcanstat}
