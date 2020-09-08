@@ -34,7 +34,8 @@ nordcanstat_survival_quality <- function(
   subsets <- list(
     "percentage excl. due to age 90+" = x[["age"]] > 90.0
   )
-  lapply(names(subset), function(new_col_nm) {
+
+  lapply(names(subsets), function(new_col_nm) {
     subset <- subset_and(subset, subsets[[new_col_nm]])
     count_dt_new_col <- basicepistats::stat_count(
       x = x,
@@ -42,17 +43,27 @@ nordcanstat_survival_quality <- function(
       subset = subset,
       subset_style = subset_style
     )
-    i.N <- NULL # appease R CMD CHECK
-    count_dt[
-      i = count_dt_new_col,
-      on = stratum_col_nms,
-      j = (new_col_nm) := i.N
-    ]
+    if (length(stratum_col_nms) == 0L) {
+      count_dt[
+        j = (new_col_nm) := count_dt_new_col[["N"]]
+      ]
+    } else {
+      i.N <- NULL # appease R CMD CHECK
+      count_dt[
+        i = count_dt_new_col,
+        on = stratum_col_nms,
+        j = (new_col_nm) := i.N
+      ]
+      count_dt[
+        i = is.na(count_dt[[new_col_nm]]),
+        j = (new_col_nm) := 0L
+      ]
+    }
     count_dt[
       j = (new_col_nm) := .SD[[1L]] / .SD[[2L]],
       .SDcols = c(new_col_nm, "N")
     ]
-
+    NULL
   })
 
   return(count_dt[])
