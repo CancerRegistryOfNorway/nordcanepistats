@@ -32,7 +32,10 @@ nordcanstat_survival_quality <- function(
   stratum_col_nms <- setdiff(names(count_dt), "N")
 
   subsets <- list(
-    "percentage excl. due to age 90+" = x[["age_year"]] > 90.0
+    "percentage excl. due to age 90+" = x[["age_year"]] >= 90.0,
+    "percentage excl. due to DCO" = x[["excl_surv_dco"]] == 1,
+    "percentage excl. due to autopsy" = x[["excl_surv_autopsy"]] == 1,
+    "percentage excl. due to neg follow up" = x[["excl_surv_negativefou"]] == 1
   )
 
   lapply(names(subsets), function(new_col_nm) {
