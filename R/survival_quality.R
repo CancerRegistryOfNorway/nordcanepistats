@@ -2,7 +2,7 @@
 
 
 
-#' @title Survival Quality Statsitics
+#' @title Survival Quality Statistics
 #' @description
 #' Compute basic survival quality statistics.
 #' @param x see [basicepistats::stat_count]
@@ -20,9 +20,9 @@ nordcanstat_survival_quality <- function(
   subset_style = "zeros"
 ) {
 
-  if (is.character(by)) {
-    by <- nordcancore::get_column_level_space(by)
-  }
+  # if (is.character(by)) {
+  #   by <- nordcancore::get_column_level_space(by)
+  # }
   count_dt <- basicepistats::stat_count(
     x = x,
     by = by,

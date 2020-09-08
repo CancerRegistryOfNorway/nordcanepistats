@@ -20,9 +20,9 @@ nordcanstat_count <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
-  if (is.character(by)) {
-    by <- nordcancore::get_column_level_space(by)
-  }
+  # if (is.character(by)) {
+  #   by <- nordcancore::get_column_level_space(by)
+  # }
   count_dt <- basicepstats::stat_count(
     x = x,
     by = by,

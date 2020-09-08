@@ -2,7 +2,7 @@
 % Please edit documentation in R/survival_quality.R
 \name{nordcanstat_survival_quality}
 \alias{nordcanstat_survival_quality}
-\title{Survival Quality Statsitics}
+\title{Survival Quality Statistics}
 \usage{
 nordcanstat_survival_quality(
   x,
