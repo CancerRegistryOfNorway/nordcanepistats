@@ -38,7 +38,8 @@ nordcanstat_survival_quality <- function(
     "Percentage excl. due to DCO" = x[["excl_surv_dco"]] == 1,
     "Percentage excl. due to autopsy" = x[["excl_surv_autopsy"]] == 1,
     "Percentage excl. due to neg follow up" = x[["excl_surv_negativefou"]] == 1,
-    "Percentage excl. due to multiple cancer" = x[["excluded_multiple"]] == 1
+    "Percentage excl. due to multiple cancer" = x[["excluded_multiple"]] == 1,
+    "Percentage not reported in NORDCAN" = x[["Entity"]] == 999
   )
 
   lapply(names(subsets), function(new_col_nm) {
