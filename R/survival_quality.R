@@ -15,8 +15,6 @@
 #' @family nordcanstat
 nordcanstat_survival_quality <- function(
   x,
-nordcanstat_survival_quality <- function(
-  x,
   by = NULL,
   subset = NULL,
   subset_style = "zeros"
