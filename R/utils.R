@@ -35,13 +35,13 @@ subset_and <- function(
   subset1,
   subset2
 ) {
-  dbc::assert_is_one_of(
+  dbc::assert_prod_input_is_one_of(
     x = subset1,
-    fun_nms = c("assert_is_NULL", "assert_is_logical", "assert_is_integer")
+    funs = c("report_is_NULL", "report_is_logical", "report_is_integer")
   )
-  dbc::assert_is_one_of(
+  dbc::assert_prod_input_is_one_of(
     x = subset2,
-    fun_nms = c("assert_is_NULL", "assert_is_logical", "assert_is_integer")
+    funs = c("report_is_NULL", "report_is_logical", "report_is_integer")
   )
   if (is.null(subset1) && is.null(subset2)) {
     return(NULL)
@@ -173,9 +173,9 @@ compute_by_entity_column <- function(
   arg_list
 ) {
   dbc::assert_is_data_table(x)
-  dbc::assert_is_one_of(
+  dbc::assert_prod_input_is_one_of(
     x = arg_list[["by"]],
-    fun_nms = c("assert_is_data.table", "assert_is_NULL")
+    funs = c("report_is_data.table", "report_is_NULL")
   )
   dbc::assert_is_integer_nonNA_vector(entities)
   dbc::assert_is_function(fun)
