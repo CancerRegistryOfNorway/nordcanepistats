@@ -4,7 +4,13 @@
 \alias{nordcanstat_count}
 \title{Cancer Record Counts}
 \usage{
-nordcanstat_count(x, by = NULL, subset = NULL, subset_style = "zeros")
+nordcanstat_count(
+  x,
+  by = NULL,
+  entities = nordcancore::nordcan_entity_set("cancer_record_count"),
+  subset = NULL,
+  subset_style = "zeros"
+)
 }
 \arguments{
 \item{x}{see \link[basicepistats:counts]{basicepistats::stat_count}}

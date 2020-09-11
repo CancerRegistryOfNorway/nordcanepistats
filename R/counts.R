@@ -17,12 +17,13 @@
 nordcanstat_count <- function(
   x,
   by = NULL,
+  entities = nordcancore::nordcan_entity_set("cancer_record_count"),
   subset = NULL,
   subset_style = "zeros"
 ) {
-  # if (is.character(by)) {
-  #   by <- nordcancore::get_column_level_space(by)
-  # }
+  if (is.character(by)) {
+    by <- nordcancore::nordcan_metadata_column_level_space_dt(by)
+  }
   count_dt <- basicepstats::stat_count(
     x = x,
     by = by,

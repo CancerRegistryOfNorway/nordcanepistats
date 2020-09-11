@@ -9,7 +9,7 @@ nordcanstat_settings <- function(function_name) {
     function_name %in% "nordcanstat_prevalent_subject_count"
   )
 
-  prevalence_col_nms <- nordcancore::nordcan_column_name_set(
+  prevalence_col_nms <- nordcancore::nordcan_metadata_column_name_set(
     "column_name_set_prevalence"
   )
 
@@ -184,8 +184,8 @@ compute_by_entity_column <- function(
     c("x", "by") %in% names(formals(fun))
   )
 
-  entity_dt <- nordcancore::nordcan_column_level_space_dt(
-    nordcancore::nordcan_column_name_set("column_name_set_entity")
+  entity_dt <- nordcancore::nordcan_metadata_column_level_space_dt(
+    nordcancore::nordcan_metadata_column_name_set("column_name_set_entity")
   )
   in_entity_set <- nordcancore::in_entity_set(entity_dt, entities)
   entity_dt <- entity_dt[in_entity_set, ]
