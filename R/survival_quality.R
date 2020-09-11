@@ -32,10 +32,14 @@ nordcanstat_survival_quality <- function(
   stratum_col_nms <- setdiff(names(count_dt), "N")
 
   subsets <- list(
-    "percentage excl. due to age 90+" = x[["age_year"]] >= 90.0,
-    "percentage excl. due to DCO" = x[["excl_surv_dco"]] == 1,
-    "percentage excl. due to autopsy" = x[["excl_surv_autopsy"]] == 1,
-    "percentage excl. due to neg follow up" = x[["excl_surv_negativefou"]] == 1
+    "Included cases" = x[["excl_imp_total"]] == 0,
+    "Percentage included"= NULL,
+    "Percentage excl. due to age 90+" = x[["age_year"]] >= 90.0,
+    "Percentage excl. due to DCO" = x[["excl_surv_dco"]] == 1,
+    "Percentage excl. due to autopsy" = x[["excl_surv_autopsy"]] == 1,
+    "Percentage excl. due to neg follow up" = x[["excl_surv_negativefou"]] == 1,
+    "Percentage excl. due to multiple cancer" = x[["excluded_multiple"]] == 1,
+    "Percentage not reported in NORDCAN" = x[["Entity"]] == 999
   )
 
   lapply(names(subsets), function(new_col_nm) {
@@ -69,6 +73,8 @@ nordcanstat_survival_quality <- function(
     NULL
   })
 
+  names(count_dt)[which(names(count_dt)=="N")]="All cases"
+  count_dt[,"Included cases"]=count_dt[,"Included cases"]*count_dt[,"All cases"]
+  count_dt[,"Percentage included"]=count_dt[,"Included cases"]/count_dt[,"All cases"]
   return(count_dt[])
 }
-
