@@ -14,7 +14,7 @@
 #   offset_dt <- nordcanepistats::get_offset_dt(
 #     union(stratum_col_nms, adjust_col_nms)
 #   )
-#   basicepstats::stat_rate(
+#   basicepistats::stat_rate(
 #     x,
 #     offset_dt,
 #     stratum_col_nms,

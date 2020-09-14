@@ -197,29 +197,34 @@ compute_by_entity_column <- function(
   results_by_entity_col <- lapply(names(entity_dt), function(entity_col_nm) {
     col_entity_set <- intersect(x[[entity_col_nm]], entities)
     by_entity <- data.table::data.table(
-      entity = unique(entity_dt[[entity_col_nm]])
+      entity = intersect(nordcancore::nordcan_metadata_entity_no_set("all"),
+                         entity_dt[[entity_col_nm]])
     )
     data.table::setnames(by_entity, "entity", entity_col_nm)
     if (is.null(arg_list[["by"]])) {
       arg_list[["by"]] <- by_entity
     } else {
-      arg_list[["by"]] <- list(arg_list[["by"]], by_entity)
+      arg_list[["by"]] <- list(by = arg_list[["by"]], entity = by_entity)
     }
     do.call(fun, arg_list)
   })
 
-  if (all(vapply(results_by_entity, data.table::is.data.table, logical(1L)))) {
-    results_by_entity <- lapply(seq_along(results_by_entity), function(i) {
-      dt <- results_by_entity[[i]]
-      entity_col_nm <- names(entity_dt)[i]
-      data.table::setnames(dt, entity_col_nm, "entity", skip_absent = TRUE)
-      return(dt[])
-    })
-    results_by_entity <- data.table::rbindlist(results_by_entity)
+  is_dt <- vapply(results_by_entity_col, data.table::is.data.table, logical(1L))
+  if (all(is_dt)) {
+    results_by_entity_col <- lapply(
+      seq_along(results_by_entity_col),
+      function(i) {
+        dt <- results_by_entity_col[[i]]
+        entity_col_nm <- names(entity_dt)[i]
+        data.table::setnames(dt, entity_col_nm, "entity", skip_absent = TRUE)
+        return(dt[])
+      })
+    results_by_entity_col <- data.table::rbindlist(results_by_entity_col)
+    data.table::setkeyv(results_by_entity_col,
+                        union(names(results_by_entity_col), "entity"))
   }
 
-  return(results_by_entity)
-
+  return(results_by_entity_col)
 }
 
 
