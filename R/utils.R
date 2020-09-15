@@ -12,15 +12,17 @@ nordcanstat_settings <- function(function_name) {
   prevalence_col_nms <- nordcancore::nordcan_metadata_column_name_set(
     "column_name_set_prevalence"
   )
+  gs <- nordcancore::get_global_nordcan_settings()
+  first_obs_y <- gs[["stat_prevalent_subject_count_first_year"]]
+  last_obs_y <- nordcancore::nordcan_metadata_nordcan_year()
+  obs_yrs <- first_obs_y:last_obs_y
 
   if (function_name == "nordcanstat_prevalent_subject_count") {
-    message("TODO for Joonas: embed observation_years setting into ",
-            "nordcancore")
     settings <- list(
       entry_year_col_nm = prevalence_col_nms["entry_year"],
       exit_year_col_nm = prevalence_col_nms["exit_year"],
       subject_id_col_nm = prevalence_col_nms["subject_id"],
-      observation_years = 2018L,
+      observation_years = obs_yrs,
       maximum_follow_up_years = c(1L, 3L, 5L, 10L, 1000L)
     )
   }

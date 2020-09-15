@@ -9,6 +9,12 @@
 #' @template param_x
 #' @template param_by
 #' @template param_entities
+#' @param observation_years `[NULL, integer]` (optional, default `NULL`)
+#'
+#' - `NULL`: NORDCAN default set of years is used
+#' - `integer`: only observe prevalence at the ends of these years; see
+#'   [basicepistats::stat_year_based_prevalent_subject_count] for more
+#'   information
 #' @param subset see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @param subset_style see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @export
@@ -18,11 +24,20 @@ nordcanstat_year_based_prevalent_subject_count <- function(
   x,
   by = NULL,
   entities = NULL,
+  observation_years = NULL,
   subset = NULL,
   subset_style = "zeros"
 ) {
+  dbc::assert_prod_input_is_data.table(x)
+  dbc::assert_prod_input_is_one_of(
+    x = observation_years,
+    funs = c("report_is_NULL", "report_is_integer_nonNA_vector")
+  )
   settings <- nordcanstat_settings("nordcanstat_prevalent_subject_count")
   arg_list <- c(mget(c("x", "by", "subset", "subset_style")), settings)
+  if (!is.null(observation_years)) {
+    arg_list[["observation_years"]] <- observation_years
+  }
 
   # ensure that prevalence is calculated correctly for the last year used in
   # NORDCAN --- having the exit year of those who were in follow-up at the end

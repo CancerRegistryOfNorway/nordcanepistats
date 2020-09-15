@@ -10,14 +10,7 @@ compute_by_entity(x, entities, fun, arg_list)
 
 compute_by_entity_column(x, entities, fun, arg_list)
 
-nordcanstat_by_entity_column(
-  x,
-  by,
-  entities,
-  subset,
-  subset_style,
-  basicepistats_fun
-)
+nordcanstat_by_entity_column(entities, arg_list, basicepistats_fun)
 }
 \arguments{
 \item{x}{\verb{[data.table]} (mandatory, no default)
@@ -43,6 +36,11 @@ function that is applied to each entity / entity column; see Details}
 
 a \code{list} containing arguments to pass to \code{fun}; see Details}
 
+\item{basicepistats_fun}{\verb{[function]} (mandatory, no default)
+
+function from \strong{basicepistats}, e.g. \verb{[basicepistats::stat_count]};
+this function will be run to produce results by entity number}
+
 \item{by}{see \link[basicepistats:counts]{basicepistats::stat_count}
 
 exceptions to \verb{[basicepistats::stat_count]}:
@@ -60,11 +58,6 @@ entities to compute results by are supplied via \code{entities}
 \item{subset}{see the same argument in e.g. \link[basicepistats:counts]{basicepistats::stat_count}}
 
 \item{subset_style}{see the same argument in e.g. \link[basicepistats:counts]{basicepistats::stat_count}}
-
-\item{basicepistats_fun}{\verb{[function]} (mandatory, no default)
-
-function from \strong{basicepistats}, e.g. \verb{[basicepistats::stat_count]};
-this function will be run to produce results by entity number}
 }
 \value{
 Either a \code{list} or a \code{data.table}. Initially results are collected into a

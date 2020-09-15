@@ -8,6 +8,7 @@ nordcanstat_year_based_prevalent_subject_count(
   x,
   by = NULL,
   entities = NULL,
+  observation_years = NULL,
   subset = NULL,
   subset_style = "zeros"
 )
@@ -40,6 +41,14 @@ see \code{by} for how to stratify output by entity number.
 \code{nordcancore::nordcan_metadata_entity_no_set("all")}
 is used
 \item \code{integer}: these entity numbers are used
+}}
+
+\item{observation_years}{\verb{[NULL, integer]} (optional, default \code{NULL})
+\itemize{
+\item \code{NULL}: NORDCAN default set of years is used
+\item \code{integer}: only observe prevalence at the ends of these years; see
+\link[basicepistats:year_based_prevalence]{basicepistats::stat_year_based_prevalent_subject_count} for more
+information
 }}
 
 \item{subset}{see \link[basicepistats:year_based_prevalence]{basicepistats::stat_year_based_prevalent_subject_count}}
