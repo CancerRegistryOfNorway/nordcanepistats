@@ -28,22 +28,10 @@
 #' )
 #' @export
 
-# ####working directory
-# setwd("")
-#  
-# ####packages
-# library(basicepistats)
-#
 # ####data
-#
-# ###mortality
 # cancer_death_count_dataset=data.table::data.table(read.csv("Cancer_death_count_dataset.csv"))
 # cancer_record_dataset=data.table::data.table(read.csv("Cancer_record_dataset.csv"))
-# 
-# ###incidence
-# cancer_case_dataset=data.table::data.table(read.csv("Cancer_case_dataset.csv"))
-# cancer_case_dataset$date_of_incidence=as.Date(cancer_case_dataset$date_of_incidence,"%d.%m.%Y")
-# cancer_case_dataset$end_of_followup=as.Date(cancer_case_dataset$end_of_followup,"%d.%m.%Y")
+# cancer_case_dataset=data.table::data.table(read.csv("enriched.csv"))
 
 nordcan_statistics_payload <- function(
   datasets=list(
@@ -74,19 +62,16 @@ nordcan_statistics_payload <- function(
   
   payload=list(
     cancer_death_count_dataset=cancer_death_count_dataset,
-    cancer_case_count_dataset=data.table::as.data.table(basicepistats::stat_table_list(
-      varying_arg_list = list(
-        by = list(c("year","sex","region","age","entity"))
-      ),
-      fixed_arg_list = list(x = cancer_case_dataset),
-      stat_fun_nm = "stat_count"
-    )),
+cancer_case_count_dataset=data.table::as.data.table(nordcanepistats::nordcanstat_count(
+  x = cancer_case_dataset, 
+  by = c("year","sex","region","agegroup","entity")
+)),
   prevalent_cancer_patient_count_dataset=data.table::as.data.table(
-  nordcanepistats::nordcanstat_prevalent_subject_count(cancer_case_dataset))
+  nordcanepistats::nordcanstat_year_based_prevalent_subject_count(x=cancer_case_dataset,by=c("year","sex","region","agegroup","entity"))
   )
-  
+)
   stopifnot(
-    c("cancer_death_count_dataset","cancer_case_count_dataset")
+    c("cancer_death_count_dataset","cancer_case_count_dataset","prevalent_cancer_patient_count_dataset")
     %in%
       names(payload),
     inherits(payload, "list"),
