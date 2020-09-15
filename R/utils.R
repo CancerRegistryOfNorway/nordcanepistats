@@ -229,4 +229,72 @@ compute_by_entity_column <- function(
 
 
 
+#' @rdname compute_by_entity
+#' @export
+#' @template param_x
+#' @template param_by
+#' @template param_entities
+#' @param subset see the same argument in e.g. [basicepistats::stat_count]
+#' @param subset_style see the same argument in e.g. [basicepistats::stat_count]
+#' @param basicepistats_fun `[function]` (mandatory, no default)
+#'
+#' function from **basicepistats**, e.g. `[basicepistats::stat_count]`;
+#' this function will be run to produce results by entity number
+#' @importFrom dbc assert_prod_input_is_data.table
+#' assert_prod_input_is_one_of assert_prod_input_is_one_of
+#' @importFrom nordcancore nordcan_metadata_entity_no_set
+#' assert_prod_input_entities nordcan_metadata_column_level_space_dt
+nordcanstat_by_entity_column <- function(
+  entities,
+  arg_list,
+  basicepistats_fun
+) {
+  dbc::assert_prod_input_is_uniquely_named_list(arg_list)
+  dbc::assert_prod_input_has_names(arg_list, required_names = c("x", "by"))
+  dbc::assert_prod_input_is_data.table(arg_list[["x"]])
+  dbc::assert_prod_input_is_one_of(
+    x = arg_list[["by"]],
+    funs = c("report_is_NULL", "report_is_character_nonNA_vector",
+             "report_is_data.table")
+  )
+  dbc::assert_prod_input_is_one_of(
+    x = entities,
+    funs = c("report_is_NULL", "report_is_integer_nonNA_vector")
+  )
+  if (is.null(entities)) {
+    entities <- nordcancore::nordcan_metadata_entity_no_set("all")
+  } else {
+    nordcancore::assert_prod_input_entities(entities)
+  }
+  statfun_arg_nms <- names(formals(basicepistats_fun))
+  statfun_arg_list <- arg_list[statfun_arg_nms]
+  names(statfun_arg_list) <- statfun_arg_nms
+  if (is.character(statfun_arg_list[["by"]]) && "entity" %in% statfun_arg_list[["by"]]) {
+    statfun_arg_list[["by"]] <- setdiff(statfun_arg_list[["by"]], "entity")
+    if (length(statfun_arg_list[["by"]]) == 0L) {
+      statfun_arg_list[["by"]] <- NULL
+    } else {
+      statfun_arg_list[["by"]] <- nordcancore::nordcan_metadata_column_level_space_dt(
+        statfun_arg_list[["by"]]
+      )
+    }
+
+    stat_dt <- compute_by_entity_column(
+      x = statfun_arg_list[["x"]],
+      entities = entities,
+      fun = basicepistats_fun,
+      arg_list = statfun_arg_list
+    )
+    return(stat_dt[])
+  }
+  if (is.character(statfun_arg_list[["by"]])) {
+    statfun_arg_list[["by"]] <- nordcancore::nordcan_metadata_column_level_space_dt(
+      statfun_arg_list[["by"]]
+    )
+  }
+  stat_dt <- do.call(basicepistats_fun, statfun_arg_list[["by"]])
+  return(stat_dt[])
+}
+
+
 

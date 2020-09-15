@@ -6,8 +6,9 @@
 #' @description
 #' Compute numbers of people alive at specific time points who have had
 #' a cancer diagnosis in their past.
-#' @param x see [basicepistats::stat_year_based_prevalent_subject_count]
-#' @param by see [basicepistats::stat_year_based_prevalent_subject_count]
+#' @template param_x
+#' @template param_by
+#' @template param_entities
 #' @param subset see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @param subset_style see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @export
@@ -16,6 +17,7 @@
 nordcanstat_year_based_prevalent_subject_count <- function(
   x,
   by = NULL,
+  entities = NULL,
   subset = NULL,
   subset_style = "zeros"
 ) {
@@ -41,5 +43,10 @@ nordcanstat_year_based_prevalent_subject_count <- function(
   }))
   data.table::setnames(use_x, names(use_x), names(x))
   arg_list[["x"]] <- use_x
-  do.call(basicepistats::stat_year_based_prevalent_subject_count, arg_list)
+
+  nordcanstat_by_entity_column(
+    entities = entities,
+    arg_list = arg_list,
+    basicepistats_fun = basicepistats::stat_year_based_prevalent_subject_count
+  )
 }

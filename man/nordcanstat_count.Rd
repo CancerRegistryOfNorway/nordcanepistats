@@ -7,17 +7,40 @@
 nordcanstat_count(
   x,
   by = NULL,
-  entities = nordcancore::nordcan_entity_set("cancer_record_count"),
+  entities = NULL,
   subset = NULL,
   subset_style = "zeros"
 )
 }
 \arguments{
-\item{x}{see \link[basicepistats:counts]{basicepistats::stat_count}}
+\item{x}{\verb{[data.table]} (mandatory, no default)
 
-\item{by}{see \link[basicepistats:counts]{basicepistats::stat_count}}
+the NORDCAN cancer record dataset after preprocessing; see also the
+underlying implementation \link[basicepistats:counts]{basicepistats::stat_count}}
 
-\item{subset}{see \link[basicepistats:counts]{basicepistats::stat_count}}
+\item{by}{see \link[basicepistats:counts]{basicepistats::stat_count}
+
+exceptions to \verb{[basicepistats::stat_count]}:
+\itemize{
+\item if \code{by} is a character vector of column names in \code{x}, the allowed
+combinations of those columns are retrieved using
+\verb{[nordcancore::nordcan_metadata_column_level_space_dt]}, and the output
+will include all of these combinations
+\item additionally if \code{by} is a character vector and one element of it is
+\code{"entity"}, then output is also stratified by entity number
+(the entity numbers will be in column \code{entity} in output); the
+entities to compute results by are supplied via \code{entities}
+}}
+
+\item{entities}{\verb{[NULL, integer]} (optional, default \code{NULL})
+
+see \code{by} for how to stratify output by entity number.
+\itemize{
+\item \code{NULL}: output of
+\code{nordcancore::nordcan_metadata_entity_no_set("all")}
+is used
+\item \code{integer}: these entity numbers are used
+}}
 
 \item{subset_style}{see \link[basicepistats:counts]{basicepistats::stat_count}}
 }

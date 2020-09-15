@@ -1,4 +1,7 @@
-
-#' @param entities `[integer]` (mandatory, no default)
+#' @param entities `[NULL, integer]` (optional, default `NULL`)
 #'
-#' an integer vector of entity numbers
+#' see `by` for how to stratify output by entity number.
+#' - `NULL`: output of
+#'   `nordcancore::nordcan_metadata_entity_no_set("all")`
+#'   is used
+#' - `integer`: these entity numbers are used
