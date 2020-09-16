@@ -51,15 +51,17 @@ nordcan_statistics_tables <- function(
     cancer_record_dataset=cancer_record_dataset
   )
 ) {
-  dbc::assert_user_input_is_uniquely_named_list(datasets)
-  dbc::assert_user_input_has_names(
+  dbc::assert_dev_input_is_uniquely_named_list(datasets)
+  dbc::assert_dev_input_has_names(
     datasets,
     required_names = nordcan_statistics_input_names()
   )
   lapply(nordcan_statistics_tables_input_names(), function(dataset_name) {
-    nordcanpreprocessing::assert_dataset_is_valid(
-      x = datasets[[dataset_name]], dataset_name = dataset_name
-    )
+    if (dbc::get_dev_mode() == TRUE) {
+      nordcanpreprocessing::assert_dataset_is_valid(
+        x = datasets[[dataset_name]], dataset_name = dataset_name
+      )
+    }
     NULL
   })
 
@@ -70,13 +72,13 @@ nordcan_statistics_tables <- function(
       by = c("yoi","sex","region","agegroup","entity")
     ),
     prevalent_cancer_patient_count_dataset = nordcanstat_year_based_prevalent_subject_count(
-      x = cancer_case_dataset, by = c("year", "sex", "region", "agegroup", "entity")
+      x = cancer_case_dataset, by = c("sex", "region", "agegroup", "entity")
     ),
     general_population_size_dataset = datasets[["general_population_size_dataset"]]
   )
 
-  dbc::assert_prod_output_is_uniquely_named_list(payload)
-  dbc::assert_prod_output_has_names(
+  dbc::assert_dev_output_is_uniquely_named_list(payload)
+  dbc::assert_dev_output_has_names(
     payload,
     required_names = nordcan_statistics_tables_output_names()
   )
