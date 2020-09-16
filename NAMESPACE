@@ -2,7 +2,7 @@
 
 export(compute_by_entity)
 export(compute_by_entity_column)
-export(nordcan_statistics_tables_input_names)
+export(nordcan_statistics_tables)
 export(nordcanstat_by_entity_column)
 export(nordcanstat_count)
 export(nordcanstat_survival_quality)

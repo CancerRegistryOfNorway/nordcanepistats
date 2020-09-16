@@ -32,19 +32,6 @@
 # cancer_record_dataset=data.table::data.table(read.csv("Cancer_record_dataset.csv"))
 # cancer_case_dataset=data.table::data.table(read.csv("enriched.csv"))
 
-nordcan_statistics_tables_input_names <- function() {
-  c("cancer_record_dataset",
-    "cancer_death_count_dataset",
-    "general_population_size_dataset")
-}
-
-nordcan_statistics_tables_output_names <- function() {
-  c("cancer_death_count_dataset",
-    "cancer_case_count_dataset",
-    "prevalent_cancer_patient_count_dataset",
-    "general_population_size_dataset")
-}
-
 nordcan_statistics_tables <- function(
   datasets = list(
     cancer_death_count_dataset=cancer_death_count_dataset,
@@ -83,4 +70,19 @@ nordcan_statistics_tables <- function(
     required_names = nordcan_statistics_tables_output_names()
   )
   return(payload)
+}
+
+
+
+nordcan_statistics_tables_input_names <- function() {
+  c("cancer_record_dataset",
+    "cancer_death_count_dataset",
+    "general_population_size_dataset")
+}
+
+nordcan_statistics_tables_output_names <- function() {
+  c("cancer_death_count_dataset",
+    "cancer_case_count_dataset",
+    "prevalent_cancer_patient_count_dataset",
+    "general_population_size_dataset")
 }
