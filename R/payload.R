@@ -77,7 +77,7 @@ nordcan_statistics_tables <- function(
   dbc::assert_dev_input_is_uniquely_named_list(datasets)
   dbc::assert_dev_input_has_names(
     datasets,
-    required_names = nordcan_statistics_input_names()
+    required_names = nordcan_statistics_tables_input_names()
   )
   lapply(nordcan_statistics_tables_input_names(), function(dataset_name) {
     if (dbc::get_dev_mode() == TRUE) {
