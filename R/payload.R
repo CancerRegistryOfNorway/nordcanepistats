@@ -4,26 +4,25 @@
 #' Compute all necessary statistics for NORDCAN into a single payload.
 #' @param datasets `[list]` (mandatory, no default)
 #'
-#' a list containing datasets. the following are mandatory:
-#' - `cancer_record_dataset`: each row is a cancer record as output by
-#'   [nordcanpreprocessing::nordcan_incidence_dataset]
-#' - `population_mean_size_dataset`: see
-#'   [nordcanpreprocessing::nordcan_population_mean_size_dataset]
-#' - `population_mortality_dataset`: see
-#'   [nordcanpreprocessing::nordcan_population_mortality_dataset]
+#' a list containing the followin datasets:
+#' - `cancer_record_dataset`: as output by
+#'   [nordcanpreprocessing::nordcan_processed_cancer_record_dataset]
+#' - `general_population_size_dataset`: see
+#'   [nordcanpreprocessing::nordcan_general_population_size_dataset]
+#' - `national_population_life_table`: see
+#'   [nordcanpreprocessing::nordcan_national_population_life_table]
+#' - `cancer_death_count_dataset`: dataset containing numbers of cancer deaths;
+#'   the creation of this dataset is explained in
+#'   [nordcanpreprocessing::nordcan_processed_cancer_death_count_dataset]
 #'
-#' the following are optional and are computed within this function if not
-#' supplied:
-#' - `cancer_death_count_dataset`: contains the numbers of cancer deaths; see
-#'   [nordcanpreprocessing::nordcan_cancer_death_count_dataset]
 #' @examples
 #'
-#' nc_stats_payload <- nordcanepistats::nordcan_statistics_payload(
+#' nc_stats <- nordcan_statistics_tables(
 #'   datasets = list(
 #'     cancer_record_dataset = my_crd,
 #'     cancer_death_count_dataset = my_cdcd,
-#'     population_mean_size_dataset = my_mps,
-#'     population_mortality_dataset = my_md
+#'     general_population_size_dataset = my_gpsd,
+#'     national_population_life_table = my_lt
 #'   )
 #' )
 #' @export
@@ -33,49 +32,53 @@
 # cancer_record_dataset=data.table::data.table(read.csv("Cancer_record_dataset.csv"))
 # cancer_case_dataset=data.table::data.table(read.csv("enriched.csv"))
 
-nordcan_statistics_payload <- function(
-  datasets=list(
+nordcan_statistics_tables_input_names <- function() {
+  c("cancer_record_dataset",
+    "cancer_death_count_dataset",
+    "general_population_size_dataset")
+}
+
+nordcan_statistics_tables_output_names <- function() {
+  c("cancer_death_count_dataset",
+    "cancer_case_count_dataset",
+    "prevalent_cancer_patient_count_dataset",
+    "general_population_size_dataset")
+}
+
+nordcan_statistics_tables <- function(
+  datasets = list(
     cancer_death_count_dataset=cancer_death_count_dataset,
-    cancer_record_dataset=cancer_record_dataset,
-    cancer_case_dataset=cancer_case_dataset
+    cancer_record_dataset=cancer_record_dataset
   )
 ) {
-  
-  stopifnot(
-    inherits(datasets, "list"),
-    vapply(datasets, data.table::is.data.table, logical(1L)),
-    !is.null(names(datasets)),
-    names(datasets) %in% c("cancer_death_count_dataset","cancer_record_dataset","cancer_case_dataset"),
-    c("cancer_record_dataset","cancer_case_dataset") %in% names(datasets)
+  dbc::assert_user_input_is_uniquely_named_list(datasets)
+  dbc::assert_user_input_has_names(
+    datasets,
+    required_names = nordcan_statistics_input_names()
   )
-  
-  '%ni%'=Negate('%in%')
-  if('cancer_death_count_dataset' %in% names(datasets)){
-    message("cancer_death_count_dataset is given in datasets and 
-            need not to be computed inside this function!")
-  } 
-  else if('cancer_death_count_dataset' %ni% names(datasets)){
-    cancer_death_count_dataset=unique(
-      basicepistats::stat_count(x=cancer_record_dataset,by=cancer_record_dataset)
+  lapply(nordcan_statistics_tables_input_names(), function(dataset_name) {
+    nordcanpreprocessing::assert_dataset_is_valid(
+      x = datasets[[dataset_name]], dataset_name = dataset_name
     )
-  }
-  
-  payload=list(
-    cancer_death_count_dataset=cancer_death_count_dataset,
-cancer_case_count_dataset=data.table::as.data.table(nordcanepistats::nordcanstat_count(
-  x = cancer_case_dataset, 
-  by = c("year","sex","region","agegroup","entity")
-)),
-  prevalent_cancer_patient_count_dataset=data.table::as.data.table(
-  nordcanepistats::nordcanstat_year_based_prevalent_subject_count(x=cancer_case_dataset,by=c("year","sex","region","agegroup","entity"))
+    NULL
+  })
+
+  payload <- list(
+    cancer_death_count_dataset = cancer_death_count_dataset,
+    cancer_case_count_dataset = nordcanstat_count(
+      x = cancer_case_dataset,
+      by = c("yoi","sex","region","agegroup","entity")
+    ),
+    prevalent_cancer_patient_count_dataset = nordcanstat_year_based_prevalent_subject_count(
+      x = cancer_case_dataset, by = c("year", "sex", "region", "agegroup", "entity")
+    ),
+    general_population_size_dataset = datasets[["general_population_size_dataset"]]
   )
-)
-  stopifnot(
-    c("cancer_death_count_dataset","cancer_case_count_dataset","prevalent_cancer_patient_count_dataset")
-    %in%
-      names(payload),
-    inherits(payload, "list"),
-    vapply(payload, inherits, logical(1L), what = "data.table")
+
+  dbc::assert_prod_output_is_uniquely_named_list(payload)
+  dbc::assert_prod_output_has_names(
+    payload,
+    required_names = nordcan_statistics_tables_output_names()
   )
   return(payload)
 }
