@@ -2,16 +2,19 @@
 #' @title NORDCAN Statistics Payload
 #' @description
 #' Compute all necessary statistics for NORDCAN into a single payload.
-#' @param datasets `[list]` (mandatory, no default)
+#' @param cancer_record_dataset `[data.table]` (mandatory, no default)
 #'
-#' a list containing the following datasets:
-#' - `cancer_record_dataset`: as output by
-#'   [nordcanpreprocessing::nordcan_processed_cancer_record_dataset]
-#' - `general_population_size_dataset`: the dataset of population sizes
-#'   as per the call for data
-#' - `national_population_life_table`: the life table as per the call for data
-#' - `cancer_death_count_dataset`: dataset containing numbers of cancer deaths;
-#'   see Details
+#' as output by
+#' [nordcanpreprocessing::nordcan_processed_cancer_record_dataset]
+#'
+#' @param general_population_size_dataset `[data.table]` (mandatory, no default)
+#' the dataset of population sizes as per the call for data
+#'
+#' @param national_population_life_table `[data.table]` (mandatory, no default)
+#' the life table as per the call for data
+#'
+#' @param cancer_death_count_dataset `[data.table]` (mandatory, no default)
+#' dataset containing numbers of cancer deaths; see Details
 #'
 #' @details
 #' You need to form `cancer_death_count_dataset` yourself using the raw data
@@ -53,12 +56,10 @@
 #'
 #' \dontrun{
 #' nc_stats <- nordcan_statistics_tables(
-#'   datasets = list(
-#'     cancer_record_dataset = crd,
-#'     cancer_death_count_dataset = cdcd,
-#'     general_population_size_dataset = gpsd,
-#'     national_population_life_table = lt
-#'   )
+#'  cancer_record_dataset = crd,
+#'  cancer_death_count_dataset = cdcd,
+#'  general_population_size_dataset = gpsd,
+#'  national_population_life_table = lt
 #' )
 #' }
 #' @export
@@ -68,43 +69,53 @@
 # cancer_record_dataset=data.table::data.table(read.csv("Cancer_record_dataset.csv"))
 # cancer_case_dataset=data.table::data.table(read.csv("enriched.csv"))
 
+#' @importFrom data.table timetaken
+#' @importFrom dbc assert_user_input_is_data.table
 nordcan_statistics_tables <- function(
-  datasets = list(
-    cancer_death_count_dataset=cancer_death_count_dataset,
-    cancer_record_dataset=cancer_record_dataset
-  )
+  cancer_record_dataset,
+  cancer_death_count_dataset,
+  general_population_size_dataset,
+  national_population_life_table
 ) {
-  dbc::assert_dev_input_is_uniquely_named_list(datasets)
-  dbc::assert_dev_input_has_names(
-    datasets,
-    required_names = nordcan_statistics_tables_input_names()
-  )
-  lapply(nordcan_statistics_tables_input_names(), function(dataset_name) {
-    if (dbc::get_dev_mode() == TRUE) {
-      nordcanpreprocessing::assert_dataset_is_valid(
-        x = datasets[[dataset_name]], dataset_name = dataset_name
-      )
-    }
-    NULL
-  })
+  t_start <- proc.time()
+  dbc::assert_user_input_is_data.table(cancer_record_dataset)
+  dbc::assert_user_input_is_data.table(cancer_death_count_dataset)
+  dbc::assert_user_input_is_data.table(general_population_size_dataset)
+  dbc::assert_user_input_is_data.table(national_population_life_table)
 
   payload <- list(
     cancer_death_count_dataset = cancer_death_count_dataset,
-    cancer_case_count_dataset = nordcanstat_count(
-      x = cancer_case_dataset,
-      by = c("yoi","sex","region","agegroup","entity")
-    ),
-    prevalent_cancer_patient_count_dataset = nordcanstat_year_based_prevalent_subject_count(
-      x = cancer_case_dataset, by = c("sex", "region", "agegroup", "entity")
-    ),
-    general_population_size_dataset = datasets[["general_population_size_dataset"]]
+    general_population_size_dataset = general_population_size_dataset
   )
+  message("* nordcanepistats::nordcan_statistics_tables: started computing ",
+          "cancer_case_count_dataset at ", as.character(Sys.time()), "..")
+  t <- proc.time()
+  payload[["cancer_case_count_dataset"]] <- nordcanstat_count(
+    x = cancer_record_dataset,
+    by = c("yoi","sex","region","agegroup","entity")
+  )
+  message("* nordcanepistats::nordcan_statistics_tables: done computing ",
+          "cancer_case_count_dataset; ",
+          data.table::timetaken(t))
+  message("* nordcanepistats::nordcan_statistics_tables: started computing ",
+          "prevalent_cancer_patient_count_dataset at ",
+          as.character(Sys.time()), "...")
+  t <- proc.time()
+  dt <- nordcanstat_year_based_prevalent_subject_count(
+    x = cancer_record_dataset, by = c("sex", "region", "agegroup", "entity")
+  )
+  payload[["prevalent_cancer_patient_count_dataset"]] <- dt
+  message("* nordcanepistats::nordcan_statistics_tables: done computing ",
+          "prevalent_cancer_patient_count_dataset; ",
+          data.table::timetaken(t))
 
   dbc::assert_dev_output_is_uniquely_named_list(payload)
   dbc::assert_dev_output_has_names(
     payload,
     required_names = nordcan_statistics_tables_output_names()
   )
+  message("* nordcanepistats::nordcan_statistics_tables: finished; ",
+          data.table::timetaken(t_start))
   return(payload)
 }
 

@@ -5,23 +5,26 @@
 \title{NORDCAN Statistics Payload}
 \usage{
 nordcan_statistics_tables(
-  datasets = list(cancer_death_count_dataset = cancer_death_count_dataset,
-    cancer_record_dataset = cancer_record_dataset)
+  cancer_record_dataset,
+  cancer_death_count_dataset,
+  general_population_size_dataset,
+  national_population_life_table
 )
 }
 \arguments{
-\item{datasets}{\verb{[list]} (mandatory, no default)
+\item{cancer_record_dataset}{\verb{[data.table]} (mandatory, no default)
 
-a list containing the following datasets:
-\itemize{
-\item \code{cancer_record_dataset}: as output by
-\link[nordcanpreprocessing:nordcan_processed_cancer_record_dataset]{nordcanpreprocessing::nordcan_processed_cancer_record_dataset}
-\item \code{general_population_size_dataset}: the dataset of population sizes
-as per the call for data
-\item \code{national_population_life_table}: the life table as per the call for data
-\item \code{cancer_death_count_dataset}: dataset containing numbers of cancer deaths;
-see Details
-}}
+as output by
+\link[nordcanpreprocessing:nordcan_processed_cancer_record_dataset]{nordcanpreprocessing::nordcan_processed_cancer_record_dataset}}
+
+\item{cancer_death_count_dataset}{\verb{[data.table]} (mandatory, no default)
+dataset containing numbers of cancer deaths; see Details}
+
+\item{general_population_size_dataset}{\verb{[data.table]} (mandatory, no default)
+the dataset of population sizes as per the call for data}
+
+\item{national_population_life_table}{\verb{[data.table]} (mandatory, no default)
+the life table as per the call for data}
 }
 \description{
 Compute all necessary statistics for NORDCAN into a single payload.
@@ -59,12 +62,10 @@ naturally only die once, so there can be at most one \code{TRUE} value per perso
 
 \dontrun{
 nc_stats <- nordcan_statistics_tables(
-  datasets = list(
-    cancer_record_dataset = crd,
-    cancer_death_count_dataset = cdcd,
-    general_population_size_dataset = gpsd,
-    national_population_life_table = lt
-  )
+ cancer_record_dataset = crd,
+ cancer_death_count_dataset = cdcd,
+ general_population_size_dataset = gpsd,
+ national_population_life_table = lt
 )
 }
 }
