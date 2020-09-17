@@ -131,8 +131,12 @@ nordcan_statistics_tables <- function(
           "survival_dataset at ",
           as.character(Sys.time()), "...")
   t <- proc.time()
+  gs <- nordcancore::get_global_nordcan_settings()
+  first_year <- gs[["stat_survival_follow_up_first_year"]]
+  keep <- cancer_record_dataset[["period"]] >= first_year
+  crd <- cancer_record_dataset[keep, ]
   dt <- tryCatch(nordcansurvival::nordcanstat_survival(
-    cancer_record_dataset = cancer_record_dataset,
+    cancer_record_dataset = crd,
     national_population_life_table = national_population_life_table,
     stata_exe_path = stata_exe_path
   ), error = function(e) e)
