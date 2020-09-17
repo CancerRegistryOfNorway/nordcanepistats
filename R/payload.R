@@ -141,20 +141,21 @@ nordcan_statistics_tables <- function(
 
 
   # survival_dataset -----------------------------------------------------------
-  message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-          "survival_dataset at ",
-          as.character(Sys.time()), "...")
-  t <- proc.time()
-  dt <- tryCatch(nordcansurvival::nordcanstat_survival(
-    cancer_record_dataset = cancer_record_dataset,
-    national_population_life_table = national_population_life_table,
-    stata_exe_path = stata_exe_path
-  ), error = function(e) e)
-  payload[["survival_dataset"]] <- dt
-  message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-          "survival_dataset; ",
-          data.table::timetaken(t))
+  # message("* nordcanepistats::nordcan_statistics_tables: started computing ",
+  #         "survival_dataset at ",
+  #         as.character(Sys.time()), "...")
+  # t <- proc.time()
+  # dt <- tryCatch(nordcansurvival::nordcanstat_survival(
+  #   cancer_record_dataset = cancer_record_dataset,
+  #   national_population_life_table = national_population_life_table,
+  #   stata_exe_path = stata_exe_path
+  # ), error = function(e) e)
+  # payload[["survival_dataset"]] <- dt
+  # message("* nordcanepistats::nordcan_statistics_tables: done computing ",
+  #         "survival_dataset; ",
+  #         data.table::timetaken(t))
 
+  # final touches --------------------------------------------------------------
   dbc::assert_dev_output_is_uniquely_named_list(payload)
   dbc::assert_dev_output_has_names(
     payload,
@@ -177,5 +178,7 @@ nordcan_statistics_tables_output_names <- function() {
   c("cancer_death_count_dataset",
     "cancer_case_count_dataset",
     "prevalent_cancer_patient_count_dataset",
+    "survival_quality_dataset",
+    # "survival_dataset",
     "general_population_size_dataset")
 }
