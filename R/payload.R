@@ -84,11 +84,26 @@ nordcan_statistics_tables <- function(
   stata_exe_path
 ) {
   t_start <- proc.time()
-  dbc::assert_user_input_is_data.table(cancer_record_dataset)
-  dbc::assert_user_input_is_data.table(cancer_death_count_dataset)
-  dbc::assert_user_input_is_data.table(general_population_size_dataset)
-  dbc::assert_user_input_is_data.table(national_population_life_table)
+  dbc::assert_user_input_is_data.table_with_required_names(
+    cancer_record_dataset,
+    required_names = nordcancore::nordcan_metadata_column_name_set(
+      "column_name_set_processed_cancer_record_dataset"
+    )
+    )
   dbc::assert_user_input_file_exists(stata_exe_path)
+  nordcanpreprocessing::assert_dataset_is_valid(
+    cancer_death_count_dataset,
+    dataset_name = "processed_cancer_death_count_dataset"
+  )
+  nordcanpreprocessing::assert_dataset_is_valid(
+    general_population_size_dataset,
+    dataset_name = "general_population_size_dataset"
+  )
+  nordcanpreprocessing::assert_dataset_is_valid(
+    national_population_life_table,
+    dataset_name = "national_population_life_table"
+  )
+
 
   payload <- list(
     cancer_death_count_dataset = cancer_death_count_dataset,
