@@ -19,11 +19,7 @@ nordcanstat_survival_quality <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
-
-  # if (is.character(by)) {
-  #   by <- nordcancore::get_column_level_space(by)
-  # }
-  count_dt <- basicepistats::stat_count(
+  count_dt <- nordcanstat_count(
     x = x,
     by = by,
     subset = subset,
@@ -44,7 +40,7 @@ nordcanstat_survival_quality <- function(
 
   lapply(names(subsets), function(new_col_nm) {
     subset <- subset_and(subset, subsets[[new_col_nm]])
-    count_dt_new_col <- basicepistats::stat_count(
+    count_dt_new_col <- nordcanstat_count(
       x = x,
       by = by,
       subset = subset,
