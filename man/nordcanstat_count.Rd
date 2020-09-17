@@ -42,6 +42,8 @@ is used
 \item \code{integer}: these entity numbers are used
 }}
 
+\item{subset}{see \link[basicepistats:counts]{basicepistats::stat_count}}
+
 \item{subset_style}{see \link[basicepistats:counts]{basicepistats::stat_count}}
 }
 \description{

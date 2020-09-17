@@ -15,8 +15,7 @@ nordcanstat_by_entity_column(entities, arg_list, basicepistats_fun)
 \arguments{
 \item{x}{\verb{[data.table]} (mandatory, no default)
 
-the NORDCAN cancer record dataset after preprocessing; see also the
-underlying implementation \link[basicepistats:counts]{basicepistats::stat_count}}
+a NORDCAN cancer record dataset}
 
 \item{entities}{\verb{[NULL, integer]} (optional, default \code{NULL})
 
@@ -40,24 +39,6 @@ a \code{list} containing arguments to pass to \code{fun}; see Details}
 
 function from \strong{basicepistats}, e.g. \verb{[basicepistats::stat_count]};
 this function will be run to produce results by entity number}
-
-\item{by}{see \link[basicepistats:counts]{basicepistats::stat_count}
-
-exceptions to \verb{[basicepistats::stat_count]}:
-\itemize{
-\item if \code{by} is a character vector of column names in \code{x}, the allowed
-combinations of those columns are retrieved using
-\verb{[nordcancore::nordcan_metadata_column_level_space_dt]}, and the output
-will include all of these combinations
-\item additionally if \code{by} is a character vector and one element of it is
-\code{"entity"}, then output is also stratified by entity number
-(the entity numbers will be in column \code{entity} in output); the
-entities to compute results by are supplied via \code{entities}
-}}
-
-\item{subset}{see the same argument in e.g. \link[basicepistats:counts]{basicepistats::stat_count}}
-
-\item{subset_style}{see the same argument in e.g. \link[basicepistats:counts]{basicepistats::stat_count}}
 }
 \value{
 Either a \code{list} or a \code{data.table}. Initially results are collected into a

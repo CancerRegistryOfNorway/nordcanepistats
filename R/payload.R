@@ -75,7 +75,7 @@
 
 #' @importFrom data.table timetaken
 #' @importFrom dbc assert_user_input_is_data.table
-#' @importFrom nordcansurvival get_stata_info, nordcanstat_survival
+#' @importFrom nordcansurvival get_stata_info nordcanstat_survival
 nordcan_statistics_tables <- function(
   cancer_record_dataset,
   cancer_death_count_dataset,

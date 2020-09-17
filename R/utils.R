@@ -233,11 +233,6 @@ compute_by_entity_column <- function(
 
 #' @rdname compute_by_entity
 #' @export
-#' @template param_x
-#' @template param_by
-#' @template param_entities
-#' @param subset see the same argument in e.g. [basicepistats::stat_count]
-#' @param subset_style see the same argument in e.g. [basicepistats::stat_count]
 #' @param basicepistats_fun `[function]` (mandatory, no default)
 #'
 #' function from **basicepistats**, e.g. `[basicepistats::stat_count]`;

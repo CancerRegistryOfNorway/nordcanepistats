@@ -9,6 +9,7 @@
 #' @template param_x
 #' @template param_by
 #' @template param_entities
+#' @param subset see [basicepistats::stat_count]
 #' @param subset_style see [basicepistats::stat_count]
 #' @export
 #' @importFrom basicepistats stat_count
