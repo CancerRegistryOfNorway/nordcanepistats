@@ -30,12 +30,12 @@ nordcanstat_survival_quality <- function(
   subsets <- list(
     "Included cases" = x[["excl_imp_total"]] == 0,
     "Percentage included"= NULL,
-    "Percentage excl. due to age 90+" = x[["age_year"]] >= 90.0,
+    "Percentage excl. due to age 90+" = x[["age"]] >= 90.0,
     "Percentage excl. due to DCO" = x[["excl_surv_dco"]] == 1,
     "Percentage excl. due to autopsy" = x[["excl_surv_autopsy"]] == 1,
     "Percentage excl. due to neg follow up" = x[["excl_surv_negativefou"]] == 1,
     "Percentage excl. due to multiple cancer" = x[["excluded_multiple"]] == 1,
-    "Percentage not reported in NORDCAN" = x[["Entity"]] == 999
+    "Percentage not reported in NORDCAN" = x[["entity_level_30"]] == 999
   )
 
   lapply(names(subsets), function(new_col_nm) {

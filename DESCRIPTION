@@ -1,7 +1,7 @@
 Package: nordcanepistats
 Type: Package
 Title: NORDCAN Epidemiological Statistics
-Version: 0.1.19
+Version: 0.1.20
 Author: Joonas Miettinen
 Maintainer: Joonas Miettinen <joonas.miettinen@cancer.fit>
 Description: Compute epidemiological statistics for NORDCAN.
