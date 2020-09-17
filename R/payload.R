@@ -16,6 +16,9 @@
 #' @param cancer_death_count_dataset `[data.table]` (mandatory, no default)
 #' dataset containing numbers of cancer deaths; see Details
 #'
+#' @param stata_exe_path `[character]` (mandatory, no default)
+#'
+#' pased to [nordcansurvival::nordcanstat_survival]
 #' @details
 #' You need to form `cancer_death_count_dataset` yourself using the raw data
 #' you have using one of two methods.
@@ -59,7 +62,8 @@
 #'  cancer_record_dataset = crd,
 #'  cancer_death_count_dataset = cdcd,
 #'  general_population_size_dataset = gpsd,
-#'  national_population_life_table = lt
+#'  national_population_life_table = lt,
+#'  stata_exe_path = "stata.exe"
 #' )
 #' }
 #' @export
@@ -71,22 +75,27 @@
 
 #' @importFrom data.table timetaken
 #' @importFrom dbc assert_user_input_is_data.table
+#' @importFrom nordcansurvival nordcanstat_survival
 nordcan_statistics_tables <- function(
   cancer_record_dataset,
   cancer_death_count_dataset,
   general_population_size_dataset,
-  national_population_life_table
+  national_population_life_table,
+  stata_exe_path
 ) {
   t_start <- proc.time()
   dbc::assert_user_input_is_data.table(cancer_record_dataset)
   dbc::assert_user_input_is_data.table(cancer_death_count_dataset)
   dbc::assert_user_input_is_data.table(general_population_size_dataset)
   dbc::assert_user_input_is_data.table(national_population_life_table)
+  dbc::assert_user_input_file_exists(stata_exe_path)
 
   payload <- list(
     cancer_death_count_dataset = cancer_death_count_dataset,
     general_population_size_dataset = general_population_size_dataset
   )
+
+  # cancer_case_count_dataset --------------------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
           "cancer_case_count_dataset at ", as.character(Sys.time()), "..")
   t <- proc.time()
@@ -97,6 +106,8 @@ nordcan_statistics_tables <- function(
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
           "cancer_case_count_dataset; ",
           data.table::timetaken(t))
+
+  # prevalent_cancer_patient_count_dataset -------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
           "prevalent_cancer_patient_count_dataset at ",
           as.character(Sys.time()), "...")
@@ -108,6 +119,22 @@ nordcan_statistics_tables <- function(
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
           "prevalent_cancer_patient_count_dataset; ",
           data.table::timetaken(t))
+
+  # survival_dataset -------------------------------------
+  message("* nordcanepistats::nordcan_statistics_tables: started computing ",
+          "survival_dataset at ",
+          as.character(Sys.time()), "...")
+  t <- proc.time()
+  dt <- nordcansurvival::nordcanstat_survival(
+    cancer_record_dataset = cancer_record_dataset,
+    national_population_life_table = national_population_life_table,
+    stata_exe_path = stata_exe_path
+  )
+  payload[["survival_dataset"]] <- dt
+  message("* nordcanepistats::nordcan_statistics_tables: done computing ",
+          "survival_dataset; ",
+          data.table::timetaken(t))
+
 
   dbc::assert_dev_output_is_uniquely_named_list(payload)
   dbc::assert_dev_output_has_names(

@@ -8,7 +8,8 @@ nordcan_statistics_tables(
   cancer_record_dataset,
   cancer_death_count_dataset,
   general_population_size_dataset,
-  national_population_life_table
+  national_population_life_table,
+  stata_exe_path
 )
 }
 \arguments{
@@ -25,6 +26,10 @@ the dataset of population sizes as per the call for data}
 
 \item{national_population_life_table}{\verb{[data.table]} (mandatory, no default)
 the life table as per the call for data}
+
+\item{stata_exe_path}{\verb{[character]} (mandatory, no default)
+
+pased to \link[nordcansurvival:nordcanstat_survival]{nordcansurvival::nordcanstat_survival}}
 }
 \description{
 Compute all necessary statistics for NORDCAN into a single payload.
@@ -65,7 +70,8 @@ nc_stats <- nordcan_statistics_tables(
  cancer_record_dataset = crd,
  cancer_death_count_dataset = cdcd,
  general_population_size_dataset = gpsd,
- national_population_life_table = lt
+ national_population_life_table = lt,
+ stata_exe_path = "stata.exe"
 )
 }
 }
