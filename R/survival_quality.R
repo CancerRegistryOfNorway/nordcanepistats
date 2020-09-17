@@ -35,7 +35,7 @@ nordcanstat_survival_quality <- function(
     "Percentage excl. due to autopsy" = x[["excl_surv_autopsy"]] == 1,
     "Percentage excl. due to neg follow up" = x[["excl_surv_negativefou"]] == 1,
     "Percentage excl. due to multiple cancer" = x[["excluded_multiple"]] == 1,
-    "Percentage not reported in NORDCAN" = x[["entity_level_30"]] == 999
+    "Percentage not reported in NORDCAN" = x[["entity_level_10"]] %in% c(999L, NA)
   )
 
   lapply(names(subsets), function(new_col_nm) {
@@ -62,15 +62,20 @@ nordcanstat_survival_quality <- function(
         j = (new_col_nm) := 0L
       ]
     }
-    count_dt[
-      j = (new_col_nm) := .SD[[1L]] / .SD[[2L]],
-      .SDcols = c(new_col_nm, "N")
-    ]
+    if (grepl("^Percentage", new_col_nm)) {
+      count_dt[
+        j = (new_col_nm) := .SD[[1L]] / .SD[[2L]],
+        .SDcols = c(new_col_nm, "N")
+      ]
+      count_dt[
+        j = (new_col_nm) := round(100 * .SD[[1L]], 2L),
+        .SDcols = new_col_nm
+      ]
+    }
     NULL
   })
 
-  names(count_dt)[which(names(count_dt)=="N")]="All cases"
-  count_dt[,"Included cases"]=count_dt[,"Included cases"]*count_dt[,"All cases"]
-  count_dt[,"Percentage included"]=count_dt[,"Included cases"]/count_dt[,"All cases"]
+  data.table::setnames(count_dt, "N", "All cases")
+
   return(count_dt[])
 }
