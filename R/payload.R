@@ -84,6 +84,9 @@ nordcan_statistics_tables <- function(
   stata_exe_path
 ) {
   t_start <- proc.time()
+
+  message("* nordcanepistats::nordcan_statistics_tables: validating your ",
+          "datasets...")
   dbc::assert_user_input_is_data.table_with_required_names(
     cancer_record_dataset,
     required_names = nordcancore::nordcan_metadata_column_name_set(
@@ -103,6 +106,7 @@ nordcan_statistics_tables <- function(
     national_population_life_table,
     dataset_name = "national_population_life_table"
   )
+  message("* nordcanepistats::nordcan_statistics_tables: done.")
 
 
   payload <- list(
