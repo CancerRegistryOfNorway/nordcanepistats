@@ -92,7 +92,7 @@ nordcan_statistics_tables <- function(
     required_names = nordcancore::nordcan_metadata_column_name_set(
       "column_name_set_processed_cancer_record_dataset"
     )
-    )
+  )
   dbc::assert_user_input_file_exists(stata_exe_path)
   nordcanpreprocessing::assert_dataset_is_valid(
     cancer_death_count_dataset,
@@ -114,20 +114,17 @@ nordcan_statistics_tables <- function(
     general_population_size_dataset = general_population_size_dataset
   )
 
-  message("* nordcanepistats::nordcan_statistics_tables: testing that you ",
-          "can run stata...")
-  stata_info <- nordcansurvival::get_stata_info(stata_exe_path)
-  payload[["stata_info"]] <- stata_info
-  message("* nordcanepistats::nordcan_statistics_tables: succeeded.")
-
   # cancer_case_count_dataset --------------------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
           "cancer_case_count_dataset at ", as.character(Sys.time()), "...")
   t <- proc.time()
-  payload[["cancer_case_count_dataset"]] <- tryCatch(nordcanstat_count(
-    x = cancer_record_dataset,
-    by = c("yoi","sex","region","agegroup","entity")
-  ), error = function(e) e)
+  payload[["cancer_case_count_dataset"]] <- tryCatch(
+    nordcanstat_count(
+      x = cancer_record_dataset,
+      by = c("yoi","sex","region","agegroup","entity")
+    ),
+    error = function(e) e
+  )
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
           "cancer_case_count_dataset; ",
           data.table::timetaken(t))
@@ -137,67 +134,97 @@ nordcan_statistics_tables <- function(
           "prevalent_cancer_patient_count_dataset at ",
           as.character(Sys.time()), "...")
   t <- proc.time()
-  dt <- tryCatch(nordcanstat_year_based_prevalent_subject_count(
-    x = cancer_record_dataset, by = c("sex", "region", "agegroup", "entity")
-  ), error = function(e) e)
-  payload[["prevalent_cancer_patient_count_dataset"]] <- dt
+  payload[["prevalent_cancer_patient_count_dataset"]] <- tryCatch(
+    expr = nordcanstat_year_based_prevalent_subject_count(
+      x = cancer_record_dataset, by = c("sex", "region", "agegroup", "entity")
+    ),
+    error = function(e) e
+  )
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
           "prevalent_cancer_patient_count_dataset; ",
           data.table::timetaken(t))
 
-  # survival_quality_dataset ---------------------------------------------------
+  # survival_quality_statistics_dataset ----------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-          "survival_quality_dataset at ",
+          "survival_quality_statistics_dataset at ",
           as.character(Sys.time()), "...")
   t <- proc.time()
-  dt <- tryCatch(nordcanstat_survival_quality(
-    x = cancer_record_dataset, by = c("sex", "period", "agegroup", "entity")
-  ), error = function(e) e)
-  payload[["survival_quality_dataset"]] <- dt
+  payload[["survival_quality_statistics_dataset"]] <- tryCatch(
+    expr = nordcanstat_survival_quality(
+      x = cancer_record_dataset, by = c("sex", "period", "agegroup", "entity")
+    ),
+    error = function(e) e
+  )
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-          "survival_quality_dataset; ",
+          "survival_quality_statistics_dataset; ",
           data.table::timetaken(t))
 
 
   # survival_dataset -----------------------------------------------------------
-  # message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-  #         "survival_dataset at ",
-  #         as.character(Sys.time()), "...")
-  # t <- proc.time()
-  # dt <- tryCatch(nordcansurvival::nordcanstat_survival(
-  #   cancer_record_dataset = cancer_record_dataset,
-  #   national_population_life_table = national_population_life_table,
-  #   stata_exe_path = stata_exe_path
-  # ), error = function(e) e)
-  # payload[["survival_dataset"]] <- dt
-  # message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-  #         "survival_dataset; ",
-  #         data.table::timetaken(t))
+  message("* nordcanepistats::nordcan_statistics_tables: testing that you ",
+          "can run stata...")
+  payload[["stata_info"]] <- tryCatch(
+    nordcansurvival::get_stata_info(stata_exe_path),
+    error = function(e) e
+  )
+  message("* nordcanepistats::nordcan_statistics_tables: done.")
+
+  message("* nordcanepistats::nordcan_statistics_tables: testing that you ",
+          "can run an example of nordcansurvival::survival_statistics...")
+  ss_output <- tryCatch(
+    expr = {
+      infile <-  paste0(system.file(package = "nordcansurvival"),
+                        "/stata/demo/NCS_NO_anonymous_example_data.dta")
+      lifetable <- paste0(system.file(package = "nordcansurvival"),
+                          "/stata/demo/NO_2018_lifetable.dta")
+      nordcansurvival::survival_statistics(
+        cancer_record_dataset_path  = infile ,
+        national_population_life_table_path = lifetable,
+        stata_exe_path = stata_exe_path
+      )
+    },
+    error = function(e) e
+  )
+  ss_output_path <- "survival/survival_statistics_output.csv"
+  if (!inherits(ss_output, "error") && file.exists(ss_output_path)) {
+    ss_output <- data.table::fread(ss_output_path)
+  }
+  payload[["survival_statistics_example"]] <- ss_output
+  message("* nordcanepistats::nordcan_statistics_tables: done.")
+
+  message("* nordcanepistats::nordcan_statistics_tables: started computing ",
+          "survival_dataset at ",
+          as.character(Sys.time()), "...")
+  t <- proc.time()
+  payload[["survival_dataset"]] <- tryCatch(
+    expr = nordcansurvival::nordcanstat_survival(
+      cancer_record_dataset = cancer_record_dataset,
+      national_population_life_table = national_population_life_table,
+      stata_exe_path = stata_exe_path
+    ),
+    error = function(e) e
+  )
+  message("* nordcanepistats::nordcan_statistics_tables: done computing ",
+          "survival_dataset; ",
+          data.table::timetaken(t))
 
   # final touches --------------------------------------------------------------
-  dbc::assert_dev_output_is_uniquely_named_list(payload)
-  dbc::assert_dev_output_has_names(
-    payload,
-    required_names = nordcan_statistics_tables_output_names()
-  )
+  # dbc::assert_dev_output_is_uniquely_named_list(payload)
+  # dbc::assert_dev_output_has_names(
+  #   payload,
+  #   required_names = nordcan_statistics_tables_output_names()
+  # )
   message("* nordcanepistats::nordcan_statistics_tables: finished; ",
           data.table::timetaken(t_start))
   return(payload)
 }
 
 
-
-nordcan_statistics_tables_input_names <- function() {
-  c("cancer_record_dataset",
-    "cancer_death_count_dataset",
-    "general_population_size_dataset")
-}
-
 nordcan_statistics_tables_output_names <- function() {
   c("cancer_death_count_dataset",
     "cancer_case_count_dataset",
     "prevalent_cancer_patient_count_dataset",
-    "survival_quality_dataset",
-    # "survival_dataset",
+    "survival_quality_statistics_dataset",
+    "survival_statistics_dataset",
     "general_population_size_dataset")
 }
