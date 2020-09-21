@@ -75,7 +75,8 @@
 
 #' @importFrom data.table timetaken
 #' @importFrom dbc assert_user_input_is_data.table
-#' @importFrom nordcansurvival get_stata_info nordcanstat_survival
+#' @importFrom nordcansurvival get_stata_info survival_statistics
+#' nordcanstat_survival
 nordcan_statistics_tables <- function(
   cancer_record_dataset,
   cancer_death_count_dataset,
@@ -177,7 +178,7 @@ nordcan_statistics_tables <- function(
                         "/stata/demo/NCS_NO_anonymous_example_data.dta")
       lifetable <- paste0(system.file(package = "nordcansurvival"),
                           "/stata/demo/NO_2018_lifetable.dta")
-      nordcansurvival:::survival_statistics(
+      nordcansurvival::survival_statistics(
         cancer_record_dataset_path  = infile ,
         national_population_life_table_path = lifetable,
         stata_exe_path = stata_exe_path
