@@ -19,6 +19,7 @@
 #' @param subset_style see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @export
 #' @importFrom basicepistats stat_year_based_prevalent_subject_count
+#' @importFrom data.table setDT setnames
 #' @family nordcanstat
 nordcanstat_year_based_prevalent_subject_count <- function(
   x,
@@ -59,9 +60,11 @@ nordcanstat_year_based_prevalent_subject_count <- function(
   data.table::setnames(use_x, names(use_x), names(x))
   arg_list[["x"]] <- use_x
 
-  nordcanstat_by_entity_column(
+  dt <- nordcanstat_by_entity_column(
     entities = entities,
     arg_list = arg_list,
     basicepistats_fun = basicepistats::stat_year_based_prevalent_subject_count
   )
+  data.table::setnames(dt, "N", "prevalent_patient_count")
+  return(dt[])
 }
