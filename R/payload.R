@@ -130,19 +130,19 @@ nordcan_statistics_tables <- function(
           "cancer_record_count_dataset; ",
           data.table::timetaken(t))
 
-  # prevalent_cancer_patient_count_dataset -------------------------------------
+  # prevalent_patient_count_dataset ------------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-          "prevalent_cancer_patient_count_dataset at ",
+          "prevalent_patient_count_dataset at ",
           as.character(Sys.time()), "...")
   t <- proc.time()
-  payload[["prevalent_cancer_patient_count_dataset"]] <- tryCatch(
+  payload[["prevalent_patient_count_dataset"]] <- tryCatch(
     expr = nordcanstat_year_based_prevalent_subject_count(
       x = cancer_record_dataset, by = c("sex", "region", "agegroup", "entity")
     ),
     error = function(e) e
   )
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-          "prevalent_cancer_patient_count_dataset; ",
+          "prevalent_patient_count_dataset; ",
           data.table::timetaken(t))
 
   # survival_quality_statistics_dataset ----------------------------------------
@@ -224,7 +224,7 @@ nordcan_statistics_tables <- function(
 nordcan_statistics_tables_output_names <- function() {
   c("cancer_death_count_dataset",
     "cancer_record_count_dataset",
-    "prevalent_cancer_patient_count_dataset",
+    "prevalent_patient_count_dataset",
     "survival_quality_statistics_dataset",
     "survival_statistics_dataset",
     "general_population_size_dataset")
