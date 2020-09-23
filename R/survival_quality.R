@@ -28,14 +28,14 @@ nordcanstat_survival_quality <- function(
   stratum_col_nms <- setdiff(names(count_dt), "N")
 
   subsets <- list(
-    "Included cases" = x[["excl_imp_total"]] == 0,
-    "Percentage included"= x[["excl_imp_total"]] == 0,
-    "Percentage excl. due to age 90+" = x[["excl_surv_age"]] == 1,
-    "Percentage excl. due to DCO" = x[["excl_surv_dco"]] == 1,
-    "Percentage excl. due to autopsy" = x[["excl_surv_autopsy"]] == 1,
-    "Percentage excl. due to neg follow up" = x[["excl_surv_negativefou"]] == 1,
-    "Percentage excl. due to multiple cancer" = x[["excluded_multiple"]] == 1,
-    "Percentage not reported in NORDCAN" = x[["entity_level_10"]] %in% c(999L, NA)
+    "cancer_record_count_included" = x[["excl_imp_total"]] == 0,
+    "percentage_included"= x[["excl_imp_total"]] == 0,
+    "percentage_excl_surv_age" = x[["excl_surv_age"]] == 1,
+    "percentage_excl_surv_dco" = x[["excl_surv_dco"]] == 1,
+    "percentage_excl_surv_autopsy" = x[["excl_surv_autopsy"]] == 1,
+    "percentage_excl_surv_negativefou" = x[["excl_surv_negativefou"]] == 1,
+    "percentage_excl_surv_duplicate" = x[["excluded_multiple"]] == 1,
+    "percentage not reported in NORDCAN" = x[["entity_level_10"]] %in% c(999L, NA)
   )
 
   lapply(names(subsets), function(new_col_nm) {
@@ -62,7 +62,7 @@ nordcanstat_survival_quality <- function(
         j = (new_col_nm) := 0L
       ]
     }
-    if (grepl("^Percentage", new_col_nm)) {
+    if (grepl("^percentage", new_col_nm)) {
       count_dt[
         j = (new_col_nm) := .SD[[1L]] / .SD[[2L]],
         .SDcols = c(new_col_nm, "N")
@@ -75,7 +75,8 @@ nordcanstat_survival_quality <- function(
     NULL
   })
 
-  data.table::setnames(count_dt, "N", "All cases")
+  data.table::setnames(count_dt, "N", "cancer_record_count")
 
   return(count_dt[])
 }
+
