@@ -13,7 +13,7 @@
 #' @param subset_style see [basicepistats::stat_count]
 #' @export
 #' @importFrom basicepistats stat_count
-#' @importFrom data.table :=
+#' @importFrom data.table setnames
 #' @family nordcanstat
 nordcanstat_count <- function(
   x,
@@ -22,11 +22,13 @@ nordcanstat_count <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
-  nordcanstat_by_entity_column(
+  dt <- nordcanstat_by_entity_column(
     entities = entities,
     arg_list = mget(names(formals(basicepistats::stat_count))),
     basicepistats_fun = basicepistats::stat_count
   )
+  data.table::setnames(dt, "N", "cancer_record_count")
+  return(dt[])
 }
 
 
