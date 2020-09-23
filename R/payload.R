@@ -115,11 +115,11 @@ nordcan_statistics_tables <- function(
     general_population_size_dataset = general_population_size_dataset
   )
 
-  # cancer_case_count_dataset --------------------------------------------------
+  # cancer_record_count_dataset ------------------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-          "cancer_case_count_dataset at ", as.character(Sys.time()), "...")
+          "cancer_record_count_dataset at ", as.character(Sys.time()), "...")
   t <- proc.time()
-  payload[["cancer_case_count_dataset"]] <- tryCatch(
+  payload[["cancer_record_count_dataset"]] <- tryCatch(
     nordcanstat_count(
       x = cancer_record_dataset,
       by = c("yoi","sex","region","agegroup","entity")
@@ -127,7 +127,7 @@ nordcan_statistics_tables <- function(
     error = function(e) e
   )
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-          "cancer_case_count_dataset; ",
+          "cancer_record_count_dataset; ",
           data.table::timetaken(t))
 
   # prevalent_cancer_patient_count_dataset -------------------------------------
@@ -194,10 +194,10 @@ nordcan_statistics_tables <- function(
   message("* nordcanepistats::nordcan_statistics_tables: done.")
 
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-          "survival_dataset at ",
+          "survival_statistics_dataset at ",
           as.character(Sys.time()), "...")
   t <- proc.time()
-  payload[["survival_dataset"]] <- tryCatch(
+  payload[["survival_statistics_dataset"]] <- tryCatch(
     expr = nordcansurvival::nordcanstat_survival(
       cancer_record_dataset = cancer_record_dataset,
       national_population_life_table = national_population_life_table,
@@ -206,7 +206,7 @@ nordcan_statistics_tables <- function(
     error = function(e) e
   )
   message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-          "survival_dataset; ",
+          "survival_statistics_dataset; ",
           data.table::timetaken(t))
 
   # final touches --------------------------------------------------------------
@@ -223,7 +223,7 @@ nordcan_statistics_tables <- function(
 
 nordcan_statistics_tables_output_names <- function() {
   c("cancer_death_count_dataset",
-    "cancer_case_count_dataset",
+    "cancer_record_count_dataset",
     "prevalent_cancer_patient_count_dataset",
     "survival_quality_statistics_dataset",
     "survival_statistics_dataset",
