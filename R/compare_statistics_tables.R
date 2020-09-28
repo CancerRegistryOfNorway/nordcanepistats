@@ -273,7 +273,6 @@ compare_proportion_tables <- function(x, y, prop_col_nm, count_col_nm) {
 
 #' @importFrom dbc assert_prod_input_is_integer_gtezero_vector
 #' @importFrom data.table setDT :=
-#' @importFrom skellam pskellam
 compare_counts <- function(
   x,
   y
@@ -284,10 +283,10 @@ compare_counts <- function(
   dt <- data.table::setDT(list(x = x, y = y))
   dt[, "stat_type" := "count_x_minus_y"]
   dt[, "stat_value" := dt$x - dt$y]
+  h0_means <- (dt$x + dt$y) / 2.0
   dt[
-    j = "p_value" := 2 * skellam::pskellam(q = abs(dt$stat_value),
-                                           lambda1 = (dt$x + dt$y) / 2.0,
-                                           lower.tail = FALSE)
+    j = "p_value" := 2 * (1 - skellam_cdf(q = abs(dt$stat_value),
+                                          mu1 = h0_means, mu2 = h0_means))
 
   ]
   return(dt[])
@@ -347,7 +346,6 @@ compare_proportions <- function(
 
 #' @importFrom dbc assert_prod_input_is_integer_gtezero_vector
 #' @importFrom data.table setDT :=
-#' @importFrom skellam pskellam
 compare_rates <- function(
   x,
   y,
@@ -363,12 +361,12 @@ compare_rates <- function(
   x_as_count <- as.integer(round(x * x_count))
   y_as_count <- as.integer(round(y * y_count))
   abs_count_diff <- abs(x_as_count - y_as_count)
-  count_sum  <- x_as_count + y_as_count
+  h0_means  <- (x_as_count + y_as_count) / 2L
 
   dt[
-    j = "p_value" := 2 * skellam::pskellam(q = abs_count_diff,
-                                           lambda1 = count_sum / 2.0,
-                                           lower.tail = FALSE)
+    j = "p_value" := 2 * (1 - skellam_cdf(q = abs_count_diff,
+                                          mu1 = h0_means,
+                                          mu2 = h0_means))
   ]
   return(dt[])
 }
