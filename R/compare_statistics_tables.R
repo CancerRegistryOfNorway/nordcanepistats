@@ -128,7 +128,7 @@ compare_nordcan_statistics_table_lists <- function(
         n_p_value_lte_001 = sum(dt$p_value < 0.01, na.rm = TRUE),
         n_p_value_lte_005 = sum(dt$p_value < 0.05, na.rm = TRUE),
         min_stat_value = min(dt$stat_value, na.rm = TRUE),
-        median_stat_value = median(dt$stat_value, na.rm = TRUE),
+        median_stat_value = stats::median(dt$stat_value, na.rm = TRUE),
         min_stat_value = max(dt$stat_value, na.rm = TRUE),
         n_na_p_value = sum(is.na(dt$p_value)),
         n_na_x = sum(is.na(dt$x)),
@@ -198,7 +198,7 @@ compare_imp_quality_statistics_tables <- function(
   }))
   dt <- rbind(
     dt,
-    compare_rate_tables(x = x, y = y, ratio_col_nm = "mi_ratio",
+    compare_rate_tables(x = x, y = y, rate_col_nm = "mi_ratio",
                         count_col_nm = count_col_nm)
   )
   return(dt[])
