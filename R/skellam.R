@@ -1,6 +1,5 @@
 
 
-#' @importFrom dbc assert_is_integer_vector assert_is_number_nonNA_atom
 skellam_logpmf <- function(x, mu1, mu2) {
   dbc::assert_is_integer_vector(x)
   dbc::assert_is_number_nonNA_vector(mu1)
@@ -15,7 +14,6 @@ skellam_pmf <- function(x, mu1, mu2) {
   exp(skellam_logpmf(x = x, mu1 = mu1, mu2 = mu2))
 }
 
-#' @importFrom stats qpois
 skellam_logcdf <- function(q, mu1, mu2) {
   dbc::assert_is_integer_vector(q)
   dbc::assert_is_number_nonNA_vector(mu1)

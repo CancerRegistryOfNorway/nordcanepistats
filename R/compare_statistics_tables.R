@@ -43,8 +43,7 @@ nordcan_statistics_table_names_for_comparison <- function() {
 #' - `comparisons`: a list of data.tables, where one row in a data.table
 #'   corresponds to one comparison between an old and a new statistic.
 #' @export
-#' @importFrom stats p.adjust
-#' @importFrom data.table setkeyv rbindlist setDT := set
+#' @importFrom data.table := .SD
 compare_nordcan_statistics_table_lists <- function(
   current_stat_table_list,
   old_stat_table_list
@@ -189,7 +188,6 @@ compare_tables <- function(
 }
 
 
-#' @importFrom data.table rbindlist
 compare_imp_quality_statistics_tables <- function(
   x, y, prop_col_nms, count_col_nm
   ) {
@@ -206,7 +204,6 @@ compare_imp_quality_statistics_tables <- function(
   return(dt[])
 }
 
-#' @importFrom data.table rbindlist
 compare_survival_quality_statistics_tables <- function(
   x, y, prop_col_nms, count_col_nm
 ) {
@@ -271,8 +268,8 @@ compare_proportion_tables <- function(x, y, prop_col_nm, count_col_nm) {
   return(dt[])
 }
 
-#' @importFrom dbc assert_prod_input_is_integer_gtezero_vector
-#' @importFrom data.table setDT :=
+
+#' @importFrom data.table :=
 compare_counts <- function(
   x,
   y
@@ -293,8 +290,7 @@ compare_counts <- function(
 }
 
 
-#' @importFrom dbc assert_prod_input_is_number_gtezero_vector
-#' @importFrom data.table setDT := .N setcolorder
+#' @importFrom data.table := .N
 compare_survivals <- function(
   x,
   y
@@ -310,10 +306,7 @@ compare_survivals <- function(
 }
 
 
-#' @importFrom dbc assert_prod_input_is_number_vector
-#' assert_prod_input_is_integer_gtezero_vector
-#' @importFrom stats pbeta
-#' @importFrom data.table setDT :=
+#' @importFrom data.table :=
 compare_proportions <- function(
   x,
   y,
@@ -344,8 +337,7 @@ compare_proportions <- function(
 
 
 
-#' @importFrom dbc assert_prod_input_is_integer_gtezero_vector
-#' @importFrom data.table setDT :=
+#' @importFrom data.table :=
 compare_rates <- function(
   x,
   y,

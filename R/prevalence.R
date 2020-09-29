@@ -18,8 +18,6 @@
 #' @param subset see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @param subset_style see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @export
-#' @importFrom basicepistats stat_year_based_prevalent_subject_count
-#' @importFrom data.table setDT setnames
 #' @family nordcanstat
 nordcanstat_year_based_prevalent_subject_count <- function(
   x,

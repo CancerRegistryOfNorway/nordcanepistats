@@ -123,10 +123,6 @@ subset_and <- function(
 #' in the entity column-specific results before combining.
 #'
 #'
-#' @importFrom dbc assert_is_data_table assert_is_function
-#' assert_is_list assert_is_integer_nonNA_vector
-#' @importFrom nordcancore in_entity_set
-#' @importFrom data.table is.data.table rbindlist set setcolorder
 #' @export
 compute_by_entity <- function(
   x,
@@ -162,10 +158,7 @@ compute_by_entity <- function(
 }
 
 
-#' @importFrom dbc assert_is_data_table assert_is_function
-#' assert_is_list assert_is_integer_nonNA_vector
-#' @importFrom nordcancore in_entity_set
-#' @importFrom data.table .SD setnames data.table rbindlist
+#' @importFrom data.table .SD
 #' @rdname compute_by_entity
 #' @export
 compute_by_entity_column <- function(
@@ -237,10 +230,6 @@ compute_by_entity_column <- function(
 #'
 #' function from **basicepistats**, e.g. `[basicepistats::stat_count]`;
 #' this function will be run to produce results by entity number
-#' @importFrom dbc assert_prod_input_is_data.table
-#' assert_prod_input_is_one_of assert_prod_input_is_one_of
-#' @importFrom nordcancore nordcan_metadata_entity_no_set
-#' assert_prod_input_entities nordcan_metadata_column_level_space_dt
 nordcanstat_by_entity_column <- function(
   entities,
   arg_list,

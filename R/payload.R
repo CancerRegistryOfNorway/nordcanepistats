@@ -73,10 +73,6 @@
 # cancer_record_dataset=data.table::data.table(read.csv("Cancer_record_dataset.csv"))
 # cancer_case_dataset=data.table::data.table(read.csv("enriched.csv"))
 
-#' @importFrom data.table timetaken
-#' @importFrom dbc assert_user_input_is_data.table
-#' @importFrom nordcansurvival get_stata_info survival_statistics
-#' nordcanstat_survival
 nordcan_statistics_tables <- function(
   cancer_record_dataset,
   cancer_death_count_dataset,

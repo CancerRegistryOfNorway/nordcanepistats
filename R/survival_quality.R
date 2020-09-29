@@ -10,8 +10,7 @@
 #' @param subset see [basicepistats::stat_count]
 #' @param subset_style see [basicepistats::stat_count]
 #' @export
-#' @importFrom basicepistats stat_count
-#' @importFrom data.table :=
+#' @importFrom data.table := .SD
 #' @family nordcanstat
 nordcanstat_survival_quality <- function(
   x,

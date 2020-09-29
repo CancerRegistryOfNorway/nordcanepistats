@@ -12,8 +12,6 @@
 #' @param subset see [basicepistats::stat_count]
 #' @param subset_style see [basicepistats::stat_count]
 #' @export
-#' @importFrom basicepistats stat_count
-#' @importFrom data.table setnames
 #' @family nordcanstat
 nordcanstat_count <- function(
   x,
