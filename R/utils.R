@@ -291,7 +291,7 @@ session_info <- function() {
   sink(file = tf)
   cat("System time at start:", as.character(Sys.time()), "\n")
   cat("sessionInfo() output:\n")
-  print(sessionInfo())
+  print(utils::sessionInfo())
   sink(file = NULL)
 
   readLines(tf)
