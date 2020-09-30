@@ -33,10 +33,10 @@ nordcanstat_imp_quality <- function(
     subset = subset,
     subset_style = subset_style
   )
-  stratum_col_nms <- setdiff(names(count_dt), "N")
+  stratum_col_nms <- setdiff(names(count_dt), "cancer_record_count")
 
-  # clinical, clinical inv., hist. of metastasis, hist. of primary tumor
-  mv_levels <- c(1L, 2L, 6L, 7L)
+  # cytology, hist. of metastasis, hist. of primary tumor
+  mv_levels <- c(5L, 6L, 7L)
   subsets <- list(
     "cancer_record_count_included" = x[["excl_imp_total"]] == 0L,
     "percentage_included"= x[["excl_imp_total"]] == 0L,
@@ -54,14 +54,14 @@ nordcanstat_imp_quality <- function(
     )
     if (length(stratum_col_nms) == 0L) {
       count_dt[
-        j = (new_col_nm) := count_dt_new_col[["N"]]
+        j = (new_col_nm) := count_dt_new_col[["cancer_record_count"]]
       ]
     } else {
-      i.N <- NULL # appease R CMD CHECK
+      i.cancer_record_count <- NULL # appease R CMD CHECK
       count_dt[
         i = count_dt_new_col,
         on = stratum_col_nms,
-        j = (new_col_nm) := i.N
+        j = (new_col_nm) := i.cancer_record_count
       ]
       count_dt[
         i = is.na(count_dt[[new_col_nm]]),
@@ -71,7 +71,7 @@ nordcanstat_imp_quality <- function(
     if (grepl("^percentage", new_col_nm)) {
       count_dt[
         j = (new_col_nm) := .SD[[1L]] / .SD[[2L]],
-        .SDcols = c(new_col_nm, "N")
+        .SDcols = c(new_col_nm, "cancer_record_count")
       ]
       count_dt[
         j = (new_col_nm) := round(100 * .SD[[1L]], 2L),
@@ -80,8 +80,6 @@ nordcanstat_imp_quality <- function(
     }
     NULL
   })
-
-  data.table::setnames(count_dt, "N", "cancer_record_count")
 
   i.cancer_death_count <- cancer_record_count <- NULL # to appease R CMD CHECK
   count_dt[

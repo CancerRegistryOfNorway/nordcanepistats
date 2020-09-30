@@ -43,7 +43,7 @@
 #'   subset = died_from_cancer == TRUE
 #' )
 #' data.table::setnames(cdcd,
-#'                      c("N", "yoi"), c("death_count", "year"))
+#'                      c("N", "yoi"), c("cancer_death_count", "year"))
 #' ```
 #'
 #' where `processed_cancer_record_dataset` is your cancer record dataset after
