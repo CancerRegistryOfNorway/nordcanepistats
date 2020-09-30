@@ -147,6 +147,23 @@ nordcan_statistics_tables <- function(
           "prevalent_patient_count_dataset; ",
           data.table::timetaken(t))
 
+  # imp_quality_statistics_dataset ---------------------------------------------
+  message("* nordcanepistats::nordcan_statistics_tables: started computing ",
+          "imp_quality_statistics_dataset at ",
+          as.character(Sys.time()), "...")
+  t <- proc.time()
+  payload[["imp_quality_statistics_dataset"]] <- tryCatch(
+    expr = nordcanstat_imp_quality(
+      x = cancer_record_dataset,
+      cancer_death_count_dataset = cancer_death_count_dataset,
+      by = c("sex", "region", "agegroup", "entity")
+    ),
+    error = function(e) e
+  )
+  message("* nordcanepistats::nordcan_statistics_tables: done computing ",
+          "imp_quality_statistics_dataset; ",
+          data.table::timetaken(t))
+
   # survival_quality_statistics_dataset ----------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: started computing ",
           "survival_quality_statistics_dataset at ",
@@ -155,8 +172,7 @@ nordcan_statistics_tables <- function(
   payload[["survival_quality_statistics_dataset"]] <- tryCatch(
     expr = nordcanstat_survival_quality(
       x = cancer_record_dataset,
-      by = c("sex", "period", "agegroup", "entity"),
-      subset = cancer_record_dataset[["excl_surv_total"]] == 0L
+      by = c("sex", "period", "agegroup", "entity")
     ),
     error = function(e) e
   )

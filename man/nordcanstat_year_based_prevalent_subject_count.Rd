@@ -65,6 +65,7 @@ a cancer diagnosis in their past.
 \seealso{
 Other nordcanstat: 
 \code{\link{nordcanstat_count}()},
+\code{\link{nordcanstat_imp_quality}()},
 \code{\link{nordcanstat_survival_quality}()}
 }
 \concept{nordcanstat}

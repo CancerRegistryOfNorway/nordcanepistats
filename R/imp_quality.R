@@ -1,23 +1,32 @@
 
-
-
-
-#' @title Survival Quality Statistics
+#' @title Incidence, Mortality and Prevalence Quality Statistics
 #' @description
-#' Compute basic survival quality statistics.
+#' Compute basic IMP quality statistics.
 #' @param x see [basicepistats::stat_count]
+#' @param cancer_death_count_dataset `[data.table]` (mandatory, no default)
+#'
+#'
 #' @param by see [basicepistats::stat_count]
 #' @param subset see [basicepistats::stat_count]
 #' @param subset_style see [basicepistats::stat_count]
 #' @export
 #' @importFrom data.table := .SD
 #' @family nordcanstat
-nordcanstat_survival_quality <- function(
+nordcanstat_imp_quality <- function(
   x,
+  cancer_death_count_dataset,
   by = NULL,
   subset = NULL,
   subset_style = "zeros"
 ) {
+  cdcd_col_nms <- "cancer_death_count"
+  if (is.character(by)) {
+    cdcd_col_nms <- union(by, cdcd_col_nms)
+  }
+  dbc::assert_is_data.table_with_required_names(
+    cancer_death_count_dataset,
+    required_names = cdcd_col_nms
+  )
   count_dt <- nordcanstat_count(
     x = x,
     by = by,
@@ -26,15 +35,13 @@ nordcanstat_survival_quality <- function(
   )
   stratum_col_nms <- setdiff(names(count_dt), "N")
 
+  # clinical, clinical inv., hist. of metastasis, hist. of primary tumor
+  mv_levels <- c(1L, 2L, 6L, 7L)
   subsets <- list(
-    "cancer_record_count_included" = x[["excl_surv_total"]] == 0,
-    "percentage_included"= x[["excl_surv_total"]] == 0,
-    "percentage_excl_surv_age" = x[["excl_surv_age"]] == 1,
-    "percentage_excl_surv_dco" = x[["excl_surv_dco"]] == 1,
-    "percentage_excl_surv_autopsy" = x[["excl_surv_autopsy"]] == 1,
-    "percentage_excl_surv_negativefou" = x[["excl_surv_negativefou"]] == 1,
-    "percentage_excl_surv_duplicate" = x[["excluded_multiple"]] == 1,
-    "percentage_not_reported_in_nordcan" = x[["entity_level_10"]] %in% c(999L, NA)
+    "cancer_record_count_included" = x[["excl_imp_total"]] == 0L,
+    "percentage_included"= x[["excl_imp_total"]] == 0L,
+    "percentage_mv" = x[["bod"]] %in% mv_levels,
+    "percentage_dco" = x[["bod"]] == 0L
   )
 
   lapply(names(subsets), function(new_col_nm) {
@@ -76,6 +83,12 @@ nordcanstat_survival_quality <- function(
 
   data.table::setnames(count_dt, "N", "cancer_record_count")
 
+  i.cancer_death_count <- cancer_record_count <- NULL # to appease R CMD CHECK
+  count_dt[
+    i = cancer_death_count_dataset,
+    on = eval(stratum_col_nms),
+    j = "mi_ratio" := i.cancer_death_count / cancer_record_count
+  ]
+
   return(count_dt[])
 }
-
