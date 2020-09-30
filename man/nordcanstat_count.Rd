@@ -26,10 +26,13 @@ exceptions to \verb{[basicepistats::stat_count]}:
 combinations of those columns are retrieved using
 \verb{[nordcancore::nordcan_metadata_column_level_space_dt]}, and the output
 will include all of these combinations
-\item additionally if \code{by} is a character vector and one element of it is
+\item if \code{by} is a character vector and one element of it is
 \code{"entity"}, then output is also stratified by entity number
 (the entity numbers will be in column \code{entity} in output); the
 entities to compute results by are supplied via \code{entities}
+\item if \code{by} is a character vector and one element of it is
+\code{"region"}, then output is also stratified by region number, i.e. by
+every sub-region (if applicable) and also the top region
 }}
 
 \item{entities}{\verb{[NULL, integer]} (optional, default \code{NULL})
