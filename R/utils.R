@@ -284,3 +284,21 @@ nordcanstat_by_entity_column <- function(
 
 
 
+
+session_info <- function() {
+  tf <- tempfile()
+  on.exit(unlink(tf))
+  sink(file = tf)
+  cat("System time at start:", as.character(Sys.time()), "\n")
+  cat("sessionInfo() output:\n")
+  print(sessionInfo())
+  sink(file = NULL)
+
+  readLines(tf)
+}
+
+
+
+
+
+

@@ -82,6 +82,7 @@ nordcan_statistics_tables <- function(
 ) {
   t_start <- proc.time()
 
+  # dataset validation ---------------------------------------------------------
   message("* nordcanepistats::nordcan_statistics_tables: validating your ",
           "datasets...")
   dbc::assert_user_input_is_data.table_with_required_names(
@@ -106,7 +107,9 @@ nordcan_statistics_tables <- function(
   message("* nordcanepistats::nordcan_statistics_tables: done.")
 
 
+  # output list creation -------------------------------------------------------
   payload <- list(
+    session_info = session_info(),
     cancer_death_count_dataset = cancer_death_count_dataset,
     general_population_size_dataset = general_population_size_dataset
   )
@@ -118,7 +121,8 @@ nordcan_statistics_tables <- function(
   payload[["cancer_record_count_dataset"]] <- tryCatch(
     nordcanstat_count(
       x = cancer_record_dataset,
-      by = c("yoi","sex","region","agegroup","entity")
+      by = c("yoi","sex","region","agegroup","entity"),
+      subset = cancer_record_dataset[["excl_imp_total"]] == 0L
     ),
     error = function(e) e
   )
@@ -133,7 +137,9 @@ nordcan_statistics_tables <- function(
   t <- proc.time()
   payload[["prevalent_patient_count_dataset"]] <- tryCatch(
     expr = nordcanstat_year_based_prevalent_subject_count(
-      x = cancer_record_dataset, by = c("sex", "region", "agegroup", "entity")
+      x = cancer_record_dataset,
+      by = c("sex", "region", "agegroup", "entity"),
+      subset = cancer_record_dataset[["excl_imp_total"]] == 0L
     ),
     error = function(e) e
   )
@@ -148,7 +154,9 @@ nordcan_statistics_tables <- function(
   t <- proc.time()
   payload[["survival_quality_statistics_dataset"]] <- tryCatch(
     expr = nordcanstat_survival_quality(
-      x = cancer_record_dataset, by = c("sex", "period", "agegroup", "entity")
+      x = cancer_record_dataset,
+      by = c("sex", "period", "agegroup", "entity"),
+      subset = cancer_record_dataset[["excl_surv_total"]] == 0L
     ),
     error = function(e) e
   )
@@ -206,11 +214,6 @@ nordcan_statistics_tables <- function(
           data.table::timetaken(t))
 
   # final touches --------------------------------------------------------------
-  # dbc::assert_dev_output_is_uniquely_named_list(payload)
-  # dbc::assert_dev_output_has_names(
-  #   payload,
-  #   required_names = nordcan_statistics_tables_output_names()
-  # )
   message("* nordcanepistats::nordcan_statistics_tables: finished; ",
           data.table::timetaken(t_start))
   return(payload)
@@ -218,7 +221,8 @@ nordcan_statistics_tables <- function(
 
 
 nordcan_statistics_tables_output_names <- function() {
-  c("cancer_death_count_dataset",
+  c("session_info",
+    "cancer_death_count_dataset",
     "cancer_record_count_dataset",
     "prevalent_patient_count_dataset",
     "survival_quality_statistics_dataset",
