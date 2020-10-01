@@ -252,13 +252,3 @@ nordcan_statistics_tables <- function(
   return(payload)
 }
 
-
-nordcan_statistics_tables_output_names <- function() {
-  c("session_info",
-    "cancer_death_count_dataset",
-    "cancer_record_count_dataset",
-    "prevalent_patient_count_dataset",
-    "survival_quality_statistics_dataset",
-    "survival_statistics_dataset",
-    "general_population_size_dataset")
-}
