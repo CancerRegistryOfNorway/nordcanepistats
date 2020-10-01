@@ -5,17 +5,12 @@
 
 write_nordcan_statistics_tables <- function(input, purpose = "archive") {
   ## Check is the input is a list.
-  # purpose:
-  # a character which can be 'archive' or 'sending'. 'archive means the function
-  # will zip all elements (including log files) of input into a zip file'.
-  # 'sending' means the function will zip only data tables into a zip file.
-
   if (!is.list(input)) {
     stop("'input' (nordcan_statistics_tables) must be a 'list'!")
   } else {
-
+    
     class_list <- rep(NA, length(input))
-
+    
     for (i in 1:length(input)) {
       if ("character" %in% class(input[[i]])) {
         class_list[i] <- "character"
@@ -23,22 +18,21 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
         class_list[i] <- "data.table"
       }
     }
-
+    
     id <- which(is.na(class_list))
     if (length(id) > 0) {
       stop(sprintf("Class of variable: %s is not supported! \n
-                   The classes of the elements of 'input' must be 'character' or 'data.table'",
+                   The classes of the elements of 'input' must be 'character' or 'data.table'", 
                    paste(class_list[id], collapse = ",")))
     }
   }
-
-
+  
   ## Get global settings of Nordcan
   Global_nordcan_settings <- nordcancore::get_global_nordcan_settings()
   ## Get work directory
   work_dir <- Global_nordcan_settings$work_dir
   ## Create temporary directory for storing the output of nordcan_statistics_tables;
-  temp_dir <- normalizePath(sprintf("%s/%s", work_dir,  nordcancore::random_names()[1]))
+  temp_dir <- sprintf("%s/%s", work_dir,  nordcancore::random_names()[1])
   dir.create(temp_dir)
   ## Delete the folder when the function exit;
   on.exit({
@@ -46,35 +40,31 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
       unlink(temp_dir, recursive = TRUE)
     }
   })
-
-
+    
   if (dir.exists(temp_dir)) {
-    ## Write elements of input to temporary directory.
+    ## Write elements of input to temporary directory. 
     for (i in 1:length(input)) {
       cls <- class(input[[i]])
-      if (cls == "character") {
+      if ("character" %in% cls) {
         if (purpose == "archive") {
           writeLines(text = input[[i]],
-                     con = normalizePath(sprintf("%s/%s.txt", temp_dir, names(input)[i])))
+                     con = sprintf("%s/%s.txt", temp_dir, names(input)[i]))
         }
       } else {
-        write.csv(x = input[[i]],
-                  file = normalizePath(sprintf("%s/%s.csv", temp_dir, names(input)[i])),
+        data.table::fwrite(x = input[[i]],
+                  file = sprintf("%s/%s.csv", temp_dir, names(input)[i]), 
                   sep = ";")
       }
     }
-
-
+    
     ## zip files
-
+    wd <- getwd()
+    setwd(temp_dir); on.exit({setwd(wd)})
     zip(zipfile = sprintf("%s/nordcan_statistics_tables.zip", work_dir),
-        files = list.files(temp_dir, full.names = TRUE))
-
-
-
+        files = list.files(temp_dir, full.names = FALSE))
   }
-
 }
+
 
 
 
