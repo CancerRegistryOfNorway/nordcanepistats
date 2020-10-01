@@ -4,19 +4,24 @@
 \alias{write_nordcan_statistics_tables}
 \alias{write_nordcan_statistics_tables_for_archive}
 \alias{write_nordcan_statistics_tables_for_sending}
+\alias{read_nordcan_statistics_tables}
 \title{Write NORDCAN Statistics Tables to Zip}
 \usage{
-write_nordcan_statistics_tables_for_archive(input)
+write_nordcan_statistics_tables_for_archive(x)
 
-write_nordcan_statistics_tables_for_sending(input)
+write_nordcan_statistics_tables_for_sending(x)
+
+read_nordcan_statistics_tables(zip_file_path)
 }
 \arguments{
-\item{input}{a list of output of nordcan statistics tables}
-}
-\value{
-a zip file named 'nordcan_statistics_tables.zip' will be save in
-current work directory (which should be setup before using
-\link[nordcancore:global_nordcan_settings]{nordcancore::set_global_nordcan_settings})
+\item{x}{\verb{[list]} (mandatory, no default)
+
+list of statistics tables (data.tables) and any associated logs
+(character vectors)}
+
+\item{zip_file_path}{\verb{[character]} (mandatory, no default)
+
+path to an existing zip file}
 }
 \description{
 Write the output of \link{nordcan_statistics_tables} into a .zip file.
@@ -24,12 +29,23 @@ Write the output of \link{nordcan_statistics_tables} into a .zip file.
 \details{
 \itemize{
 \item \code{write_nordcan_statistics_tables_for_archive} writes data.tables as .csv
-character vectors as .txt files
+character vectors as .txt files and compresses them into
+\code{nordcan_statistics_tables.zip} in the current working directory
+set using \link[nordcancore:global_nordcan_settings]{nordcancore::set_global_nordcan_settings}
 }
 
 \itemize{
-\item \code{write_nordcan_statistics_tables_for_archive} writes data.tables as .csv
-character vectors as .txt files
+\item \code{write_nordcan_statistics_tables_for_sending} writes data.tables as .csv
+and compresses them into
+\code{nordcan_statistics_tables.zip} in the current working directory
+set using \link[nordcancore:global_nordcan_settings]{nordcancore::set_global_nordcan_settings}; does NOT
+save any logs (character vectors in \code{x}) as .txt files
+}
+
+\itemize{
+\item \code{read_nordcan_statistics_tables} uncompresses a zip file and reads into R
+all .csv files as data.tables and .txt files as character vectors that it
+contained
 }
 }
 \examples{
@@ -46,12 +62,12 @@ nordcancore::set_global_nordcan_settings(
 )
 
 
-input <- list(log1 = letters, log2 = LETTERS[1:5],
-               output1 = data.table::as.data.table(cars),
-               output2 = data.table::as.data.table(CO2))
+x <- list(log1 = letters, log2 = LETTERS[1:5],
+          output1 = data.table::as.data.table(cars),
+          output2 = data.table::as.data.table(CO2))
 
 
-write_nordcan_statistics_tables_for_archive(input = input)
+write_nordcan_statistics_tables_for_archive(x = x)
 }
 \dontrun{
 library("data.table")
@@ -64,12 +80,15 @@ nordcancore::set_global_nordcan_settings(
   stat_survival_follow_up_first_year = 1954L
 )
 
+# log1 and log2 are NOT saved
+x <- list(log1 = letters, log2 = LETTERS[1:5],
+          output1 = data.table::as.data.table(cars),
+          output2 = data.table::as.data.table(CO2))
 
-input <- list(log1 = letters, log2 = LETTERS[1:5],
-              output1 = data.table::as.data.table(cars),
-              output2 = data.table::as.data.table(CO2))
 
-
-write_nordcan_statistics_tables_for_sending(input = input)
+write_nordcan_statistics_tables_for_sending(x = x)
+}
+\dontrun{
+statistics <- read_nordcan_statistics_tables("nordcan_statistics_tables.zip")
 }
 }
