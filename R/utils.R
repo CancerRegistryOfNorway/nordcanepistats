@@ -300,5 +300,38 @@ session_info <- function() {
 
 
 
+read_statistics_tables <- function(
+zip_file_path
+)
+{
+dbc::assert_user_input_file_exists(zip_file_path)
+stopifnot(grepl("\\.zip$", zip_file_path))
+
+r <- random_names(n_random_names = 1L)
+d <- dir.create(r, recursive = TRUE)
+
+utils::unzip(zipfile = zip_file_path, exdir = r)
+
+csv <- list.files(path=r, pattern = "csv" ,full.names = TRUE)
+text <- list.files(path=r, pattern = "txt" ,full.names = TRUE)  
+
+csv_n <- sub('\\.csv$', '', list.files(path=r, pattern = "csv"))
+txt_n <- sub('\\.txt$', '', list.files(path=r, pattern = "txt"))
+
+txt <- lapply(1:length(text), function(i) readLines(text[i]))
+csv <- lapply(1:length(csv), function(i) data.table::fread(csv[i]))
+
+lapply(1:length(txt), function(i) dbc::assert_is_character(txt[[i]]))
+lapply(1:length(csv), function(i) dbc::assert_is_data.table(csv[[i]]))
+
+unlink(r, recursive = TRUE)
+
+output <- c(txt, csv)
+names(output) <- c(txt_n, csv_n)
+return(output)
+
+}
+
+
 
 
