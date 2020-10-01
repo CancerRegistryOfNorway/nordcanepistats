@@ -19,14 +19,19 @@ nordcanstat_imp_quality <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
+  dbc::assert_is_data.table(x)
+  dbc::assert_is_data.table(cancer_death_count_dataset)
   cdcd_col_nms <- "cancer_death_count"
   if (is.character(by)) {
     cdcd_col_nms <- union(by, cdcd_col_nms)
+    dbc::assert_has_only_names(
+      cancer_death_count_dataset, required_names = cdcd_col_nms
+    )
+  } else {
+    dbc::assert_has_names(
+      cancer_death_count_dataset, required_names = cdcd_col_nms
+    )
   }
-  dbc::assert_is_data.table_with_required_names(
-    cancer_death_count_dataset,
-    required_names = cdcd_col_nms
-  )
   count_dt <- nordcanstat_count(
     x = x,
     by = by,

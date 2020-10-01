@@ -152,10 +152,27 @@ nordcan_statistics_tables <- function(
           "imp_quality_statistics_dataset at ",
           as.character(Sys.time()), "...")
   t <- proc.time()
+  cdcd <- data.table::copy(cancer_death_count_dataset)
+  min_period <- min(cancer_record_dataset$period, na.rm = TRUE)
+  max_period <- max(cancer_record_dataset$period, na.rm = TRUE)
+  period_breaks <- c(seq(min_period, max_period, 5L), Inf)
+  cdcd[
+    j = "period" := cut(
+      x = cdcd$year, breaks = period_breaks, labels = FALSE, right = FALSE
+    )
+  ]
+  cdcd[j = "period" := period_breaks[cdcd$period]]
+  cdcd <- cdcd[!is.na(cdcd$period), ]
+  cdcd[, "year" := NULL]
+  cdcd <- cdcd[
+    j = lapply(.SD, sum),
+    .SDcols = "cancer_death_count",
+    keyby = c("sex", "period", "entity", "region")
+  ]
   payload[["imp_quality_statistics_dataset"]] <- tryCatch(
     expr = nordcanstat_imp_quality(
       x = cancer_record_dataset,
-      cancer_death_count_dataset = cancer_death_count_dataset,
+      cancer_death_count_dataset = cdcd,
       by = c("sex", "period", "entity", "region")
     ),
     error = function(e) e
