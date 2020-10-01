@@ -156,7 +156,7 @@ nordcan_statistics_tables <- function(
     expr = nordcanstat_imp_quality(
       x = cancer_record_dataset,
       cancer_death_count_dataset = cancer_death_count_dataset,
-      by = c("sex", "region", "agegroup", "entity")
+      by = c("sex", "period", "entity", "region")
     ),
     error = function(e) e
   )
@@ -172,7 +172,7 @@ nordcan_statistics_tables <- function(
   payload[["survival_quality_statistics_dataset"]] <- tryCatch(
     expr = nordcanstat_survival_quality(
       x = cancer_record_dataset,
-      by = c("sex", "period", "agegroup", "entity")
+      by = c("sex", "period", "entity")
     ),
     error = function(e) e
   )
