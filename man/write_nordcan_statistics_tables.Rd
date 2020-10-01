@@ -63,9 +63,10 @@ nordcancore::set_global_nordcan_settings(
 
 
 input <- list(log1 = letters, log2 = LETTERS[1:5],
-              output1 = as.data.table(cars), output2 = as.data.table(CO2))
+              output1 = data.table::as.data.table(cars),
+              output2 = data.table::as.data.table(CO2))
 
 
-write_nordcan_statistics_tables_for_archive(input = input)
+write_nordcan_statistics_tables_for_sending(input = input)
 }
 }

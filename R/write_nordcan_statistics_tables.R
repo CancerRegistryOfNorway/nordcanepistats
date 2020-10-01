@@ -142,7 +142,7 @@ write_nordcan_statistics_tables_for_archive <- function(input) {
 #'               output2 = data.table::as.data.table(CO2))
 #'
 #'
-#' write_nordcan_statistics_tables_for_archive(input = input)
+#' write_nordcan_statistics_tables_for_sending(input = input)
 #' }
 
 
