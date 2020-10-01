@@ -8,9 +8,9 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
   if (!is.list(input)) {
     stop("'input' (nordcan_statistics_tables) must be a 'list'!")
   } else {
-    
+
     class_list <- rep(NA, length(input))
-    
+
     for (i in 1:length(input)) {
       if ("character" %in% class(input[[i]])) {
         class_list[i] <- "character"
@@ -18,15 +18,15 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
         class_list[i] <- "data.table"
       }
     }
-    
+
     id <- which(is.na(class_list))
     if (length(id) > 0) {
       stop(sprintf("Class of variable: %s is not supported! \n
-                   The classes of the elements of 'input' must be 'character' or 'data.table'", 
+                   The classes of the elements of 'input' must be 'character' or 'data.table'",
                    paste(class_list[id], collapse = ",")))
     }
   }
-  
+
   ## Get global settings of Nordcan
   Global_nordcan_settings <- nordcancore::get_global_nordcan_settings()
   ## Get work directory
@@ -40,9 +40,9 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
       unlink(temp_dir, recursive = TRUE)
     }
   })
-    
+
   if (dir.exists(temp_dir)) {
-    ## Write elements of input to temporary directory. 
+    ## Write elements of input to temporary directory.
     for (i in 1:length(input)) {
       cls <- class(input[[i]])
       if ("character" %in% cls) {
@@ -52,16 +52,18 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
         }
       } else {
         data.table::fwrite(x = input[[i]],
-                  file = sprintf("%s/%s.csv", temp_dir, names(input)[i]), 
+                  file = sprintf("%s/%s.csv", temp_dir, names(input)[i]),
                   sep = ";")
       }
     }
-    
+
     ## zip files
     wd <- getwd()
-    setwd(temp_dir); on.exit({setwd(wd)})
-    zip(zipfile = sprintf("%s/nordcan_statistics_tables.zip", work_dir),
-        files = list.files(temp_dir, full.names = FALSE))
+    setwd(temp_dir); on.exit({setwd(wd)}, add = TRUE)
+    utils::zip(zipfile = sprintf("%s/nordcan_statistics_tables.zip", work_dir),
+               files = list.files(temp_dir, full.names = FALSE))
+
+    return(invisible(NULL))
   }
 }
 
@@ -88,6 +90,7 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
 #' @examples
 #'
 #' \dontrun{
+#' library("data.table")
 #' nordcancore::set_global_nordcan_settings(
 #'   work_dir = ".",
 #'   participant_name = "Norway",
@@ -99,7 +102,8 @@ write_nordcan_statistics_tables <- function(input, purpose = "archive") {
 #'
 #'
 #' input <- list(log1 = letters, log2 = LETTERS[1:5],
-#'                output1 = as.data.table(cars), output2 = as.data.table(CO2))
+#'                output1 = data.table::as.data.table(cars),
+#'                output2 = data.table::as.data.table(CO2))
 #'
 #'
 #' write_nordcan_statistics_tables_for_archive(input = input)
@@ -117,6 +121,7 @@ write_nordcan_statistics_tables_for_archive <- function(input) {
 #'   character vectors as .txt files
 #' @examples
 #' \dontrun{
+#' library("data.table")
 #' nordcancore::set_global_nordcan_settings(
 #'   work_dir = ".",
 #'   participant_name = "Norway",
