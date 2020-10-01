@@ -175,29 +175,26 @@ read_nordcan_statistics_tables <- function(
   dbc::assert_user_input_file_exists(zip_file_path)
   stopifnot(grepl("\\.zip$", zip_file_path))
 
-  r <- random_names(n_random_names = 1L)
+  r <- nordcancore::random_names(n_random_names = 1L)
   d <- dir.create(r, recursive = TRUE)
+  on.exit(unlink(r, recursive = TRUE))
 
   utils::unzip(zipfile = zip_file_path, exdir = r)
 
-  csv <- list.files(path=r, pattern = "csv" ,full.names = TRUE)
-  text <- list.files(path=r, pattern = "txt" ,full.names = TRUE)
+  file_ext_re <- "\\.((csv)|(txt))$"
+  file_paths <- dir(r, pattern = file_ext_re, full.names = TRUE)
+  output <- lapply(file_paths, function(file_path) {
+    file_ext <- ifelse(grepl("\\.csv", file_path), "csv", "txt")
+    switch(
+      file_ext,
+      csv = data.table::fread(file_path),
+      txt = readLines(file_path)
+    )
+  })
+  file_names <- dir(r, pattern = file_ext_re, full.names = FALSE)
+  names(output) <- sub(file_ext_re, "", file_names)
 
-  csv_n <- sub('\\.csv$', '', list.files(path=r, pattern = "csv"))
-  txt_n <- sub('\\.txt$', '', list.files(path=r, pattern = "txt"))
-
-  txt <- lapply(1:length(text), function(i) readLines(text[i]))
-  csv <- lapply(1:length(csv), function(i) data.table::fread(csv[i]))
-
-  lapply(1:length(txt), function(i) dbc::assert_is_character(txt[[i]]))
-  lapply(1:length(csv), function(i) dbc::assert_is_data.table(csv[[i]]))
-
-  unlink(r, recursive = TRUE)
-
-  output <- c(txt, csv)
-  names(output) <- c(txt_n, csv_n)
   return(output)
-
 }
 
 
