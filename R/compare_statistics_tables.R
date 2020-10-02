@@ -63,13 +63,13 @@ compare_nordcan_statistics_table_lists <- function(
     message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
             "comparing current_stat_table_list$", table_name,
             " to old_stat_table_list$" , table_name, "...")
-    x <- current_stat_table_list[[table_name]]
-    y <- old_stat_table_list[[table_name]]
+    t <- proc.time()
+    x <- data.table::copy(current_stat_table_list[[table_name]])
+    y <- data.table::copy(old_stat_table_list[[table_name]])
     xy_stratum_col_nm_set <- intersect(
       stratum_col_nm_set,
       intersect(names(x), names(y))
     )
-
     x <- x[
       i = y,
       on = eval(xy_stratum_col_nm_set),
@@ -87,14 +87,20 @@ compare_nordcan_statistics_table_lists <- function(
     ]
     data.table::setkeyv(y, xy_stratum_col_nm_set)
     comparison_dt <- compare_tables(x = x, y = y, table_name = table_name)
-    cbind(
+    out <- cbind(
       x[j = .SD, .SDcols = xy_stratum_col_nm_set],
       comparison_dt
     )
+    message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
+            "done; ", data.table::timetaken(t))
+    return(out[])
   })
   names(comparisons) <- table_names
 
 
+  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
+          "adjusting p-values...")
+  t_p_value <- proc.time()
   p_value_dt <- data.table::rbindlist(lapply(table_names, function(table_name) {
     dt <- comparisons[[table_name]]
     data.table::setDT(list(
@@ -117,7 +123,12 @@ compare_nordcan_statistics_table_lists <- function(
     )
     NULL
   })
+  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
+          "done; ", data.table::timetaken(t_p_value))
 
+  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
+          "computing summary table...")
+  t_summary <- proc.time()
   summary <- data.table::rbindlist(lapply(table_names, function(table_name) {
     dt <- comparisons[[table_name]]
     dt_summary <- dt[
@@ -140,6 +151,8 @@ compare_nordcan_statistics_table_lists <- function(
     dt_summary <- cbind(table_name = table_name, dt_summary)
     return(dt_summary[])
   }))
+  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
+          "done; ", data.table::timetaken(t_summary))
 
   list(summary = summary, comparisons = comparisons)
 }
@@ -286,6 +299,7 @@ compare_counts <- function(
                                           mu1 = h0_means, mu2 = h0_means))
 
   ]
+  dt[dt$x == 0L & dt$y == 0L, "p_value" := NA_real_]
   return(dt[])
 }
 
