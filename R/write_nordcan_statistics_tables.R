@@ -21,9 +21,14 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 
     id <- which(is.na(class_list))
     if (length(id) > 0) {
-      stop(sprintf("Class of variable: %s is not supported! \n
-                   The classes of the elements of 'x' must be 'character' or 'data.table'",
-                   paste(class_list[id], collapse = ",")))
+      # stop(sprintf("Class of variable: %s is not supported! \n
+      #              The classes of the elements of 'x' must be 'character' or 'data.table'",
+      #             paste(class_list[id], collapse = ",")))
+      stop(sprintf("Input of 'x' should be a list of 'character' (for logs) or 'data.table' (for tables).  \n
+                    The classes (%s) of x[%s] are not belong to  'character' or 'data.table'", class_list[id], id))
+
+
+
     }
   }
 
