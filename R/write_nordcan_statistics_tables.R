@@ -60,7 +60,7 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
     wd <- getwd()
     setwd(temp_dir); on.exit({setwd(wd)})
     zip_file_path <- sprintf("%s/nordcan_statistics_tables.zip", work_dir)
-    utils::zip(zipfile = zip_file_path,
+    zip::zip(zipfile = zip_file_path,
                files = list.files(temp_dir, full.names = FALSE))
     message("* nordcanepistats::write_nordcan_statistics_tables: wrote .zip ",
            "into \"", zip_file_path, "\"")
@@ -188,7 +188,7 @@ read_nordcan_statistics_tables <- function(
   d <- dir.create(r, recursive = TRUE)
   on.exit(unlink(r, recursive = TRUE))
 
-  utils::unzip(zipfile = zip_file_path, exdir = r)
+  zip::unzip(zipfile = zip_file_path, exdir = r)
 
   file_ext_re <- "\\.((csv)|(txt))$"
   file_paths <- dir(r, pattern = file_ext_re, full.names = TRUE)
