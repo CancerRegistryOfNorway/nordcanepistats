@@ -20,8 +20,7 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
     
     id <- which(!class_list %in% c("character", "data.table"))
     if (length(id) > 0) {
-      stop(sprintf("Input of 'x' should be a list of 'character' (for logs) or 'data.table' (for tables) objects.  \n
-                   The class(es) ('%s') of *%s* are not belong to  'character' or 'data.table'", class_list[id], names(x)[id]))
+      stop(sprintf("Input of 'x' should be a list of 'character' (for logs) or 'data.table' (for tables) objects.  \n The class(es) ('%s') of *%s* are not belong to  'character' or 'data.table'", class_list[id], names(x)[id]))
     }
     
   }
