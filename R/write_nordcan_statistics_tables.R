@@ -9,27 +9,21 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
     stop("'x' must be a 'list'!")
   } else {
 
-    class_list <- rep(NA, length(x))
-
+    class_list <- unlist(lapply(x, class))
     for (i in 1:length(x)) {
-      if ("character" %in% class(x[[i]])) {
+      if ("character" %in% class_list[i]) {
         class_list[i] <- "character"
-      } else if ("data.table" %in% class(x[[i]])) {
+      } else if ("data.table" %in% class_list[i]) {
         class_list[i] <- "data.table"
       }
     }
-
-    id <- which(is.na(class_list))
+    
+    id <- which(!class_list %in% c("character", "data.table"))
     if (length(id) > 0) {
-      # stop(sprintf("Class of variable: %s is not supported! \n
-      #              The classes of the elements of 'x' must be 'character' or 'data.table'",
-      #             paste(class_list[id], collapse = ",")))
-      stop(sprintf("Input of 'x' should be a list of 'character' (for logs) or 'data.table' (for tables).  \n
-                    The classes (%s) of x[%s] are not belong to  'character' or 'data.table'", class_list[id], id))
-
-
-
+      stop(sprintf("Input of 'x' should be a list of 'character' (for logs) or 'data.table' (for tables) objects.  \n
+                   The class(es) ('%s') of *%s* are not belong to  'character' or 'data.table'", class_list[id], names(x)[id]))
     }
+    
   }
 
   ## Get global settings of Nordcan
