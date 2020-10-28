@@ -140,7 +140,7 @@ compute_by_entity <- function(
   results_by_entity <- lapply(entities, function(entity_no) {
     is_entity <- nordcancore::in_entity_set(x = x, entities = entity_no)
     arg_list[["x"]] <- x[is_entity, ]
-    do.call(fun, arg_list)
+    call_with_arg_list(fun_nm = "fun", arg_list = arg_list)
   })
 
   if (all(vapply(results_by_entity, data.table::is.data.table, logical(1L)))) {
@@ -201,7 +201,7 @@ compute_by_entity_column <- function(
     } else {
       arg_list[["by"]] <- list(by = arg_list[["by"]], entity = by_entity)
     }
-    do.call(fun, arg_list)
+    call_with_arg_list("fun", arg_list = arg_list)
   })
 
   is_dt <- vapply(results_by_entity_col, data.table::is.data.table, logical(1L))
@@ -247,6 +247,7 @@ nordcanstat_by_entity_column <- function(
     x = entities,
     funs = c("report_is_NULL", "report_is_integer_nonNA_vector")
   )
+  dbc::assert_prod_input_is_function(basicepistats_fun)
   if (is.null(entities)) {
     entities <- nordcancore::nordcan_metadata_entity_no_set("all")
   } else {
@@ -278,7 +279,7 @@ nordcanstat_by_entity_column <- function(
       statfun_arg_list[["by"]]
     )
   }
-  stat_dt <- do.call(basicepistats_fun, statfun_arg_list[["by"]])
+  stat_dt <- call_with_arg_list("basicepistats_fun", arg_list = arg_list)
   return(stat_dt[])
 }
 
@@ -300,6 +301,67 @@ session_info <- function() {
 
 
 
+
+call_with_arg_list <- function(
+  fun_nm,
+  arg_list = NULL,
+  envir = parent.frame(1L)
+) {
+  dbc::assert_prod_input_is_character_nonNA_atom(fun_nm)
+  fun <- tryCatch(
+    eval(substitute(get(fun_nm, mode = "function")),
+         envir = envir),
+    error = function(e) e
+  )
+  if (!is.function(fun)) {
+    fun <- tryCatch(
+      eval(substitute(get(fun_nm, mode = "function")),
+           envir = parent.frame(1L)),
+      error = function(e) e
+    )
+  }
+  if (!is.function(fun)) {
+    fun <- tryCatch(
+      eval(substitute(get(fun_nm, mode = "function")),
+           envir = environment(call_with_arg_list)),
+      error = function(e) e
+    )
+  }
+  if (!is.function(fun)) {
+    stop("internal error: could not retrieve fun named ", deparse(fun_nm))
+  }
+
+  if (is.null(arg_list)) {
+    arg_list <- mget(names(formals(fun)), envir = envir)
+  }
+  dbc::assert_prod_input_is_list(arg_list)
+
+  is_unnamed_arg <- names(arg_list) == ""
+  n_unnamed_args <- sum(is_unnamed_arg)
+  if (n_unnamed_args > 0L) {
+    names(arg_list)[is_unnamed_arg] <- paste0(
+      "unnamed_argument_", 1:n_unnamed_args
+    )
+  }
+
+  fun_env <- new.env(parent = envir)
+  fun_env[[fun_nm]] <- fun
+  arg_env <- new.env(parent = fun_env)
+  lapply(seq_along(arg_list), function(i) {
+    arg_env[[names(arg_list)[i]]] <- arg_list[[i]]
+  })
+
+  call_string <- paste0(
+    fun_nm, "(\n",
+    paste0("  ", names(arg_list), " = ", names(arg_list), collapse = ",\n"),
+    "\n)"
+  )
+  call_string <- gsub("unnamed_argument_[0-9]+ = ", "", call_string)
+
+  call <- parse(text = call_string)[[1L]]
+  eval_env <- new.env(parent = arg_env)
+  eval(call, envir = eval_env)
+}
 
 
 
