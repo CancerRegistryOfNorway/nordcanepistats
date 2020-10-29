@@ -88,12 +88,14 @@ nordcan_statistics_tables <- function(
 ) {
   t_start <- proc.time()
 
-  dbc::assert_user_input_is_one_of(
-    output_objects,
-    funs = list(dbc::assert_is_NULL, dbc::assert_is_character_nonNA_vector)
-  )
   if (is.null(output_objects)) {
     output_objects <- nordcan_statistics_tables_output_object_space()
+  } else {
+    dbc::assert_is_character_nonNA_vector(output_objects)
+    dbc::assert_vector_elems_are_in_set(
+      output_objects,
+      set = nordcan_statistics_tables_output_object_space()
+    )
   }
 
   # dataset validation ---------------------------------------------------------
