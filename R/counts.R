@@ -21,10 +21,11 @@ nordcanstat_count <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
-  dt <- nordcanstat_by_entity_column(
+  dt <- nordcanstat_by_entity(
     entities = entities,
     arg_list = mget(names(formals(basicepistats::stat_count))),
-    basicepistats_fun = basicepistats::stat_count
+    basicepistats_fun = basicepistats::stat_count,
+    loop_over = "entity_columns"
   )
 
   if (is.character(by) && "region" %in% by) {
@@ -37,10 +38,11 @@ nordcanstat_count <- function(
       # while ignoring sub-regions to get the marginal figures
       dt <- rbind(
         dt,
-        nordcanstat_by_entity_column(
+        nordcanstat_by_entity(
           entities = entities,
           arg_list = mget(names(formals(basicepistats::stat_count))),
-          basicepistats_fun = basicepistats::stat_count
+          basicepistats_fun = basicepistats::stat_count,
+          loop_over = "entity_columns"
         )[, "region" := topregion_number][]
       )
     }

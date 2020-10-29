@@ -88,10 +88,10 @@ subset_and <- function(
 #' a `list` containing arguments to pass to `fun`; see Details
 #' @details
 #'
-#' `compute_by_entity` effectively loops over each entity number given in
+#' `loop_over_entity_numbers` effectively loops over each entity number given in
 #' `entities` and computes the results separately for each.
 #'
-#' `compute_by_entity_column` loops over each column defining entities in
+#' `loop_over_entity_columns` loops over each column defining entities in
 #' `x`. For each such column, `arg_list[["by"]]` is created or modified to have
 #'  (also) the column in question, limited to only those entities supplied in
 #'  `entities`.
@@ -102,15 +102,15 @@ subset_and <- function(
 #' `fun` is called using `arg_list` after the appropriate entity- or
 #' entity column-specific modification using `[base::do.call]`.
 #'
-#' `compute_by_entity` modifies an element in `arg_list` named
+#' `loop_over_entity_numbers` modifies an element in `arg_list` named
 #' `x`, intended to contain the dataset cancer record. `x` is subset into
 #' each entity number separately before calling `fun`, i.e.
 #' `arg_list[["x"]] <- x[has_first_entity_no, ]` for the first entity and so on.
 #'
-#' `compute_by_entity_column` modifies or creates `arg_list[["by"]]` before
+#' `loop_over_entity_columns` modifies or creates `arg_list[["by"]]` before
 #' calling `fun`. `x` is not subset by this function. Therefore
-#' `compute_by_entity_column` is a more efficient but also less flexible
-#' version of `compute_by_entity`.
+#' `loop_over_entity_columns` is a more efficient but also less flexible
+#' version of `loop_over_entity_numbers`.
 #'
 #' @return
 #' Either a `list` or a `data.table`. Initially results are collected into a
@@ -118,13 +118,16 @@ subset_and <- function(
 #' or entity column. If every element of this list is a `data.table`,
 #' then every element is combined into one long `data.table` where column
 #' `"entity"` will identify the entity. In the case of
-#' `compute_by_entity` the column `"entity"` is created and in the case of
-#' `compute_by_entity_column` each entity column is renamed to `"entity"`
+#' `loop_over_entity_numbers` the column `"entity"` is created and in the case of
+#' `loop_over_entity_columns` each entity column is renamed to `"entity"`
 #' in the entity column-specific results before combining.
-#'
-#'
+#' @name entity_strata
+NULL
+
+
+#' @rdname entity_strata
 #' @export
-compute_by_entity <- function(
+loop_over_entity_numbers <- function(
   x,
   entities,
   fun,
@@ -159,9 +162,9 @@ compute_by_entity <- function(
 
 
 #' @importFrom data.table .SD
-#' @rdname compute_by_entity
+#' @rdname entity_strata
 #' @export
-compute_by_entity_column <- function(
+loop_over_entity_columns <- function(
   x,
   entities,
   fun,
@@ -224,17 +227,26 @@ compute_by_entity_column <- function(
 
 
 
-#' @rdname compute_by_entity
+#' @rdname entity_strata
 #' @export
 #' @param basicepistats_fun `[function]` (mandatory, no default)
 #'
 #' function from **basicepistats**, e.g. `[basicepistats::stat_count]`;
 #' this function will be run to produce results by entity number
-nordcanstat_by_entity_column <- function(
+#' @param loop_over `[character]` (mandatory, default `"entity_numbers"`)
+#'
+#' - `"entity_columns"`: function `loop_over_entity_columns` is called internally
+#' - `"entity_numbers"`: function `loop_over_entity_numbers` is called internally
+nordcanstat_by_entity <- function(
   entities,
   arg_list,
-  basicepistats_fun
+  basicepistats_fun,
+  loop_over = c("entity_numbers", "entity_columns")[1L]
 ) {
+  dbc::assert_prod_input_is_character_nonNA_atom(loop_over)
+  dbc::assert_atom_is_in_set(
+    loop_over, set = c("entity_columns", "entity_numbers")
+  )
   dbc::assert_prod_input_is_uniquely_named_list(arg_list)
   dbc::assert_prod_input_has_names(arg_list, required_names = c("x", "by"))
   dbc::assert_prod_input_is_data.table(arg_list[["x"]])
@@ -266,7 +278,12 @@ nordcanstat_by_entity_column <- function(
       )
     }
 
-    stat_dt <- compute_by_entity_column(
+    loop_fun <- switch(
+      loop_over,
+      entity_numbers = loop_over_entity_numbers,
+      entity_columns = loop_over_entity_columns
+    )
+    stat_dt <- loop_fun(
       x = statfun_arg_list[["x"]],
       entities = entities,
       fun = basicepistats_fun,

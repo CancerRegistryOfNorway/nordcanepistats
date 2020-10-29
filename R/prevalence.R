@@ -27,12 +27,19 @@ nordcanstat_year_based_prevalent_subject_count <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
-  dbc::assert_prod_input_is_data.table(x)
+  settings <- nordcanstat_settings("nordcanstat_prevalent_subject_count")
+  col_nms <- unlist(settings[
+    c("entry_year_col_nm", "exit_year_col_nm", "subject_id_col_nm")
+  ])
+  col_nms <- union("vit_sta", col_nms)
+  dbc::assert_prod_input_is_data.table_with_required_names(
+    x,
+    required_names = col_nms
+  )
   dbc::assert_prod_input_is_one_of(
     x = observation_years,
     funs = c("report_is_NULL", "report_is_integer_nonNA_vector")
   )
-  settings <- nordcanstat_settings("nordcanstat_prevalent_subject_count")
   arg_list <- c(mget(c("x", "by", "subset", "subset_style")), settings)
   if (!is.null(observation_years)) {
     arg_list[["observation_years"]] <- observation_years
@@ -50,18 +57,20 @@ nordcanstat_year_based_prevalent_subject_count <- function(
     col <- x[[col_nm]]
     if (col_nm == exit_year_col_nm) {
       col <- col + 0L
-      survived_last_year <- x[["vit_sta"]] == 1L
-      col[survived_last_year] <- max(settings[["observation_years"]]) + 1L
+      last_year <- nordcancore::nordcan_metadata_nordcan_year()
+      survived_last_year <- x[["vit_sta"]] == 1L & col == last_year
+      col[survived_last_year] <- max(last_year) + 1L
     }
     col
   }))
   data.table::setnames(use_x, names(use_x), names(x))
   arg_list[["x"]] <- use_x
 
-  dt <- nordcanstat_by_entity_column(
+  dt <- nordcanstat_by_entity(
     entities = entities,
     arg_list = arg_list,
-    basicepistats_fun = basicepistats::stat_year_based_prevalent_subject_count
+    basicepistats_fun = basicepistats::stat_year_based_prevalent_subject_count,
+    loop_over = "entity_numbers"
   )
 
 
@@ -75,10 +84,11 @@ nordcanstat_year_based_prevalent_subject_count <- function(
       # while ignoring sub-regions to get the marginal figures
       dt <- rbind(
         dt,
-        nordcanstat_by_entity_column(
+        nordcanstat_by_entity(
           entities = entities,
           arg_list = arg_list,
-          basicepistats_fun = basicepistats::stat_year_based_prevalent_subject_count
+          basicepistats_fun = basicepistats::stat_year_based_prevalent_subject_count,
+          loop_over = "entity_numbers"
         )[, "region" := topregion_number][]
       )
     }
