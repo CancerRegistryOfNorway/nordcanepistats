@@ -137,12 +137,19 @@ loop_over_entity_numbers <- function(
   dbc::assert_is_integer_nonNA_vector(entities)
   dbc::assert_is_function(fun)
   dbc::assert_is_list(arg_list)
-  stopifnot("x" %in% names(formals(fun)))
+  stopifnot(
+    "x" %in% names(formals(fun))
+  )
 
   entities <- unique(entities)
   results_by_entity <- lapply(entities, function(entity_no) {
     is_entity <- nordcancore::in_entity_set(x = x, entities = entity_no)
-    arg_list[["x"]] <- x[is_entity, ]
+    if ("subset" %in% names(formals(fun))) {
+      arg_list[["subset"]] <- subset_and(arg_list[["subset"]], is_entity)
+    } else {
+      arg_list[["x"]] <- x[is_entity, ]
+    }
+
     call_with_arg_list(fun_nm = "fun", arg_list = arg_list)
   })
 
