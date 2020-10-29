@@ -15,7 +15,7 @@ nordcanstat_by_entity(
   entities,
   arg_list,
   basicepistats_fun,
-  loop_over = c("entity_number", "entity_column")[1L]
+  loop_over = c("entity_numbers", "entity_columns")[1L]
 )
 }
 \arguments{
@@ -46,10 +46,10 @@ a \code{list} containing arguments to pass to \code{fun}; see Details}
 function from \strong{basicepistats}, e.g. \verb{[basicepistats::stat_count]};
 this function will be run to produce results by entity number}
 
-\item{loop_over}{\verb{[character]} (mandatory, default \code{"entity_number"})
+\item{loop_over}{\verb{[character]} (mandatory, default \code{"entity_numbers"})
 \itemize{
-\item \code{"entity_column"}: function \code{loop_over_entity_columns} is called internally
-\item \code{"entity_number"}: function \code{loop_over_entity_numbers} is called internally
+\item \code{"entity_columns"}: function \code{loop_over_entity_columns} is called internally
+\item \code{"entity_numbers"}: function \code{loop_over_entity_numbers} is called internally
 }}
 }
 \value{
