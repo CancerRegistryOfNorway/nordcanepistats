@@ -167,8 +167,7 @@ nordcan_statistics_tables <- function(
     output[["prevalent_patient_count_dataset"]] <- tryCatch(
       expr = nordcanstat_year_based_prevalent_subject_count(
         x = cancer_record_dataset,
-        by = c("sex", "region", "agegroup", "entity"),
-        subset = cancer_record_dataset[["excl_imp_total"]] == 0L
+        by = c("sex", "region", "agegroup", "entity")
       ),
       error = function(e) e
     )
