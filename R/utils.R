@@ -418,3 +418,27 @@ add_margin_to_regional_count_dt <- function(dt, count_col_nm = "N") {
 
   return(dt[])
 }
+
+
+
+remove_regional_counts_before_start_year <- function(dt, year_col_nm) {
+  dbc::assert_prod_input_is_data.table(dt)
+  dbc::assert_prod_input_is_character_nonNA_atom(year_col_nm)
+  if (all(c("region", year_col_nm) %in% names(dt))) {
+    participant_info <- nordcancore::nordcan_metadata_participant_info()
+    topregion_number <- participant_info[["topregion_number"]]
+    dbc::assert_prod_interim_is_integer_nonNA_atom(topregion_number)
+    gs <- nordcancore::get_global_nordcan_settings()
+    fy <- gs[["regional_data_first_year"]]
+    dbc::assert_prod_interim_is_integer_nonNA_atom(fy)
+    subset <- dt[["region"]] == topregion_number | (
+      dt[["region"]] != topregion_number & dt[[year_col_nm]] >= fy
+    )
+    dt <- dt[subset, ]
+  }
+  return(dt[])
+}
+
+
+
+

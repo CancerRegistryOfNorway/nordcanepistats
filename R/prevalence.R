@@ -27,6 +27,9 @@ nordcanstat_year_based_prevalent_subject_count <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
+  # just to ensure settings are set
+  nordcancore::get_global_nordcan_settings()
+
   settings <- nordcanstat_settings("nordcanstat_prevalent_subject_count")
   col_nms <- unlist(settings[
     c("entry_year_col_nm", "exit_year_col_nm", "subject_id_col_nm")
@@ -74,6 +77,10 @@ nordcanstat_year_based_prevalent_subject_count <- function(
   )
 
   dt <- add_margin_to_regional_count_dt(dt, count_col_nm = "N")
+
+  dt <- remove_regional_counts_before_start_year(
+    dt, year_col_nm = "observation_year"
+  )
 
   data.table::setkeyv(dt, setdiff(names(dt), "N"))
   data.table::setnames(dt, "N", "prevalent_patient_count")

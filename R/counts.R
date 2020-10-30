@@ -21,6 +21,9 @@ nordcanstat_count <- function(
   subset = NULL,
   subset_style = "zeros"
 ) {
+  # just to ensure settings are set
+  nordcancore::get_global_nordcan_settings()
+
   dt <- nordcanstat_by_entity(
     entities = entities,
     arg_list = mget(names(formals(basicepistats::stat_count))),
@@ -29,6 +32,10 @@ nordcanstat_count <- function(
   )
 
   dt <- add_margin_to_regional_count_dt(dt, count_col_nm = "N")
+
+  dt <- remove_regional_counts_before_start_year(
+    dt, year_col_nm = "yoi"
+  )
 
   data.table::setkeyv(dt, setdiff(names(dt), "N"))
   data.table::setnames(dt, "N", "cancer_record_count")
