@@ -390,3 +390,31 @@ call_with_arg_list <- function(
 
 
 
+add_margin_to_regional_count_dt <- function(dt, count_col_nm = "N") {
+
+  by <- setdiff(names(dt), count_col_nm)
+
+  if ("region" %in% by) {
+    region_dt <- nordcancore::nordcan_metadata_column_level_space_dt("region")
+    participant_info <- nordcancore::nordcan_metadata_participant_info()
+    topregion_number <- participant_info[["topregion_number"]]
+    if (nrow(region_dt) > 1L) {
+      # NORDCAN participant actually has some sub-regions, so need to
+      # marginalise over them to get the country-level figures
+      dt_by_region <- dt[
+        i = dt[["region"]] != topregion_number
+      ]
+      nonregion_by <- setdiff(by, "region")
+      dt_margin <- dt[
+        j = lapply(.SD, sum),
+        .SDcols = "N",
+        keyby = eval(nonregion_by)
+      ][
+        j = "region" := topregion_number
+      ]
+      dt <- rbind(dt_by_region, dt_margin, use.names = TRUE)
+    }
+  }
+
+  return(dt[])
+}
