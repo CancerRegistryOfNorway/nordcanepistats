@@ -291,7 +291,7 @@ compare_counts <- function(
   dbc::assert_prod_input_is_integer_gtezero_vector(old)
 
   dt <- data.table::setDT(list(new = new, old = old))
-  dt[, "stat_type" := "count_x_minus_y"]
+  dt[, "stat_type" := "count_new_minus_old"]
   dt[, "stat_value" := dt$new - dt$old]
   h0_means <- (dt$new + dt$old) / 2.0
   dt[
@@ -313,7 +313,7 @@ compare_survivals <- function(
   dbc::assert_prod_input_is_number_gtezero_vector(old)
 
   dt <- data.table::setDT(list(new = new, old = old))
-  dt[, "stat_type" := "survival_x_minus_y"]
+  dt[, "stat_type" := "survival_new_minus_old"]
   dt[, "stat_value" := dt$new - dt$old]
   dt[, "p_value" := NA_real_]
   return(dt[])
@@ -343,7 +343,7 @@ compare_proportions <- function(
   )
 
   dt <- data.table::setDT(list(new = new, old = old))
-  dt[, "stat_type" := "proportion_x_minus_y"]
+  dt[, "stat_type" := "proportion_new_minus_old"]
   dt[, "stat_value" := dt$new - dt$old]
   dt[, "p_value" := NA_real_]
   return(dt[])
@@ -362,7 +362,7 @@ compare_rates <- function(
   # count is the poisson offset.
 
   dt <- data.table::setDT(list(new = new, old = old))
-  dt[, "stat_type" := "ratio_x_minus_y"]
+  dt[, "stat_type" := "ratio_new_minus_old"]
   dt[, "stat_value" := dt$new - dt$old]
   x_as_count <- as.integer(round(new * x_count))
   y_as_count <- as.integer(round(old * y_count))
