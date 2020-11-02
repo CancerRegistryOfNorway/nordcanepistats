@@ -165,7 +165,7 @@ nordcan_statistics_tables <- function(
             as.character(Sys.time()), "...")
     t <- proc.time()
     output[["prevalent_patient_count_dataset"]] <- tryCatch(
-      expr = nordcanstat_year_based_prevalent_subject_count(
+      expr = nordcanstat_year_based_prevalent_patient_count(
         x = cancer_record_dataset,
         by = c("sex", "region", "agegroup", "entity"),
         subset = cancer_record_dataset[["excl_imp_entitymissing"]] == 0L
@@ -320,7 +320,7 @@ nordcan_statistics_tables_output_object_space_summaries <- function() {
     ),
     "prevalent_patient_count_dataset" = paste0(
       "Dataset of prevalent cancer patients counts computed using ",
-      "nordcanepistats::nordcanstat_year_based_prevalent_subject_count"
+      "nordcanepistats::nordcanstat_year_based_prevalent_patient_count"
     ),
     "imp_quality_statistics_dataset" = paste0(
       "Quality statistics computed using ",

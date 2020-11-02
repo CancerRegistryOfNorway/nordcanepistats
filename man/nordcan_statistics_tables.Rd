@@ -52,7 +52,7 @@ The output is a list with elements:
 \item \code{"cancer_death_count_dataset"}: The same dataset returned as-is as given to arg cancer_death_count_dataset
 \item \code{"general_population_size_dataset"}: The same dataset returned as-is as given to arg general_population_size_dataset
 \item \code{"cancer_record_count_dataset"}: Dataset of cancer record counts computed using nordcanepistats::nordcanstat_count
-\item \code{"prevalent_patient_count_dataset"}: Dataset of prevalent cancer patients counts computed using nordcanepistats::nordcanstat_year_based_prevalent_subject_count
+\item \code{"prevalent_patient_count_dataset"}: Dataset of prevalent cancer patients counts computed using nordcanepistats::nordcanstat_year_based_prevalent_patient_count
 \item \code{"imp_quality_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_imp_quality
 \item \code{"survival_quality_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_survival_quality
 \item \code{"stata_info"}: Info about stata as returned by nordcansurvival::get_stata_info

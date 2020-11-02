@@ -56,6 +56,6 @@ Compute counts of cancer records.
 Other nordcanstat: 
 \code{\link{nordcanstat_imp_quality}()},
 \code{\link{nordcanstat_survival_quality}()},
-\code{\link{nordcanstat_year_based_prevalent_subject_count}()}
+\code{\link{nordcanstat_year_based_prevalent_patient_count}()}
 }
 \concept{nordcanstat}

@@ -30,6 +30,6 @@ Compute basic IMP quality statistics.
 Other nordcanstat: 
 \code{\link{nordcanstat_count}()},
 \code{\link{nordcanstat_survival_quality}()},
-\code{\link{nordcanstat_year_based_prevalent_subject_count}()}
+\code{\link{nordcanstat_year_based_prevalent_patient_count}()}
 }
 \concept{nordcanstat}

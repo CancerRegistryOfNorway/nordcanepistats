@@ -1,7 +1,7 @@
 Package: nordcanepistats
 Type: Package
 Title: NORDCAN Epidemiological Statistics
-Version: 0.5.1
+Version: 0.5.1.1
 Author: Joonas Miettinen
 Maintainer: Joonas Miettinen <joonas.miettinen@cancer.fit>
 Description: Compute epidemiological statistics for NORDCAN.
@@ -23,3 +23,9 @@ RoxygenNote: 7.1.1
 Suggests: 
     testthat
 Roxygen: list(markdown = TRUE)
+Remotes:
+    github::WetRobot/dbc,
+    github::CancerRegistryOfNorway/basicepistats,
+    github::CancerRegistryOfNorway/nordcancore,
+    github::CancerRegistryOfNorway/nordcanpreprocessing,
+    github::CancerRegistryOfNorway/nordcansurvival

@@ -19,7 +19,7 @@
 #' @param subset_style see [basicepistats::stat_year_based_prevalent_subject_count]
 #' @export
 #' @family nordcanstat
-nordcanstat_year_based_prevalent_subject_count <- function(
+nordcanstat_year_based_prevalent_patient_count <- function(
   x,
   by = NULL,
   entities = NULL,
