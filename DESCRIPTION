@@ -1,7 +1,7 @@
 Package: nordcanepistats
 Type: Package
 Title: NORDCAN Epidemiological Statistics
-Version: 0.5.1.4
+Version: 0.5.1.5
 Depends: R (>= 4.0.0)
 Author: Joonas Miettinen
 Maintainer: Joonas Miettinen <joonas.miettinen@cancer.fit>
@@ -15,11 +15,11 @@ Imports:
     skellam,
     stats,
     data.table,
-    dbc,
+    dbc (>= 0.3.5),
     basicepistats,
-    nordcancore,
-    nordcanpreprocessing,
-    nordcansurvival
+    nordcancore (>= 0.5.1),
+    nordcanpreprocessing (>= 0.5.1),
+    nordcansurvival (>= 0.5.1)
 RoxygenNote: 7.1.1
 Suggests: 
     testthat

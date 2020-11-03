@@ -84,10 +84,10 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 #'   set using [nordcancore::set_global_nordcan_settings]
 #' @examples
 #'
-#' \dontrun{
 #' library("data.table")
+#' td <- tempdir()
 #' nordcancore::set_global_nordcan_settings(
-#'   work_dir = ".",
+#'   work_dir = td,
 #'   participant_name = "Norway",
 #'   stat_cancer_record_count_first_year = 1954L,
 #'   stat_prevalent_subject_count_first_year = 1954L,
@@ -102,8 +102,16 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 #'           output2 = data.table::as.data.table(CO2))
 #'
 #'
-#' write_nordcan_statistics_tables_for_archive(x = x)
+#' nordcanepistats::write_nordcan_statistics_tables_for_archive(x = x)
+#'
+#' zip_file_path <- paste0(td, "/nordcan_statistics_tables.zip")
+#' if (file.exists(zip_file_path)) {
+#'   message("wrote zip file to ", deparse(zip_file_path))
+#'   file.remove(zip_file_path)
+#' } else {
+#'   stop("example has failed. please notify authors")
 #' }
+#'
 write_nordcan_statistics_tables_for_archive <- function(x) {
   dbc::assert_user_input_is_uniquely_named_list(x)
   lapply(names(x), function(elem_nm) {
