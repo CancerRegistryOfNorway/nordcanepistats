@@ -25,8 +25,4 @@ Suggests:
     testthat
 Roxygen: list(markdown = TRUE)
 Remotes:
-    github::WetRobot/dbc,
-    github::CancerRegistryOfNorway/basicepistats,
-    github::CancerRegistryOfNorway/nordcancore,
-    github::CancerRegistryOfNorway/nordcanpreprocessing,
-    github::CancerRegistryOfNorway/nordcansurvival
+    github::WetRobot/dbc
