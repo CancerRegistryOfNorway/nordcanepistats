@@ -81,9 +81,9 @@ by the \code{nordcanstat_} family of functions and not by the user.
 entity column-specific modification using \verb{[base::do.call]}.
 
 \code{loop_over_entity_numbers} modifies an element in \code{arg_list} named
-\code{x}, intended to contain the dataset cancer record. \code{x} is subset into
-each entity number separately before calling \code{fun}, i.e.
-\code{arg_list[["x"]] <- x[has_first_entity_no, ]} for the first entity and so on.
+\code{subset}, intended to subset the dataset cancer record. If \code{fun} does not
+have an argument named \code{subset}, the dataset \code{x} is itself subset before
+passing to \code{fun}. This is done separately for each entity number.
 
 \code{loop_over_entity_columns} modifies or creates \code{arg_list[["by"]]} before
 calling \code{fun}. \code{x} is not subset by this function. Therefore
