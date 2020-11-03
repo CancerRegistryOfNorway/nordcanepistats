@@ -103,7 +103,7 @@ subset_and <- function(
 #' entity column-specific modification using `[base::do.call]`.
 #'
 #' `loop_over_entity_numbers` modifies an element in `arg_list` named
-#' `subset`, intended to subset the dataset cancer record. If `fun` does not
+#' `subset`, intended to subset the cancer record dataset. If `fun` does not
 #' have an argument named `subset`, the dataset `x` is itself subset before
 #' passing to `fun`. This is done separately for each entity number.
 #'

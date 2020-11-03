@@ -81,7 +81,7 @@ by the \code{nordcanstat_} family of functions and not by the user.
 entity column-specific modification using \verb{[base::do.call]}.
 
 \code{loop_over_entity_numbers} modifies an element in \code{arg_list} named
-\code{subset}, intended to subset the dataset cancer record. If \code{fun} does not
+\code{subset}, intended to subset the cancer record dataset. If \code{fun} does not
 have an argument named \code{subset}, the dataset \code{x} is itself subset before
 passing to \code{fun}. This is done separately for each entity number.
 
