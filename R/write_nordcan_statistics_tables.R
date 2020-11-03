@@ -3,27 +3,20 @@
 
 
 
+
 write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   ## Check is the x is a list.
-  if (!is.list(x)) {
-    stop("'x' must be a 'list'!")
-  } else {
-
-    class_list <- unlist(lapply(x, class))
-    for (i in 1:length(x)) {
-      if ("character" %in% class_list[i]) {
-        class_list[i] <- "character"
-      } else if ("data.table" %in% class_list[i]) {
-        class_list[i] <- "data.table"
-      }
-    }
-    
-    id <- which(!class_list %in% c("character", "data.table"))
-    if (length(id) > 0) {
-      stop(sprintf("Input of 'x' should be a list of 'character' (for logs) or 'data.table' (for tables) objects.  \n The class(es) ('%s') of *%s* are not belong to  'character' or 'data.table'", class_list[id], names(x)[id]))
-    }
-    
-  }
+  dbc::assert_prod_input_is_uniquely_named_list(x)
+  dbc::assert_prod_input_is_character_nonNA_atom(purpose)
+  dbc::assert_prod_input_atom_is_in_set(purpose, set = c("archive", "sending"))
+  lapply(names(x), function(elem_nm) {
+    dbc::assert_prod_input_is_one_of(
+      x = x[[elem_nm]],
+      x_nm = paste0("x$", elem_nm),
+      funs = list(dbc::assert_is_data.table,
+                  dbc::assert_is_character_nonNA_vector)
+    )
+  })
 
   ## Get global settings of Nordcan
   Global_nordcan_settings <- nordcancore::get_global_nordcan_settings()
@@ -33,40 +26,38 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   temp_dir <- sprintf("%s/%s", work_dir,  nordcancore::random_names()[1])
   dir.create(temp_dir)
 
-  if (dir.exists(temp_dir)) {
-    ## Write elements of x to temporary directory.
-    for (i in 1:length(x)) {
-      cls <- class(x[[i]])
-      if ("character" %in% cls) {
-        if (purpose == "archive") {
-          writeLines(text = x[[i]],
-                     con = sprintf("%s/%s.txt", temp_dir, names(x)[i]))
-        }
-      } else {
-        data.table::fwrite(x = x[[i]],
-                  file = sprintf("%s/%s.csv", temp_dir, names(x)[i]),
-                  sep = ";")
-      }
-    }
-
-    ## zip files
-    wd <- getwd()
-    setwd(temp_dir); on.exit({setwd(wd)})
-    zip_file_path <- sprintf("%s/nordcan_statistics_tables.zip", work_dir)
-    zip::zip(zipfile = zip_file_path,
-               files = list.files(temp_dir, full.names = FALSE))
-    message("* nordcanepistats::write_nordcan_statistics_tables: wrote .zip ",
-           "into \"", zip_file_path, "\"")
-    
-     ## Delete the folder when the function exit;
+  ## Delete the folder when the function exit;
   on.exit({
     if (dir.exists(temp_dir)) {
       unlink(temp_dir, recursive = TRUE)
     }
   }, add = TRUE)
 
-    return(invisible(NULL))
-  }
+  ## Write elements of x to temporary directory.
+  lapply(names(x), function(elem_nm) {
+    elem <- x[[elem_nm]]
+    if (is.character(elem) && purpose == "archive") {
+      writeLines(text = elem,
+                 con = sprintf("%s/%s.txt", temp_dir, elem_nm))
+    } else if (data.table::is.data.table(elem)) {
+      data.table::fwrite(x = elem,
+                         file = sprintf("%s/%s.csv", temp_dir, elem_nm),
+                         sep = ";")
+    }
+  })
+
+  ## zip files
+  wd <- getwd()
+  setwd(temp_dir)
+  on.exit({setwd(wd)}, add = TRUE)
+  zip_file_path <- sprintf("%s/nordcan_statistics_tables.zip", work_dir)
+  zip::zip(zipfile = zip_file_path,
+           files = list.files(temp_dir, full.names = FALSE))
+  message("* nordcanepistats::write_nordcan_statistics_tables: wrote .zip ",
+          "into \"", zip_file_path, "\"")
+
+
+  return(invisible(NULL))
 }
 
 
@@ -101,7 +92,8 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 #'   stat_cancer_record_count_first_year = 1954L,
 #'   stat_prevalent_subject_count_first_year = 1954L,
 #'   stat_cancer_death_count_first_year = 1954L,
-#'   stat_survival_follow_up_first_year = 1954L
+#'   stat_survival_follow_up_first_year = 1954L,
+#'   regional_data_first_year = 1953L
 #' )
 #'
 #'
@@ -113,6 +105,16 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 #' write_nordcan_statistics_tables_for_archive(x = x)
 #' }
 write_nordcan_statistics_tables_for_archive <- function(x) {
+  dbc::assert_user_input_is_uniquely_named_list(x)
+  lapply(names(x), function(elem_nm) {
+    dbc::assert_user_input_is_one_of(
+      x = x[[elem_nm]],
+      x_nm = paste0("x$", elem_nm),
+      funs = list(dbc::assert_is_data.table,
+                  dbc::assert_is_character_nonNA_vector)
+    )
+  })
+
   write_nordcan_statistics_tables(x = x, purpose = "archive")
 }
 
@@ -149,6 +151,16 @@ write_nordcan_statistics_tables_for_archive <- function(x) {
 write_nordcan_statistics_tables_for_sending <- function(
   x
 ) {
+  dbc::assert_user_input_is_uniquely_named_list(x)
+  lapply(names(x), function(elem_nm) {
+    dbc::assert_user_input_is_one_of(
+      x = x[[elem_nm]],
+      x_nm = paste0("x$", elem_nm),
+      funs = list(dbc::assert_is_data.table,
+                  dbc::assert_is_character_nonNA_vector)
+    )
+  })
+
   write_nordcan_statistics_tables(x = x, purpose = "sending")
 }
 

@@ -58,7 +58,8 @@ nordcancore::set_global_nordcan_settings(
   stat_cancer_record_count_first_year = 1954L,
   stat_prevalent_subject_count_first_year = 1954L,
   stat_cancer_death_count_first_year = 1954L,
-  stat_survival_follow_up_first_year = 1954L
+  stat_survival_follow_up_first_year = 1954L,
+  regional_data_first_year = 1953L
 )
 
 
