@@ -29,7 +29,7 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   ## Delete the folder when the function exit;
   on.exit({
     if (dir.exists(temp_dir)) {
-      unlink(temp_dir, recursive = TRUE)
+      unlink(temp_dir, recursive = TRUE, force = TRUE)
     }
   }, add = TRUE)
 
@@ -197,9 +197,10 @@ read_nordcan_statistics_tables <- function(
   dbc::assert_user_input_file_exists(zip_file_path)
   stopifnot(grepl("\\.zip$", zip_file_path))
 
-  r <- nordcancore::random_names(n_random_names = 1L)
+  r <- nordcancore::random_names(n_random_names = 1L,
+                                 exclude_names = dir("."))
   d <- dir.create(r, recursive = TRUE)
-  on.exit(unlink(r, recursive = TRUE))
+  on.exit(unlink(r, recursive = TRUE, force = TRUE))
 
   zip::unzip(zipfile = zip_file_path, exdir = r)
 
