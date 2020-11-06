@@ -29,41 +29,6 @@
 #'   **Value** and
 #'   `nordcan_statistics_tables_output_object_space()` for all options
 #'
-#' @details
-#' You need to form `cancer_death_count_dataset` yourself using the raw data
-#' you have using one of two methods.
-#' If you have a dataset of cancer death counts as described in the call for
-#' data, do
-#'
-#' ```
-#' cdcd <- nordcanpreprocessing::nordcan_processed_cancer_death_count_dataset(
-#'   my_raw_cdcd
-#' )
-#' ```
-#'
-#' where `my_raw_cdcd` is your dataset of cancer death counts as per the call
-#' for data.
-#'
-#' If you want to compute the counts using your cancer record dataset, do
-#'
-#' ```
-#' cdcd <- nordcanepistats::nordcanstat_count(
-#'   processed_cancer_record_dataset,
-#'   by = c("sex", "entity", "yoi", "region", "agegroup"),
-#'   subset = died_from_cancer == TRUE
-#' )
-#' data.table::setnames(cdcd,
-#'                      c("N", "yoi"), c("cancer_death_count", "year"))
-#' ```
-#'
-#' where `processed_cancer_record_dataset` is your cancer record dataset after
-#' processing
-#' (see [nordcanpreprocessing::nordcan_processed_cancer_record_dataset]),
-#' and in this example the information on who died of which cancer is identified
-#' in the logical vector `died_from_cancer`, which you need to define. It should
-#' be of length `nrow(processed_cancer_record_dataset)`. One person can
-#' naturally only die once, so there can be at most one `TRUE` value per person.
-#'
 #' @eval nordcan_statistics_tables_output_objects_options()
 #'
 #' @examples

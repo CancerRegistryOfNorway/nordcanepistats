@@ -66,34 +66,6 @@ unless argument \code{output_objects} is used to limit the output elements.
 Compute all necessary statistics for NORDCAN into a single list of tables.
 }
 \details{
-You need to form \code{cancer_death_count_dataset} yourself using the raw data
-you have using one of two methods.
-If you have a dataset of cancer death counts as described in the call for
-data, do\preformatted{cdcd <- nordcanpreprocessing::nordcan_processed_cancer_death_count_dataset(
-  my_raw_cdcd
-)
-}
-
-where \code{my_raw_cdcd} is your dataset of cancer death counts as per the call
-for data.
-
-If you want to compute the counts using your cancer record dataset, do\preformatted{cdcd <- nordcanepistats::nordcanstat_count(
-  processed_cancer_record_dataset,
-  by = c("sex", "entity", "yoi", "region", "agegroup"),
-  subset = died_from_cancer == TRUE
-)
-data.table::setnames(cdcd,
-                     c("N", "yoi"), c("cancer_death_count", "year"))
-}
-
-where \code{processed_cancer_record_dataset} is your cancer record dataset after
-processing
-(see \link[nordcanpreprocessing:nordcan_processed_cancer_record_dataset]{nordcanpreprocessing::nordcan_processed_cancer_record_dataset}),
-and in this example the information on who died of which cancer is identified
-in the logical vector \code{died_from_cancer}, which you need to define. It should
-be of length \code{nrow(processed_cancer_record_dataset)}. One person can
-naturally only die once, so there can be at most one \code{TRUE} value per person.
-
 \code{nordcan_statistics_tables_output_object_space} simply returns a character
 vector of possible names of the list output by \code{nordcan_statistics_tables}
 }
