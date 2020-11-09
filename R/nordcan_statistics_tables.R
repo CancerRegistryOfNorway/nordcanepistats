@@ -217,14 +217,17 @@ nordcan_statistics_tables <- function(
         lifetable <- paste0(system.file(package = "nordcansurvival"),
                             "/stata/demo/NO_2018_lifetable.dta")
         nordcansurvival::survival_statistics(
-          cancer_record_dataset_path  = infile ,
+          cancer_record_dataset_path = infile ,
           national_population_life_table_path = lifetable,
           stata_exe_path = stata_exe_path
         )
       },
       error = function(e) e
     )
-    ss_output_path <- "survival/survival_statistics_output.csv"
+    ss_output_path <- paste0(
+      "survival/NCS_NO_anonymous_example_data_result_dir/",
+      "NCS_NO_anonymous_example_data_result.csv"
+    )
     if (!inherits(ss_output, "error") && file.exists(ss_output_path)) {
       ss_output <- data.table::fread(ss_output_path)
     }
