@@ -40,46 +40,6 @@ nordcanstat_settings <- function(function_name) {
 
 
 
-subset_and <- function(
-  subset1,
-  subset2
-) {
-  dbc::assert_prod_input_is_one_of(
-    x = subset1,
-    funs = c("report_is_NULL", "report_is_logical", "report_is_integer")
-  )
-  dbc::assert_prod_input_is_one_of(
-    x = subset2,
-    funs = c("report_is_NULL", "report_is_logical", "report_is_integer")
-  )
-  if (is.null(subset1) && is.null(subset2)) {
-    return(NULL)
-  }
-  if (is.null(subset1)) {
-    return(subset2)
-  }
-  if (is.null(subset2)) {
-    return(subset1)
-  }
-  if (is.logical(subset1) && is.logical(subset2)) {
-    return(subset1 & subset2)
-  } else if (is.integer(subset1) && is.integer(subset2)) {
-    return(intersect(subset1, subset2))
-  } else {
-    sl <- list(subset1, subset2)
-    sl <- lapply(sl, function(s) {
-      if (is.logical(s)) {
-        which(s)
-      } else {
-        s
-      }
-    })
-    subset1 <- sl[[1L]]
-    subset2 <- sl[[2L]]
-    return(intersect(subset1, subset2))
-  }
-}
-
 #' @title Stratification by Entity
 #' @description
 #' Compute statistics by entity number.
@@ -152,7 +112,9 @@ loop_over_entity_numbers <- function(
   results_by_entity <- lapply(entities, function(entity_no) {
     is_entity <- nordcancore::in_entity_set(x = x, entities = entity_no)
     if ("subset" %in% names(formals(fun))) {
-      arg_list[["subset"]] <- subset_and(arg_list[["subset"]], is_entity)
+      arg_list[["subset"]] <- nordcancore::subset_and(
+        arg_list[["subset"]], is_entity
+      )
     } else {
       arg_list[["x"]] <- x[is_entity, ]
     }

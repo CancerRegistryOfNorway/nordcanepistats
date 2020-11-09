@@ -50,7 +50,7 @@ nordcanstat_imp_quality <- function(
   )
 
   lapply(names(subsets), function(new_col_nm) {
-    subset <- subset_and(subset, subsets[[new_col_nm]])
+    subset <- nordcancore::subset_and(subset, subsets[[new_col_nm]])
     count_dt_new_col <- nordcanstat_count(
       x = x,
       by = by,
