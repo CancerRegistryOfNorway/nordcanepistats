@@ -1,6 +1,13 @@
 
 
 
+nordcanstat_metadata_statistics_tables_names <- function() {
+  data.table::setDT(data.table::copy(
+    nordcancore::get_internal_dataset("statistics_tables_names", "nordcanepistats")
+  ))[]
+}
+
+
 
 
 nordcanstat_settings <- function(function_name) {
@@ -438,6 +445,13 @@ remove_regional_counts_before_start_year <- function(dt, year_col_nm) {
   }
   return(dt[])
 }
+
+
+
+
+
+
+
 
 
 
