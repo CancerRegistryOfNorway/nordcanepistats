@@ -203,7 +203,7 @@ compare_tables <- function(
 
 compare_imp_quality_statistics_tables <- function(
   new, old, prop_col_nms, count_col_nm
-  ) {
+) {
   dt <- data.table::rbindlist(lapply(prop_col_nms, function(prop_col_nm) {
     compare_proportion_tables(
       new = new, old = old, prop_col_nm = prop_col_nm
@@ -381,107 +381,106 @@ compare_rates <- function(
 
 
 
+#' @describeIn compare_nordcan_statistics_table_lists plots time series of
+#' comparison results (`compare_nordcan_statistics_table_lists` output);
+#' see Details
+#' @details
+#'
+#' `plot_nordcan_statistics_table_comparisons` produces .png files into dir
+#' `nordcancore::get_global_nordcan_settings()[["work_dir"]]`. Each file is a
+#' grid of entity-specific plots. One .png corresponds to one dataset taken from
+#' `x$comparisons`. Only the following datasets are plotted:
+#'
+#' - cancer_record_count_dataset: column `sex` is summed out before plotting.
+#' - cancer_death_count_dataset: column `sex` is summed out before plotting.
+#' - prevalent_patient_count_dataset column `sex` is summed out before plotting,
+#'   and only `full_years_since == "0 - 999` data is used.
+#'
+#' @export
+#' @param x `[list]` (mandatory, no default)
+#'
+#' the output of `compare_nordcan_statistics_table_lists`
+plot_nordcan_statistics_table_comparisons <- function(x) {
+  dbc::assert_user_input_is_list(x)
+  dbc::assert_user_input_has_names(x, required_names = c("comparisons"))
 
-plot_nordcan_statistics_table_comparions <- function(x){
+  x <- x$comparisons
+  participant_info <- nordcancore::nordcan_metadata_participant_info()
+  topregion_number <- participant_info$topregion_number
+  dataset_names <- c("cancer_death_count_dataset",
+                     "cancer_record_count_dataset",
+                     "prevalent_patient_count_dataset")
 
-x <- x$comparisons
+  stratum_col_nm_set <- nordcancore::nordcan_metadata_column_name_set(
+    "column_name_set_stratum_column_name_set"
+  )
+  lapply(dataset_names, function(dataset_name) {
+    dt <- x[[dataset_name]]
+    subset <- dt[["region"]] == topregion_number
+    is_prev <- dataset_name == "prevalent_patient_count_dataset"
+    if (is_prev && "full_years_since_entry" %in% names(dt)) {
+      subset <- subset & dt[["full_years_since_entry"]] == "0 - 999"
+    }
+    dt_stratum_col_nms <- intersect(
+      names(dt),
+      stratum_col_nm_set
+    )
+    dt_stratum_col_nms <- setdiff(
+      dt_stratum_col_nms,
+      c("new", "old", "stat_type", "stat_value",
+        "p_value", "column_name", "p_value_bh")
+    )
+    dt_stratum_col_nms <- setdiff(dt_stratum_col_nms, "sex")
 
-xx <- lapply(
-        1:length(x), 
-        function(i) 
-          subset(
-          x[[i]], 
-          x[[i]]$region == nordcancore::nordcan_metadata_participant_info()$topregion_number
-           )
-         )
-names(xx) <- names(x)
-x <- xx
+    dt <- dt[
+      i = subset,
+      j = lapply(.SD, sum),
+      .SDcols = "stat_value",
+      keyby = eval(dt_stratum_col_nms)
+      ]
 
-library(data.table)
-strata_col <- lapply(
-                   1:length(x), 
-                   function(i) 
-                    setdiff(
-                    names(x[[i]]), 
-                    c("new", "old", "stat_type", "stat_value", "p_value", "column_name", "p_value_bh")
-                    )
-                  )
-xx <- lapply(
-        1:length(x), ¨
-        function(i) 
-         x[[i]][, .(stat_value = sum(stat_value)), by = setdiff(strata_col[[i]], "sex")]
-         )
-names(xx) <- names(x)
-x <- xx
+    png_file_path <- paste0(
+      nordcancore::get_global_nordcan_settings()[["work_dir"]], "/",
+      dataset_name, ".png"
+    )
+    png_file_path <- normalizePath(png_file_path, mustWork = FALSE)
+    grDevices::png(
+      png_file_path,
+      width = 1400, height = 1000, units="px"
+    )
+    entity_no_set <- sort(unique(dt$entity))
+    entity_no_set_size <- length(entity_no_set)
 
-png(
-paste(names(x["cancer_death_count_dataset"]), ".png", sep = ""), 
-width=1400, height=1000, units="px"
-)
-s <- sort(unique(x$cancer_death_count_dataset$entity))
-par(mar=rep(2.2,4))
-par(mfrow = rep(ceiling(sqrt(length(s))),2))
-for(i in s){
-data <- subset(x$cancer_death_count_dataset, entity == i)
-plot(
-data$year, 
-data$stat_value, 
-main = paste(c("Entity number: ", i), 
-collapse = "")
-)
-}
-dev.off()
+    old_mar <- graphics::par("mar")
+    old_mfrow <- graphics::par("mfrow")
+    on.exit({
+      grDevices::dev.off()
+      graphics::par(mar = old_mar, mfrow = old_mfrow)
+    })
+    graphics::par(mar=rep(2.2,4))
+    graphics::par(mfrow = rep(ceiling(sqrt(entity_no_set_size)), 2L))
+    lapply(entity_no_set, function(entity_no) {
+      entity_subset <- dt$entity == entity_no
+      entity_dt <- dt[entity_subset, ]
+      x_col_nm <- intersect(names(dt), c("year", "observation_year", "yoi"))[1L]
+      plot(
+        x = entity_dt[[x_col_nm]],
+        y = entity_dt[["stat_value"]],
+        main = paste0("Entity number: ", entity_no),
+        xlab = x_col_nm,
+        ylab = "stat_value"
+      )
+    })
+    message(
+      "* nordcanepistats::plot_nordcan_statistics_table_comparisons: ",
+      "saved plot grid of comparisons by entity for ",
+      dataset_name,
+      " to ",
+      png_file_path
+    )
+  })
 
-png(
-paste(names(x["cancer_record_count_dataset"]), ".png", sep = ""), 
-width=1400, height=1000, units="px"
-)
-s <- sort(unique(x$cancer_record_count_dataset$entity))
-par(mar=rep(2.2,4))
-par(mfrow = rep(ceiling(sqrt(length(s))),2))
-for(i in s){
-data <- subset(x$cancer_record_count_dataset, entity == i)
-plot(
-data$yoi, 
-data$stat_value, 
-main = paste(c("Entity number: ", i), collapse = "")
-)
-}
-dev.off()
-
-png(
-paste(names(x["prevalent_patient_count_dataset"]), ".png", sep = ""), 
-width=1400, height=1000, units="px"
-)
-s <- sort(unique(x$prevalent_patient_count_dataset$entity))
-par(mar=rep(2.2,4))
-par(mfrow = rep(ceiling(sqrt(length(s))),2))
-for(i in s){
-data <- subset(
-           x$prevalent_patient_count_dataset, entity == i & 
-           full_years_since_entry == "0 - 999"
-           )
-plot(
-data$observation_year, 
-data$stat_value, 
-main = paste(c("Entity number: ", i), collapse = "")
-)
-}
-dev.off()
-
-lapply(
-1:length(x), 
-function(i) 
- message(
- "* nordcanepistats::plot_nordcan_statistics_table_comparisons: ", 
- "saved plot grid of comparisons by entity for ", 
-  names(x)[i], 
- " to ", 
-  paste(getwd(),"/",names(x)[i],".png", sep = "")
-   )
-)
-
-return(invisible(NULL))
+  return(invisible(NULL))
 
 }
 

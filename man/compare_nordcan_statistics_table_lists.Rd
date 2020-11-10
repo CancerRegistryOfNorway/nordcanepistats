@@ -2,12 +2,15 @@
 % Please edit documentation in R/compare_statistics_tables.R
 \name{compare_nordcan_statistics_table_lists}
 \alias{compare_nordcan_statistics_table_lists}
+\alias{plot_nordcan_statistics_table_comparisons}
 \title{Compare NORDCAN Statistics}
 \usage{
 compare_nordcan_statistics_table_lists(
   current_stat_table_list,
   old_stat_table_list
 )
+
+plot_nordcan_statistics_table_comparisons(x)
 }
 \arguments{
 \item{current_stat_table_list}{\verb{[list]} (mandatory, no default)
@@ -19,6 +22,10 @@ list of statistics tables; current version; intended for the output of
 
 list of statistics tables; current version; intended for the output of
 \link{nordcan_statistics_tables} from a previous run}
+
+\item{x}{\verb{[list]} (mandatory, no default)
+
+the output of \code{compare_nordcan_statistics_table_lists}}
 }
 \value{
 A list with elements
@@ -45,4 +52,22 @@ Comparisons are only performed on statistics in strata which exist in both
 the old and current versions. E.g. if the old version contains counts
 up to 2018 and the current one up to 2019, no comparisons are done on 2019
 counts.
+
+\code{plot_nordcan_statistics_table_comparisons} produces .png files into dir
+\code{nordcancore::get_global_nordcan_settings()[["work_dir"]]}. Each file is a
+grid of entity-specific plots. One .png corresponds to one dataset taken from
+\code{x$comparisons}. Only the following datasets are plotted:
+\itemize{
+\item cancer_record_count_dataset: column \code{sex} is summed out before plotting.
+\item cancer_death_count_dataset: column \code{sex} is summed out before plotting.
+\item prevalent_patient_count_dataset column \code{sex} is summed out before plotting,
+and only \verb{full_years_since == "0 - 999} data is used.
 }
+}
+\section{Functions}{
+\itemize{
+\item \code{plot_nordcan_statistics_table_comparisons}: plots time series of
+comparison results (\code{compare_nordcan_statistics_table_lists} output);
+see Details
+}}
+
