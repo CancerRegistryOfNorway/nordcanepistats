@@ -381,3 +381,110 @@ compare_rates <- function(
 
 
 
+
+plot_nordcan_statistics_table_comparions <- function(x){
+
+x <- x$comparisons
+
+xx <- lapply(
+        1:length(x), 
+        function(i) 
+          subset(
+          x[[i]], 
+          x[[i]]$region == nordcancore::nordcan_metadata_participant_info()$topregion_number
+           )
+         )
+names(xx) <- names(x)
+x <- xx
+
+library(data.table)
+strata_col <- lapply(
+                   1:length(x), 
+                   function(i) 
+                    setdiff(
+                    names(x[[i]]), 
+                    c("new", "old", "stat_type", "stat_value", "p_value", "column_name", "p_value_bh")
+                    )
+                  )
+xx <- lapply(
+        1:length(x), ¨
+        function(i) 
+         x[[i]][, .(stat_value = sum(stat_value)), by = setdiff(strata_col[[i]], "sex")]
+         )
+names(xx) <- names(x)
+x <- xx
+
+png(
+paste(names(x["cancer_death_count_dataset"]), ".png", sep = ""), 
+width=1400, height=1000, units="px"
+)
+s <- sort(unique(x$cancer_death_count_dataset$entity))
+par(mar=rep(2.2,4))
+par(mfrow = rep(ceiling(sqrt(length(s))),2))
+for(i in s){
+data <- subset(x$cancer_death_count_dataset, entity == i)
+plot(
+data$year, 
+data$stat_value, 
+main = paste(c("Entity number: ", i), 
+collapse = "")
+)
+}
+dev.off()
+
+png(
+paste(names(x["cancer_record_count_dataset"]), ".png", sep = ""), 
+width=1400, height=1000, units="px"
+)
+s <- sort(unique(x$cancer_record_count_dataset$entity))
+par(mar=rep(2.2,4))
+par(mfrow = rep(ceiling(sqrt(length(s))),2))
+for(i in s){
+data <- subset(x$cancer_record_count_dataset, entity == i)
+plot(
+data$yoi, 
+data$stat_value, 
+main = paste(c("Entity number: ", i), collapse = "")
+)
+}
+dev.off()
+
+png(
+paste(names(x["prevalent_patient_count_dataset"]), ".png", sep = ""), 
+width=1400, height=1000, units="px"
+)
+s <- sort(unique(x$prevalent_patient_count_dataset$entity))
+par(mar=rep(2.2,4))
+par(mfrow = rep(ceiling(sqrt(length(s))),2))
+for(i in s){
+data <- subset(
+           x$prevalent_patient_count_dataset, entity == i & 
+           full_years_since_entry == "0 - 999"
+           )
+plot(
+data$observation_year, 
+data$stat_value, 
+main = paste(c("Entity number: ", i), collapse = "")
+)
+}
+dev.off()
+
+lapply(
+1:length(x), 
+function(i) 
+ message(
+ "* nordcanepistats::plot_nordcan_statistics_table_comparisons: ", 
+ "saved plot grid of comparisons by entity for ", 
+  names(x)[i], 
+ " to ", 
+  paste(getwd(),"/",names(x)[i],".png", sep = "")
+   )
+)
+
+return(invisible(NULL))
+
+}
+
+
+
+
