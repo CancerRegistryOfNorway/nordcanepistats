@@ -247,6 +247,46 @@ read_nordcan_statistics_tables <- function(
 
 
 
+write_maintainer_summary_zip <- function(x) {
+
+  ## x is a list which is the output of nordcanepistats::compare_nordcan_statistics_table_lists
+  ## list(summary = summary, comparisons = comparisons)
+  report_df <- dbc::tests_to_report(
+    tests = "is.list(x) & names(x) == c('summary', 'comparisons')",
+    fail_messages = "x is not a list contaning 'summary' & 'comparisons'!",
+    pass_messages = "x is the output of 'nordcanepistats::compare_nordcan_statistics_table_lists'"
+  )
+  dbc::report_to_assertion(report_df)
+
+  ## Get global settings of Nordcan
+  Global_nordcan_settings <- nordcancore::get_global_nordcan_settings()
+  ## Get work directory
+  work_dir <- Global_nordcan_settings$work_dir
+
+  ## Write summary to 'comparison_summary.csv';
+  data.table::fwrite(x = x$summary,
+                     file = sprintf("%s/comparison_summary.csv", work_dir),
+                     sep = ";")
+
+  ## png files
+  nordcanepistats::plot_nordcan_statistics_table_comparisons(x)
+
+  files_list <- paste0(work_dir, "/", c("comparison_summary.csv",
+                                        "cancer_death_count_dataset.png",
+                                        "cancer_record_count_dataset.png",
+                                        "prevalent_patient_count_dataset.png"))
+
+
+  zip_file_path <- sprintf("%s/maintainer_summary.zip", work_dir)
+  zip::zip(zipfile = zip_file_path, files = files_list)
+
+
+  message("* nordcanepistats::write_maintainer_summary_zip: ",
+          "write zip to  ", zip_file_path)
+
+  return(invisible(NULL))
+}
+
 
 
 
