@@ -56,9 +56,7 @@ nordcancore::set_global_nordcan_settings(
   work_dir = td,
   participant_name = "Norway",
   stat_cancer_record_count_first_year = 1954L,
-  stat_prevalent_subject_count_first_year = 1954L,
   stat_cancer_death_count_first_year = 1954L,
-  stat_survival_follow_up_first_year = 1954L,
   regional_data_first_year = 1953L
 )
 
@@ -84,9 +82,7 @@ nordcancore::set_global_nordcan_settings(
   work_dir = ".",
   participant_name = "Norway",
   stat_cancer_record_count_first_year = 1954L,
-  stat_prevalent_subject_count_first_year = 1954L,
-  stat_cancer_death_count_first_year = 1954L,
-  stat_survival_follow_up_first_year = 1954L
+  stat_cancer_death_count_first_year = 1954L
 )
 
 # log1 and log2 are NOT saved
