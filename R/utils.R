@@ -1,6 +1,8 @@
 
 
-
+#' @rdname entity_strata
+#' @export
+#'
 nordcanstat_metadata_statistics_tables_names <- function() {
   data.table::setDT(data.table::copy(
     nordcancore::get_internal_dataset("statistics_tables_names", "nordcanepistats")

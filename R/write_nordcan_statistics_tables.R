@@ -33,6 +33,8 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
     }
   }, add = TRUE)
 
+
+  object_csv_table_names <- nordcanepistats::nordcanstat_metadata_statistics_tables_names()
   ## Write elements of x to temporary directory.
   lapply(names(x), function(elem_nm) {
     elem <- x[[elem_nm]]
@@ -40,9 +42,20 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
       writeLines(text = elem,
                  con = sprintf("%s/%s.txt", temp_dir, elem_nm))
     } else if (data.table::is.data.table(elem)) {
-      data.table::fwrite(x = elem,
-                         file = sprintf("%s/%s.csv", temp_dir, elem_nm),
-                         sep = ";")
+      id <- which(object_csv_table_names$object_name == elem_nm)
+      if (length(id) > 0) {
+        elem_nm_csv <- object_csv_table_names$csv_file_name[id]
+        data.table::fwrite(x = elem,
+                           file = sprintf("%s/%s", temp_dir, elem_nm_csv),
+                           sep = ";")
+      } else {
+        report_df <- dbc::tests_to_report(
+          tests = "elem_nm %in% object_csv_table_names$object_name",
+          fail_messages = sprintf("The name of Object '%s' is not valid!", elem_nm),
+          pass_messages = sprintf("The name of Object '%s' is valid!", elem_nm)
+        )
+        dbc::report_to_assertion(report_df)
+      }
     }
   })
 
@@ -84,13 +97,16 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 #'   set using [nordcancore::set_global_nordcan_settings]
 #' @examples
 #'
+#' \dontrun{
 #' library("data.table")
 #' td <- tempdir()
 #' nordcancore::set_global_nordcan_settings(
 #'   work_dir = td,
 #'   participant_name = "Norway",
 #'   stat_cancer_record_count_first_year = 1954L,
+#'   stat_prevalent_subject_count_first_year = 1953L,
 #'   stat_cancer_death_count_first_year = 1954L,
+#'   stat_survival_follow_up_first_year = 1954L,
 #'   regional_data_first_year = 1953L
 #' )
 #'
@@ -108,6 +124,8 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 #'   file.remove(zip_file_path)
 #' } else {
 #'   stop("example has failed. please notify authors")
+#' }
+#'
 #' }
 #'
 write_nordcan_statistics_tables_for_archive <- function(x) {
@@ -211,7 +229,18 @@ read_nordcan_statistics_tables <- function(
     )
   })
   file_names <- dir(r, pattern = file_ext_re, full.names = FALSE)
-  names(output) <- sub(file_ext_re, "", file_names)
+  object_csv_table_names <- nordcanepistats::nordcanstat_metadata_statistics_tables_names()
+
+  for (i in 1:length(file_names)) {
+    id <- which(object_csv_table_names$csv_file_name == file_names[i])
+    if (length(id) > 0) {
+      file_names[i] <- object_csv_table_names$object_name[id]
+    } else {
+      file_names[i] <- sub("\\.((csv)|(txt))$", "", file_names[i])
+    }
+  }
+
+  names(output) <- file_names
 
   return(output)
 }

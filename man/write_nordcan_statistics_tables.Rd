@@ -50,13 +50,16 @@ contained
 }
 \examples{
 
+\dontrun{
 library("data.table")
 td <- tempdir()
 nordcancore::set_global_nordcan_settings(
   work_dir = td,
   participant_name = "Norway",
   stat_cancer_record_count_first_year = 1954L,
+  stat_prevalent_subject_count_first_year = 1953L,
   stat_cancer_death_count_first_year = 1954L,
+  stat_survival_follow_up_first_year = 1954L,
   regional_data_first_year = 1953L
 )
 
@@ -74,6 +77,8 @@ if (file.exists(zip_file_path)) {
   file.remove(zip_file_path)
 } else {
   stop("example has failed. please notify authors")
+}
+
 }
 
 \dontrun{
