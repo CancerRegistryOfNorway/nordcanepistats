@@ -133,7 +133,7 @@ nordcan_statistics_tables <- function(
       expr = nordcanstat_year_based_prevalent_patient_count(
         x = cancer_record_dataset,
         by = c("sex", "region", "agegroup", "entity"),
-        subset = cancer_record_dataset[["excl_imp_entitymissing"]] == 0L
+        subset = cancer_record_dataset[["excl_imp_total"]] == 0L
       ),
       error = function(e) e
     )
