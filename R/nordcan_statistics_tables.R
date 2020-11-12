@@ -235,12 +235,13 @@ nordcan_statistics_tables <- function(
     message("* nordcanepistats::nordcan_statistics_tables: done.")
   }
 
-  if ("survival_statistics_dataset" %in% output_objects) {
+  surv_ds_nms <- paste0("survival_statistics_period_", c(5, 10), "_dataset")
+  if (any(surv_ds_nms %in% output_objects)) {
     message("* nordcanepistats::nordcan_statistics_tables: started computing ",
             "survival_statistics_dataset at ",
             as.character(Sys.time()), "...")
     t <- proc.time()
-    output[["survival_statistics_dataset"]] <- tryCatch(
+    surv_output <- tryCatch(
       expr = nordcansurvival::nordcanstat_survival(
         cancer_record_dataset = cancer_record_dataset,
         national_population_life_table = national_population_life_table,
@@ -248,6 +249,11 @@ nordcan_statistics_tables <- function(
       ),
       error = function(e) e
     )
+    if (inherits(surv_output, c("error", "try-error"))) {
+      surv_output <- list(surv_output, surv_output)
+      names(surv_output) <- surv_ds_nms
+    }
+    output[surv_ds_nms] <- surv_output
     message("* nordcanepistats::nordcan_statistics_tables: done computing ",
             "survival_statistics_dataset; ",
             data.table::timetaken(t))
@@ -305,8 +311,13 @@ nordcan_statistics_tables_output_object_space_summaries <- function() {
       "Results from nordcansurvival::survival_statistics using an example ",
       "dataset stored into the nordcansurvival package"
     ),
-    "survival_statistics_dataset" = c(
-      "Results from nordcansurvival::nordcanstat_survival using your datasets"
+    "survival_statistics_period_5_dataset" = paste0(
+      "Results from nordcansurvival::nordcanstat_survival using your datasets;",
+      " 5-year periods"
+    ),
+    "survival_statistics_period_10_dataset" = paste0(
+      "Results from nordcansurvival::nordcanstat_survival using your datasets;",
+      " 10-year periods"
     )
   )
 }

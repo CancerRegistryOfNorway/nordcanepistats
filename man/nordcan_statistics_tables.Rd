@@ -57,7 +57,8 @@ The output is a list with elements:
 \item \code{"survival_quality_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_survival_quality
 \item \code{"stata_info"}: Info about stata as returned by nordcansurvival::get_stata_info
 \item \code{"survival_statistics_example"}: Results from nordcansurvival::survival_statistics using an example dataset stored into the nordcansurvival package
-\item \code{"survival_statistics_dataset"}: Results from nordcansurvival::nordcanstat_survival using your datasets
+\item \code{"survival_statistics_period_5_dataset"}: Results from nordcansurvival::nordcanstat_survival using your datasets; 5-year periods
+\item \code{"survival_statistics_period_10_dataset"}: Results from nordcansurvival::nordcanstat_survival using your datasets; 10-year periods
 }
 
 unless argument \code{output_objects} is used to limit the output elements.
