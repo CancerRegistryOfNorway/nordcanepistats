@@ -256,12 +256,10 @@ write_maintainer_summary_zip <- function(x) {
 
   ## x is a list which is the output of nordcanepistats::compare_nordcan_statistics_table_lists
   ## list(summary = summary, comparisons = comparisons)
-  report_df <- dbc::tests_to_report(
-    tests = "is.list(x) & names(x) == c('summary', 'comparisons')",
-    fail_messages = "x is not a list contaning 'summary' & 'comparisons'!",
-    pass_messages = "x is the output of 'nordcanepistats::compare_nordcan_statistics_table_lists'"
+  dbc::assert_user_input_is_list(x)
+  dbc::assert_user_input_has_names(
+    x, required_names = c("summary", "comparisons")
   )
-  dbc::report_to_assertion(report_df)
 
   ## Get global settings of Nordcan
   Global_nordcan_settings <- nordcancore::get_global_nordcan_settings()
@@ -276,18 +274,29 @@ write_maintainer_summary_zip <- function(x) {
   ## png files
   nordcanepistats::plot_nordcan_statistics_table_comparisons(x)
 
-  files_list <- paste0(work_dir, "/", c("comparison_summary.csv",
-                                        "cancer_death_count_dataset.png",
-                                        "cancer_record_count_dataset.png",
-                                        "prevalent_patient_count_dataset.png"))
+  log_file_name <- "session_info.txt"
+  log_file_path <- paste0(work_dir, "/", log_file_name)
+  writeLines(session_info(), log_file_path)
 
+  files_list <- c(
+    log_file_name,
+    "comparison_summary.csv",
+    "cancer_death_count_dataset.png",
+    "cancer_record_count_dataset.png",
+    "prevalent_patient_count_dataset.png"
+  )
 
-  zip_file_path <- sprintf("%s/maintainer_summary.zip", work_dir)
+  dbc::assert_prod_interim_file_exists(files_list)
+
+  nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
+  zip_file_path <- paste0(
+    work_dir, "/nordcan_", nordcan_version, "_maintainer_summary.zip"
+  )
+  zip_file_path <- normalizePath(zip_file_path, mustWork = FALSE)
   zip::zip(zipfile = zip_file_path, files = files_list)
 
-
   message("* nordcanepistats::write_maintainer_summary_zip: ",
-          "write zip to  ", zip_file_path)
+          "wrote zip to  ", zip_file_path)
 
   return(invisible(NULL))
 }
