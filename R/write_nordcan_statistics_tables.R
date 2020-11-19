@@ -46,7 +46,7 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
       if (length(id) > 0) {
         elem_nm_csv <- object_csv_table_names$csv_file_name[id]
       } else {
-        elem_nm_csv <- paste0(elem, ".csv")
+        elem_nm_csv <- paste0(elem_nm, ".csv")
       }
       data.table::fwrite(x = elem,
                          file = sprintf("%s/%s", temp_dir, elem_nm_csv),
