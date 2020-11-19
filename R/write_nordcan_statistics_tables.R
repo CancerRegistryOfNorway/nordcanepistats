@@ -25,14 +25,14 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   ## Create temporary directory for storing the output of nordcan_statistics_tables;
   temp_dir <- sprintf("%s/%s", work_dir,  nordcancore::random_names()[1])
   dir.create(temp_dir)
-
+  wd <- getwd()
   ## Delete the folder when the function exit;
   on.exit({
+    setwd(wd)
     if (dir.exists(temp_dir)) {
       unlink(temp_dir, recursive = TRUE, force = TRUE)
     }
-  }, add = TRUE)
-
+  })
 
   object_csv_table_names <- nordcanepistats::nordcanstat_metadata_statistics_tables_names()
   ## Write elements of x to temporary directory.
@@ -55,15 +55,12 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   })
 
   ## zip files
-  wd <- getwd()
   setwd(temp_dir)
-  on.exit({setwd(wd)}, add = TRUE)
   zip_file_path <- sprintf("%s/nordcan_statistics_tables.zip", work_dir)
   zip::zip(zipfile = zip_file_path,
            files = list.files(temp_dir, full.names = FALSE))
   message("* nordcanepistats::write_nordcan_statistics_tables: wrote .zip ",
           "into \"", zip_file_path, "\"")
-
 
   return(invisible(NULL))
 }
