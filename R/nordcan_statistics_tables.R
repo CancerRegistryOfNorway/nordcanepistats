@@ -219,13 +219,18 @@ nordcan_statistics_tables <- function(
         nordcansurvival::survival_statistics(
           cancer_record_dataset_path = infile ,
           national_population_life_table_path = lifetable,
-          stata_exe_path = stata_exe_path
+          stata_exe_path = stata_exe_path,
+          standstrata = "agegroup_ICSS",
+          iweight = "weights_ICSS",
+          by = c("entity", "sex", "period")
         )
       },
       error = function(e) e
     )
+    wd <- nordcancore::get_global_nordcan_settings()[["work_dir"]]
     ss_output_path <- paste0(
-      "survival/NCS_NO_anonymous_example_data_result_dir/",
+      wd,
+      "/survival/NCS_NO_anonymous_example_data_result_dir/",
       "NCS_NO_anonymous_example_data_result.csv"
     )
     if (!inherits(ss_output, "error") && file.exists(ss_output_path)) {
