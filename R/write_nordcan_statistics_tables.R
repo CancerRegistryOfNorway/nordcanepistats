@@ -286,9 +286,14 @@ write_maintainer_summary_zip <- function(x) {
   dbc::assert_prod_interim_file_exists(files_list)
 
   nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
-  zip_file_path <- paste0(
-    work_dir, "/nordcan_", nordcan_version, "_maintainer_summary.zip"
+  participant_name <- tolower(
+    nordcancore::nordcan_metadata_participant_info()[["name"]]
   )
+  zip_file_name <- paste0(
+    "nordcan_", nordcan_version, "_maintainer_summary_for_",
+    participant_name, ".zip"
+  )
+  zip_file_path <- paste0(work_dir, "/", zip_file_name)
   zip_file_path <- normalizePath(zip_file_path, mustWork = FALSE)
   zip::zip(zipfile = zip_file_path, files = files_list)
 
