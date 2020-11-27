@@ -2,7 +2,9 @@
 
 #' @rdname entity_strata
 #' @export
+#' @param participant_name `[character]` (optional, default taken from settings)
 #'
+#' see [nordcancore::set_global_nordcan_settings]
 nordcanstat_metadata_statistics_tables_names <- function(
   participant_name = nordcancore::nordcan_metadata_participant_info()[["name"]]
 ) {

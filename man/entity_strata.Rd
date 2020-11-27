@@ -8,7 +8,9 @@
 \alias{nordcanstat_by_entity}
 \title{Stratification by Entity}
 \usage{
-nordcanstat_metadata_statistics_tables_names()
+nordcanstat_metadata_statistics_tables_names(
+  participant_name = nordcancore::nordcan_metadata_participant_info()[["name"]]
+)
 
 loop_over_entity_numbers(x, entities, fun, arg_list)
 
@@ -22,6 +24,10 @@ nordcanstat_by_entity(
 )
 }
 \arguments{
+\item{participant_name}{\verb{[character]} (optional, default taken from settings)
+
+see \link[nordcancore:global_nordcan_settings]{nordcancore::set_global_nordcan_settings}}
+
 \item{x}{\verb{[data.table]} (mandatory, no default)
 
 a NORDCAN cancer record dataset}
