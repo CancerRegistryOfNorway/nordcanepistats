@@ -35,6 +35,14 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   })
 
   object_csv_table_names <- nordcanepistats::nordcanstat_metadata_statistics_tables_names()
+  if (purpose == "archive") {
+    data.table::set(
+      object_csv_table_names,
+      j = "csv_file_name",
+      value = paste0(object_csv_table_names[["object_name"]], ".csv")
+    )
+  }
+
   ## Write elements of x to temporary directory.
   lapply(names(x), function(elem_nm) {
     elem <- x[[elem_nm]]
