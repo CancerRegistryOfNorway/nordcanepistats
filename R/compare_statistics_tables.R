@@ -417,6 +417,11 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
     "column_name_set_stratum_column_name_set"
   )
   lapply(dataset_names, function(dataset_name) {
+    dbc::assert_user_input_is_data.table_with_required_names(
+      x = x[[dataset_name]],
+      x_nm = paste0("x$comparisons$", dataset_name),
+      required_names = c("sex", "entity", "stat_value")
+    )
     dt <- x[[dataset_name]]
     subset <- dt[["region"]] == topregion_number
     is_prev <- dataset_name == "prevalent_patient_count_dataset"
