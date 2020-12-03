@@ -403,6 +403,7 @@ compare_rates <- function(
 plot_nordcan_statistics_table_comparisons <- function(x) {
   dbc::assert_user_input_is_list(x)
   dbc::assert_user_input_has_names(x, required_names = c("comparisons"))
+  dbc::assert_user_input_is_list(x[["comparisons"]])
 
   x <- x$comparisons
   participant_info <- nordcancore::nordcan_metadata_participant_info()
@@ -410,6 +411,7 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
   dataset_names <- c("cancer_death_count_dataset",
                      "cancer_record_count_dataset",
                      "prevalent_patient_count_dataset")
+  dataset_names <- intersect(dataset_names, names(x))
 
   stratum_col_nm_set <- nordcancore::nordcan_metadata_column_name_set(
     "column_name_set_stratum_column_name_set"
