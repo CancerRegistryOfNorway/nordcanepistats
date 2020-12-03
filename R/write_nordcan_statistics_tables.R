@@ -290,8 +290,7 @@ write_maintainer_summary_zip <- function(x) {
     "cancer_record_count_dataset.png",
     "prevalent_patient_count_dataset.png"
   )
-
-  dbc::assert_prod_interim_file_exists(files_list)
+  files_list <- intersect(files_list, dir(work_dir))
 
   nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
   participant_name <- tolower(
