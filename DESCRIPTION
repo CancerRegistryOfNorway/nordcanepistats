@@ -19,9 +19,9 @@ Imports:
     data.table,
     dbc (>= 0.3.8),
     basicepistats,
-    nordcancore (>= 1.0.1),
-    nordcanpreprocessing (>= 1.0.1),
-    nordcansurvival (>= 1.0.1)
+    nordcancore (>= 1.0.2),
+    nordcanpreprocessing (>= 1.0.2),
+    nordcansurvival (>= 1.0.2)
 RoxygenNote: 7.1.1
 Roxygen: list(markdown = TRUE)
 Remotes:
