@@ -76,13 +76,36 @@ nordcanstat_year_based_prevalent_patient_count <- function(
     loop_over = "entity_numbers"
   )
 
-  dt <- add_margin_to_regional_count_dt(dt, count_col_nm = "N")
+  info <- nordcancore::nordcan_metadata_participant_info()
+  if (is.character(by) && "region" %in% by && info[["has_sub_regions"]]) {
+    arg_list[["by"]] <- setdiff(arg_list[["by"]], "region")
+    if (length(arg_list[["by"]]) == 0L) {
+      arg_list[["by"]] <- NULL
+    }
+    dt_topregion <- nordcanstat_by_entity(
+      entities = entities,
+      arg_list = arg_list,
+      basicepistats_fun = basicepistats::stat_year_based_prevalent_subject_count,
+      loop_over = "entity_numbers"
+    )
+    topregion_number <- info[["topregion_number"]]
+    dt_topregion[, "region" := topregion_number]
+    data.table::setcolorder(dt_topregion, names(dt))
+    dt <- rbind(dt, dt_topregion)
+    data.table::setcolorder(dt, by)
+    data.table::setkeyv(dt, by)
+  }
 
   dt <- remove_regional_counts_before_start_year(
     dt, year_col_nm = "observation_year"
   )
 
-  data.table::setkeyv(dt, setdiff(names(dt), "N"))
+  if (is.character(by)) {
+    data.table::setcolorder(dt, by)
+    data.table::setkeyv(dt, by)
+  } else {
+    data.table::setkeyv(dt, setdiff(names(dt), "N"))
+  }
   data.table::setnames(dt, "N", "prevalent_patient_count")
   return(dt[])
 }
