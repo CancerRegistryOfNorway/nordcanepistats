@@ -35,7 +35,7 @@ nordcanstat_settings <- function(function_name) {
   )
   gs <- nordcancore::get_global_nordcan_settings()
   first_obs_y <- gs[["stat_prevalent_subject_count_first_year"]]
-  last_obs_y <- nordcancore::nordcan_metadata_nordcan_year()
+  last_obs_y <- gs[["last_year"]]
   obs_yrs <- first_obs_y:last_obs_y
 
   if (function_name == "nordcanstat_prevalent_subject_count") {
