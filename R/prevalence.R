@@ -60,7 +60,7 @@ nordcanstat_year_based_prevalent_patient_count <- function(
     col <- x[[col_nm]]
     if (col_nm == exit_year_col_nm) {
       col <- col + 0L
-      last_year <- nordcan::get_global_nordcan_settings()$last_year
+      last_year <- nordcancore::get_global_nordcan_settings()$last_year
       survived_last_year <- x[["vit_sta"]] == 1L & col == last_year
       col[survived_last_year] <- max(last_year) + 1L
     }

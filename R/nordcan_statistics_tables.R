@@ -217,8 +217,8 @@ nordcan_statistics_tables <- function(
         lifetable <- paste0(system.file(package = "nordcansurvival"),
                             "/stata/demo/NO_2018_lifetable.dta")
         nordcansurvival::survival_statistics(
-          cancer_record_dataset_path = infile ,
-          national_population_life_table_path = lifetable,
+          infile = infile ,
+          lifetable = lifetable,
           stata_exe_path = stata_exe_path,
           standstrata = "agegroup_ICSS",
           iweight = "weights_ICSS",
@@ -233,11 +233,16 @@ nordcan_statistics_tables <- function(
       "/survival/NCS_NO_anonymous_example_data_result_dir/",
       "NCS_NO_anonymous_example_data_result.csv"
     )
+    print(ss_output)
+
     if (!inherits(ss_output, "error") && file.exists(ss_output_path)) {
       ss_output <- data.table::fread(ss_output_path)
+      output[["survival_statistics_example"]] <- ss_output
+      message("* nordcanepistats::nordcan_statistics_tables: done.")
+    } else {
+      message("* nordcanepistats::nordcan_statistics_tables: failed!!")
     }
-    output[["survival_statistics_example"]] <- ss_output
-    message("* nordcanepistats::nordcan_statistics_tables: done.")
+
   }
 
   surv_ds_nms <- paste0("survival_statistics_period_", c(5, 10), "_dataset")
