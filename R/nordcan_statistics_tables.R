@@ -53,6 +53,7 @@ nordcan_statistics_tables <- function(
 ) {
   t_start <- proc.time()
 
+  ## Check output_objects is valid.
   if (is.null(output_objects)) {
     output_objects <- nordcan_statistics_tables_output_object_space()
   } else {
@@ -63,9 +64,8 @@ nordcan_statistics_tables <- function(
     )
   }
 
-  # dataset validation ---------------------------------------------------------
-  message("* nordcanepistats::nordcan_statistics_tables: validating your ",
-          "datasets...")
+  ## dataset validation
+  message("* validating your datasets...")
   dbc::assert_user_input_is_data.table_with_required_names(
     cancer_record_dataset,
     required_names = nordcancore::nordcan_metadata_column_name_set(
@@ -78,8 +78,8 @@ nordcan_statistics_tables <- function(
       dataset_name = "processed_cancer_death_count_dataset"
     )
   }
-  if ("survival_statistics_dataset" %in% output_objects) {
-    dbc::assert_user_input_file_exists(stata_exe_path)
+  if ("survival_statistics_period_5_dataset" %in% output_objects |
+      "survival_statistics_period_10_dataset" %in% output_objects) {
     nordcanpreprocessing::assert_dataset_is_valid(
       national_population_life_table,
       dataset_name = "national_population_life_table"
@@ -91,7 +91,7 @@ nordcan_statistics_tables <- function(
       dataset_name = "general_population_size_dataset"
     )
   }
-  message("* nordcanepistats::nordcan_statistics_tables: done.")
+  message("* validation finished.")
 
 
   # output list creation -------------------------------------------------------
@@ -108,8 +108,8 @@ nordcan_statistics_tables <- function(
 
   # cancer_record_count_dataset ------------------------------------------------
   if ("cancer_record_count_dataset" %in% output_objects) {
-    message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-            "cancer_record_count_dataset at ", as.character(Sys.time()), "...")
+    message("*  started computing 'cancer_record_count_dataset' at ",
+            as.character(Sys.time()), "...")
     t <- proc.time()
     output[["cancer_record_count_dataset"]] <- tryCatch(
       nordcanstat_count(
@@ -119,14 +119,12 @@ nordcan_statistics_tables <- function(
       ),
       error = function(e) e
     )
-    message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-            "cancer_record_count_dataset; ",
-            data.table::timetaken(t))
+    message("* finished computing 'cancer_record_count_dataset'; time used: ",
+            gsub("elapsed.*", "", data.table::timetaken(t)))
   }
   # prevalent_patient_count_dataset ------------------------------------------
   if ("prevalent_patient_count_dataset" %in% output_objects) {
-    message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-            "prevalent_patient_count_dataset at ",
+    message("*  started computing 'prevalent_patient_count_dataset' at ",
             as.character(Sys.time()), "...")
     t <- proc.time()
     output[["prevalent_patient_count_dataset"]] <- tryCatch(
@@ -137,14 +135,12 @@ nordcan_statistics_tables <- function(
       ),
       error = function(e) e
     )
-    message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-            "prevalent_patient_count_dataset; ",
-            data.table::timetaken(t))
+    message("* finished computing 'prevalent_patient_count_dataset'; time used: ",
+            gsub("elapsed.*", "", data.table::timetaken(t)))
   }
   # imp_quality_statistics_dataset ---------------------------------------------
   if ("imp_quality_statistics_dataset" %in% output_objects) {
-    message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-            "imp_quality_statistics_dataset at ",
+    message("*  started computing 'imp_quality_statistics_dataset' at ",
             as.character(Sys.time()), "...")
     t <- proc.time()
     cdcd <- data.table::copy(cancer_death_count_dataset)
@@ -172,15 +168,13 @@ nordcan_statistics_tables <- function(
       ),
       error = function(e) e
     )
-    message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-            "imp_quality_statistics_dataset; ",
-            data.table::timetaken(t))
+    message("* finished computing 'imp_quality_statistics_dataset'; time used: ",
+            gsub("elapsed.*", "", data.table::timetaken(t)))
   }
 
   # survival_quality_statistics_dataset ----------------------------------------
   if ("survival_quality_statistics_dataset" %in% output_objects) {
-    message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-            "survival_quality_statistics_dataset at ",
+    message("*  started computing 'survival_quality_statistics_dataset' at ",
             as.character(Sys.time()), "...")
     t <- proc.time()
     output[["survival_quality_statistics_dataset"]] <- tryCatch(
@@ -190,88 +184,97 @@ nordcan_statistics_tables <- function(
       ),
       error = function(e) e
     )
-    message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-            "survival_quality_statistics_dataset; ",
-            data.table::timetaken(t))
+    message("* finished computing 'survival_quality_statistics_dataset'; time used: ",
+            gsub("elapsed.*", "", data.table::timetaken(t)))
   }
+
+  stata_exist <- tryCatch(
+    dbc::assert_user_input_file_exists(stata_exe_path),
+    error = function(e) e
+  )
+  if (!inherits(stata_exist, "error")) {stata_exist <- TRUE}
+
 
   # survival_statistics_dataset ------------------------------------------------
   if ("stata_info" %in% output_objects) {
-    message("* nordcanepistats::nordcan_statistics_tables: testing that you ",
-            "can run stata...")
-    output[["stata_info"]] <- tryCatch(
-      nordcansurvival::get_stata_info(stata_exe_path),
-      error = function(e) e
-    )
-    message("* nordcanepistats::nordcan_statistics_tables: done.")
+    message("* testing that you can run stata...")
+    if(is.logical(stata_exist) ) {
+      output[["stata_info"]] <- tryCatch(
+        nordcansurvival::get_stata_info(stata_exe_path),
+        error = function(e) e
+      )
+      message("* yes, you can!")
+    } else {message(stata_exist)}
   }
 
 
   if ("survival_statistics_example" %in% output_objects) {
-    message("* nordcanepistats::nordcan_statistics_tables: testing that you ",
-            "can run an example of nordcansurvival::survival_statistics...")
-    ss_output <- tryCatch(
-      expr = {
-        infile <-  paste0(system.file(package = "nordcansurvival"),
-                          "/stata/demo/NCS_NO_anonymous_example_data.dta")
-        lifetable <- paste0(system.file(package = "nordcansurvival"),
-                            "/stata/demo/NO_2018_lifetable.dta")
-        nordcansurvival::survival_statistics(
-          infile = infile ,
-          lifetable = lifetable,
-          stata_exe_path = stata_exe_path,
-          standstrata = "agegroup_ICSS",
-          iweight = "weights_ICSS",
-          by = c("entity", "sex", "period")
-        )
-      },
-      error = function(e) e
-    )
-    wd <- nordcancore::get_global_nordcan_settings()[["work_dir"]]
-    ss_output_path <- paste0(
-      wd,
-      "/survival/NCS_NO_anonymous_example_data_result_dir/",
-      "NCS_NO_anonymous_example_data_result.csv"
-    )
-    print(ss_output)
+    message("* testing that it can run the example of 'nordcansurvival' package.")
+    if(is.logical(stata_exist) ) {
+      ss_output <- tryCatch(
+        expr = {
+          infile <-  paste0(system.file(package = "nordcansurvival"),
+                            "/stata/demo/NCS_NO_anonymous_example_data.dta")
+          lifetable <- paste0(system.file(package = "nordcansurvival"),
+                              "/stata/demo/NO_2018_lifetable.dta")
+          nordcansurvival::survival_statistics(
+            infile = infile ,
+            lifetable = lifetable,
+            stata_exe_path = stata_exe_path,
+            standstrata = "agegroup_ICSS",
+            iweight = "weights_ICSS",
+            by = c("entity", "sex", "period")
+          )
+        },
+        error = function(e) e
+      )
+      wd <- nordcancore::get_global_nordcan_settings()[["work_dir"]]
+      ss_output_path <- paste0(
+        wd,
+        "/survival/NCS_NO_anonymous_example_data_result_dir/",
+        "NCS_NO_anonymous_example_data_result.csv"
+      )
 
-    if (!inherits(ss_output, "error") && file.exists(ss_output_path)) {
-      ss_output <- data.table::fread(ss_output_path)
-      output[["survival_statistics_example"]] <- ss_output
-      message("* nordcanepistats::nordcan_statistics_tables: done.")
-    } else {
-      message("* nordcanepistats::nordcan_statistics_tables: failed!!")
-    }
+      if (!inherits(ss_output, "error") && file.exists(ss_output_path)) {
+        ss_output <- data.table::fread(ss_output_path)
+        output[["survival_statistics_example"]] <- ss_output
+        message("* yes, it can!")
+      } else {
+        message("* oops! it failed!!")
+      }
+    } else {message(stata_exist)}
+
 
   }
 
   surv_ds_nms <- paste0("survival_statistics_period_", c(5, 10), "_dataset")
   if (any(surv_ds_nms %in% output_objects)) {
-    message("* nordcanepistats::nordcan_statistics_tables: started computing ",
-            "survival_statistics_dataset at ",
+    message("*  started computing 'survival_statistics_period_5/10_dataset' at ",
             as.character(Sys.time()), "...")
-    t <- proc.time()
-    surv_output <- tryCatch(
-      expr = nordcansurvival::nordcanstat_survival(
-        cancer_record_dataset = cancer_record_dataset,
-        national_population_life_table = national_population_life_table,
-        stata_exe_path = stata_exe_path
-      ),
-      error = function(e) e
-    )
-    if (inherits(surv_output, c("error", "try-error"))) {
-      surv_output <- list(surv_output, surv_output)
-      names(surv_output) <- surv_ds_nms
-    }
-    output[surv_ds_nms] <- surv_output
-    message("* nordcanepistats::nordcan_statistics_tables: done computing ",
-            "survival_statistics_dataset; ",
-            data.table::timetaken(t))
+    if(is.logical(stata_exist) ) {
+      t <- proc.time()
+      surv_output <- tryCatch(
+        expr = nordcansurvival::nordcanstat_survival(
+          cancer_record_dataset = cancer_record_dataset,
+          national_population_life_table = national_population_life_table,
+          stata_exe_path = stata_exe_path
+        ),
+        error = function(e) e
+      )
+      if (inherits(surv_output, c("error", "try-error"))) {
+        surv_output <- list(surv_output, surv_output)
+        names(surv_output) <- surv_ds_nms
+      }
+      output[surv_ds_nms] <- surv_output
+      message("* finished computing 'survival_statistics_period_*_dataset'; time used: ",
+              gsub("elapsed.*", "", data.table::timetaken(t)))
+    } else {message(stata_exist)}
+
   }
 
   # final touches --------------------------------------------------------------
-  message("* nordcanepistats::nordcan_statistics_tables: finished; ",
-          data.table::timetaken(t_start))
+  message("--- All processes finished. Total time used: ",
+          gsub("elapsed.*", "", data.table::timetaken(t_start)))
   return(output)
 }
 

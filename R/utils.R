@@ -34,8 +34,8 @@ nordcanstat_settings <- function(function_name) {
     "column_name_set_prevalence"
   )
   gs <- nordcancore::get_global_nordcan_settings()
-  first_obs_y <- gs[["stat_prevalent_subject_count_first_year"]]
-  last_obs_y <- gs[["last_year"]]
+  first_obs_y <- gs[["first_year_prevalence"]]
+  last_obs_y <- gs[["last_year_incidence"]]
   obs_yrs <- first_obs_y:last_obs_y
 
   if (function_name == "nordcanstat_prevalent_subject_count") {
@@ -382,7 +382,7 @@ remove_regional_counts_before_start_year <- function(dt, year_col_nm) {
     topregion_number <- participant_info[["topregion_number"]]
     dbc::assert_prod_interim_is_integer_nonNA_atom(topregion_number)
     gs <- nordcancore::get_global_nordcan_settings()
-    fy <- gs[["regional_data_first_year"]]
+    fy <- gs[["first_year_region"]]
     dbc::assert_prod_interim_is_integer_nonNA_atom(fy)
     subset <- dt[["region"]] == topregion_number | (
       dt[["region"]] != topregion_number & dt[[year_col_nm]] >= fy

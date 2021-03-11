@@ -103,11 +103,12 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
 #' nordcancore::set_global_nordcan_settings(
 #'   work_dir = td,
 #'   participant_name = "Norway",
-#'   stat_cancer_record_count_first_year = 1954L,
-#'   stat_prevalent_subject_count_first_year = 1953L,
-#'   stat_cancer_death_count_first_year = 1954L,
-#'   stat_survival_follow_up_first_year = 1954L,
-#'   regional_data_first_year = 1953L
+#'   first_year_incidence = 1953L,
+#'   first_year_mortality = 1953L,
+#'   first_year_region = 1953L,
+#'   last_year_incidence = 2018L,
+#'   last_year_mortality = 2018L,
+#'   last_year_survival = 2018L
 #' )
 #'
 #'
@@ -158,8 +159,12 @@ write_nordcan_statistics_tables_for_archive <- function(x) {
 #' nordcancore::set_global_nordcan_settings(
 #'   work_dir = ".",
 #'   participant_name = "Norway",
-#'   stat_cancer_record_count_first_year = 1954L,
-#'   stat_cancer_death_count_first_year = 1954L
+#'   first_year_incidence = 1953L,
+#'   first_year_mortality = 1953L,
+#'   first_year_region = 1953L,
+#'   last_year_incidence = 2018L,
+#'   last_year_mortality = 2018L,
+#'   last_year_survival = 2018L
 #' )
 #'
 #' # log1 and log2 are NOT saved
