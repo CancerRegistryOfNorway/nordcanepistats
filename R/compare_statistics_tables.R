@@ -90,7 +90,7 @@ compare_nordcan_statistics_table_lists <- function(
       new[j = .SD, .SDcols = xy_stratum_col_nm_set],
       comparison_dt
     )
-    message("* done; ", data.table::timetaken(t))
+    message("* done; time used: ", gsub("elapsed.*", "", data.table::timetaken(t)))
     return(out[])
   })
   names(comparisons) <- table_names
@@ -120,7 +120,7 @@ compare_nordcan_statistics_table_lists <- function(
     )
     NULL
   })
-  message("* done; ", data.table::timetaken(t_p_value))
+  message("* done; time used: ", gsub("elapsed.*", "", data.table::timetaken(t_p_value)))
 
   message("* computing summary table...")
   t_summary <- proc.time()
@@ -146,7 +146,7 @@ compare_nordcan_statistics_table_lists <- function(
     dt_summary <- cbind(table_name = table_name, dt_summary)
     return(dt_summary[])
   }))
-  message("* done; ", data.table::timetaken(t_summary))
+  message("* done; time used: ", gsub("elapsed.*", "", data.table::timetaken(t_summary)))
 
   list(summary = summary, comparisons = comparisons)
 }
