@@ -60,8 +60,7 @@ compare_nordcan_statistics_table_lists <- function(
     "column_name_set_stratum_column_name_set"
   )
   comparisons <- lapply(table_names, function(table_name) {
-    message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
-            "comparing current_stat_table_list$", table_name,
+    message("* comparing current_stat_table_list$", table_name,
             " to old_stat_table_list$" , table_name, "...")
     t <- proc.time()
     new <- data.table::copy(current_stat_table_list[[table_name]])
@@ -91,15 +90,13 @@ compare_nordcan_statistics_table_lists <- function(
       new[j = .SD, .SDcols = xy_stratum_col_nm_set],
       comparison_dt
     )
-    message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
-            "done; ", data.table::timetaken(t))
+    message("* done; ", data.table::timetaken(t))
     return(out[])
   })
   names(comparisons) <- table_names
 
 
-  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
-          "adjusting p-values...")
+  message("* adjusting p-values...")
   t_p_value <- proc.time()
   p_value_dt <- data.table::rbindlist(lapply(table_names, function(table_name) {
     dt <- comparisons[[table_name]]
@@ -123,11 +120,9 @@ compare_nordcan_statistics_table_lists <- function(
     )
     NULL
   })
-  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
-          "done; ", data.table::timetaken(t_p_value))
+  message("* done; ", data.table::timetaken(t_p_value))
 
-  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
-          "computing summary table...")
+  message("* computing summary table...")
   t_summary <- proc.time()
   summary <- data.table::rbindlist(lapply(table_names, function(table_name) {
     dt <- comparisons[[table_name]]
@@ -151,8 +146,7 @@ compare_nordcan_statistics_table_lists <- function(
     dt_summary <- cbind(table_name = table_name, dt_summary)
     return(dt_summary[])
   }))
-  message("* nordcanepistats::compare_nordcan_statistics_table_lists: ",
-          "done; ", data.table::timetaken(t_summary))
+  message("* done; ", data.table::timetaken(t_summary))
 
   list(summary = summary, comparisons = comparisons)
 }

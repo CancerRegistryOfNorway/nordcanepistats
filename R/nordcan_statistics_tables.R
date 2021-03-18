@@ -203,7 +203,7 @@ nordcan_statistics_tables <- function(
         nordcansurvival::get_stata_info(stata_exe_path),
         error = function(e) e
       )
-      message("* yes, you can!")
+      message("* yes!")
     } else {message(stata_exist)}
   }
 
@@ -238,7 +238,7 @@ nordcan_statistics_tables <- function(
       if (!inherits(ss_output, "error") && file.exists(ss_output_path)) {
         ss_output <- data.table::fread(ss_output_path)
         output[["survival_statistics_example"]] <- ss_output
-        message("* yes, it can!")
+        message("* yes!")
       } else {
         message("* oops! it failed!!")
       }
