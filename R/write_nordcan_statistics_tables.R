@@ -67,8 +67,7 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   zip_file_path <- sprintf("%s/nordcan_statistics_tables.zip", work_dir)
   zip::zip(zipfile = zip_file_path,
            files = list.files(temp_dir, full.names = FALSE))
-  message("* nordcanepistats::write_nordcan_statistics_tables: wrote .zip ",
-          "into \"", zip_file_path, "\"")
+  message("* wrote .zip into \"", zip_file_path, "\"")
 
   return(invisible(NULL))
 }
@@ -309,8 +308,7 @@ write_maintainer_summary_zip <- function(x) {
   zip_file_path <- normalizePath(zip_file_path, mustWork = FALSE)
   zip::zip(zipfile = zip_file_path, files = files_list)
 
-  message("* nordcanepistats::write_maintainer_summary_zip: ",
-          "wrote zip to  ", zip_file_path)
+  message("* wrote zip to  ", zip_file_path)
 
   return(invisible(NULL))
 }

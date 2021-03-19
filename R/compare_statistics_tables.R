@@ -473,8 +473,7 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
       )
     })
     message(
-      "* nordcanepistats::plot_nordcan_statistics_table_comparisons: ",
-      "saved plot grid of comparisons by entity for ",
+      "* saved plot grid of comparisons by entity for ",
       dataset_name,
       " to ",
       png_file_path
