@@ -422,16 +422,19 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
     if (is_prev && "full_years_since_entry" %in% names(dt)) {
       subset <- subset & dt[["full_years_since_entry"]] == "0 - 999"
     }
-    dt_stratum_col_nms <- intersect(
-      names(dt),
-      stratum_col_nm_set
-    )
-    dt_stratum_col_nms <- setdiff(
-      dt_stratum_col_nms,
-      c("new", "old", "stat_type", "stat_value",
-        "p_value", "column_name", "p_value_bh")
-    )
-    dt_stratum_col_nms <- setdiff(dt_stratum_col_nms, "sex")
+    # dt_stratum_col_nms <- intersect(
+    #   names(dt),
+    #   stratum_col_nm_set
+    # )
+    # dt_stratum_col_nms <- setdiff(
+    #   dt_stratum_col_nms,
+    #   c("new", "old", "stat_type", "stat_value",
+    #     "p_value", "column_name", "p_value_bh")
+    # )
+    # dt_stratum_col_nms <- setdiff(dt_stratum_col_nms, "sex")
+
+    dt_stratum_col_nms <- c("year", "observation_year", "yoi", "entity")
+    dt_stratum_col_nms <- dt_stratum_col_nms[dt_stratum_col_nms %in% names(dt)]
 
     dt <- dt[
       i = subset,

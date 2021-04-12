@@ -247,7 +247,11 @@ nordcan_statistics_tables <- function(
 
   }
 
-  surv_ds_nms <- paste0("survival_statistics_period_", c(5, 10), "_dataset")
+  surv_ds_nms <- c("survival_statistics_period_5_dataset",
+                   "survival_statistics_period_10_dataset",
+                   "survival_statistics_period_5_10_dataset",
+                   "survival_statistics_period_10_10_dataset" )
+
   if (any(surv_ds_nms %in% output_objects)) {
     message("*  started computing 'survival_statistics_period_5/10_dataset' at ",
             as.character(Sys.time()), "...")

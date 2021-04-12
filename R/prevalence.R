@@ -91,6 +91,8 @@ nordcanstat_year_based_prevalent_patient_count <- function(
     topregion_number <- info[["topregion_number"]]
     dt_topregion[, "region" := topregion_number]
     data.table::setcolorder(dt_topregion, names(dt))
+    ## remove the count for top region in dt.
+    dt <- dt[dt$region != topregion_number, ]
     dt <- rbind(dt, dt_topregion)
     data.table::setcolorder(dt, by)
     data.table::setkeyv(dt, by)
