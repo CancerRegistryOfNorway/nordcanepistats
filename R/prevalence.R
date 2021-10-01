@@ -99,7 +99,7 @@ nordcanstat_year_based_prevalent_patient_count <- function(
   }
 
   dt <- remove_regional_counts_before_start_year(
-    dt, year_col_nm = "observation_year"
+    dt, year_col_nm = "observation_year", prevalence = TRUE
   )
 
   if (is.character(by)) {

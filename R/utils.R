@@ -374,15 +374,23 @@ call_with_arg_list <- function(
 
 
 
-remove_regional_counts_before_start_year <- function(dt, year_col_nm) {
+remove_regional_counts_before_start_year <- function(
+  dt,
+  year_col_nm,
+  prevalence = FALSE
+) {
   dbc::assert_prod_input_is_data.table(dt)
   dbc::assert_prod_input_is_character_nonNA_atom(year_col_nm)
+  dbc::assert_prod_input_is_logical_nonNA_atom(prevalence)
   if (all(c("region", year_col_nm) %in% names(dt))) {
     participant_info <- nordcancore::nordcan_metadata_participant_info()
     topregion_number <- participant_info[["topregion_number"]]
     dbc::assert_prod_interim_is_integer_nonNA_atom(topregion_number)
     gs <- nordcancore::get_global_nordcan_settings()
     fy <- gs[["first_year_region"]]
+    if (prevalence) {
+      fy <- gs[["first_year_regional_prevalence"]]
+    }
     dbc::assert_prod_interim_is_integer_nonNA_atom(fy)
     subset <- dt[["region"]] == topregion_number | (
       dt[["region"]] != topregion_number & dt[[year_col_nm]] >= fy
