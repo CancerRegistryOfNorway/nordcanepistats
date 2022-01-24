@@ -275,9 +275,13 @@ write_maintainer_summary_zip <- function(x) {
   ## Get work directory
   work_dir <- Global_nordcan_settings$work_dir
 
+  nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
+  old_version <- x$version2compare
+  version_tag <- paste0("_v",nordcan_version, "_vs_v", old_version)
+  
   ## Write summary to 'comparison_summary.csv';
   data.table::fwrite(x = x$summary,
-                     file = sprintf("%s/comparison_summary.csv", work_dir),
+                     file = sprintf("%s/comparison_summary%s.csv", work_dir, version_tag),
                      sep = ";")
 
   ## png files
@@ -289,10 +293,10 @@ write_maintainer_summary_zip <- function(x) {
 
   files_list <- c(
     log_file_name,
-    "comparison_summary.csv",
-    "cancer_death_count_dataset.png",
-    "cancer_record_count_dataset.png",
-    "prevalent_patient_count_dataset.png"
+    sprintf("comparison_summary%s.csv", version_tag),
+    sprintf("cancer_death_count_dataset%s.png", version_tag),
+    sprintf("cancer_record_count_dataset%s.png", version_tag),
+    sprintf("prevalent_patient_count_dataset%s.png", version_tag)
   )
   files_list <- intersect(files_list, dir(work_dir))
 
