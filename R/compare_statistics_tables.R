@@ -395,6 +395,10 @@ compare_rates <- function(
 #'
 #' the output of `compare_nordcan_statistics_table_lists`
 plot_nordcan_statistics_table_comparisons <- function(x) {
+  nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
+  old_version <- x$version2compare
+  version_tag <- paste0("_v",nordcan_version, "_vs_v", old_version)
+  
   dbc::assert_user_input_is_list(x)
   dbc::assert_user_input_has_names(x, required_names = c("comparisons"))
   dbc::assert_user_input_is_list(x[["comparisons"]])
@@ -442,10 +446,6 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
       .SDcols = "stat_value",
       keyby = eval(dt_stratum_col_nms)
       ]
-
-    nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
-    old_version <- x$version2compare
-    version_tag <- paste0("_v",nordcan_version, "_vs_v", old_version)
     
     png_file_path <- paste0(
       nordcancore::get_global_nordcan_settings()[["work_dir"]], "/",
