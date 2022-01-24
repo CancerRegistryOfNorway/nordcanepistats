@@ -443,9 +443,13 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
       keyby = eval(dt_stratum_col_nms)
       ]
 
+    nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
+    old_version <- x$version2compare
+    version_tag <- paste0("_v",nordcan_version, "_vs_v", old_version)
+    
     png_file_path <- paste0(
       nordcancore::get_global_nordcan_settings()[["work_dir"]], "/",
-      dataset_name, ".png"
+      dataset_name, version_tag, ".png"
     )
     png_file_path <- normalizePath(png_file_path, mustWork = FALSE)
     grDevices::png(
