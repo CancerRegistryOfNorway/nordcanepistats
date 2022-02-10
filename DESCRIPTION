@@ -22,7 +22,7 @@ Imports:
     nordcancore (>= 1.0.5),
     nordcanpreprocessing (>= 1.0.5),
     nordcansurvival (>= 1.0.5)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Roxygen: list(markdown = TRUE)
 Remotes:
     github::WetRobot/dbc
