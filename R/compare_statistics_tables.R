@@ -325,8 +325,8 @@ compare_proportions <- function(
   dbc::assert_prod_input_is_number_vector(old)
   eval_env <- environment()
   dbc::report_to_assertion(
-    dbc::tests_to_report(
-      tests = c("is.na(new) | (new >= 0.0 & new <= 100.0)",
+    dbc::expressions_to_report(
+      expressions = c("is.na(new) | (new >= 0.0 & new <= 100.0)",
                 "is.na(old) | (old >= 0.0 & old <= 100.0)"),
       fail_messages = c(
         "first five invalid values: ${deparse(utils::head(new[wh_fail], 5))}",
@@ -398,7 +398,7 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
   nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
   old_version <- x$version2compare
   version_tag <- paste0("_v",nordcan_version, "_vs_v", old_version)
-  
+
   dbc::assert_user_input_is_list(x)
   dbc::assert_user_input_has_names(x, required_names = c("comparisons"))
   dbc::assert_user_input_is_list(x[["comparisons"]])
@@ -446,7 +446,7 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
       .SDcols = "stat_value",
       keyby = eval(dt_stratum_col_nms)
       ]
-    
+
     png_file_path <- paste0(
       nordcancore::get_global_nordcan_settings()[["work_dir"]], "/",
       dataset_name, version_tag, ".png"
