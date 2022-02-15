@@ -33,7 +33,7 @@ nordcanstat_survival_quality <- function(
     "percentage_excl_surv_dco" = x[["excl_surv_dco"]] == 1,
     "percentage_excl_surv_autopsy" = x[["excl_surv_autopsy"]] == 1,
     "percentage_excl_surv_negativefou" = x[["excl_surv_negativefou"]] == 1,
-    "percentage_excl_surv_duplicate" = x[["excluded_multiple"]] == 1,
+    "percentage_excl_surv_multiple" = x[["excluded_multiple"]] == 1,
     "percentage_not_reported_in_nordcan" = x[["entity_level_10"]] %in% c(999L, NA)
   )
 
