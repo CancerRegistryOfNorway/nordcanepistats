@@ -13,8 +13,8 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
     dbc::assert_prod_input_is_one_of(
       x = x[[elem_nm]],
       x_nm = paste0("x$", elem_nm),
-      funs = list(dbc::assert_is_data.table,
-                  dbc::assert_is_character_nonNA_vector)
+      funs = list(dbc::report_is_data.table,
+                  dbc::report_is_character_nonNA_vector)
     )
   })
 
@@ -134,8 +134,8 @@ write_nordcan_statistics_tables_for_archive <- function(x) {
     dbc::assert_user_input_is_one_of(
       x = x[[elem_nm]],
       x_nm = paste0("x$", elem_nm),
-      funs = list(dbc::assert_is_data.table,
-                  dbc::assert_is_character_nonNA_vector)
+      funs = list(dbc::report_is_data.table,
+                  dbc::report_is_character_nonNA_vector)
     )
   })
 
@@ -182,8 +182,8 @@ write_nordcan_statistics_tables_for_sending <- function(
     dbc::assert_user_input_is_one_of(
       x = x[[elem_nm]],
       x_nm = paste0("x$", elem_nm),
-      funs = list(dbc::assert_is_data.table,
-                  dbc::assert_is_character_nonNA_vector)
+      funs = list(dbc::report_is_data.table,
+                  dbc::report_is_character_nonNA_vector)
     )
   })
 
@@ -278,7 +278,7 @@ write_maintainer_summary_zip <- function(x) {
   nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
   old_version <- x$version2compare
   version_tag <- paste0("_v",nordcan_version, "_vs_v", old_version)
-  
+
   ## Write summary to 'comparison_summary.csv';
   data.table::fwrite(x = x$summary,
                      file = sprintf("%s/comparison_summary%s.csv", work_dir, version_tag),
