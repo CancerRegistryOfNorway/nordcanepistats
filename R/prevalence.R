@@ -41,7 +41,8 @@ nordcanstat_year_based_prevalent_patient_count <- function(
   )
   dbc::assert_prod_input_is_one_of(
     x = observation_years,
-    funs = c("report_is_NULL", "report_is_integer_nonNA_vector")
+    funs = list(dbc::report_is_NULL, 
+                dbc::report_is_integer_nonNA_vector)
   )
   arg_list <- c(mget(c("x", "by", "subset", "subset_style")), settings)
   if (!is.null(observation_years)) {

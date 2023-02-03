@@ -1,7 +1,7 @@
 Package: nordcanepistats
 Type: Package
 Title: NORDCAN Epidemiological Statistics
-Version: 1.2
+Version: 1.3
 Depends: R (>= 4.0.0)
 Author: Joonas Miettinen
 Maintainer: Joonas Miettinen <joonas.miettinen@cancer.fit>
@@ -22,7 +22,7 @@ Imports:
     nordcancore (>= 1.0.5),
     nordcanpreprocessing (>= 1.0.5),
     nordcansurvival (>= 1.0.5)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 Roxygen: list(markdown = TRUE)
 Remotes:
     github::WetRobot/dbc

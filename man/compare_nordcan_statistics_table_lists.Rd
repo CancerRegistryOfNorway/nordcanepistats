@@ -66,8 +66,8 @@ and only \verb{full_years_since == "0 - 999} data is used.
 }
 \section{Functions}{
 \itemize{
-\item \code{plot_nordcan_statistics_table_comparisons}: plots time series of
+\item \code{plot_nordcan_statistics_table_comparisons()}: plots time series of
 comparison results (\code{compare_nordcan_statistics_table_lists} output);
 see Details
-}}
 
+}}

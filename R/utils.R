@@ -163,7 +163,8 @@ loop_over_entity_columns <- function(
   dbc::assert_is_data_table(x)
   dbc::assert_prod_input_is_one_of(
     x = arg_list[["by"]],
-    funs = c("report_is_data.table", "report_is_NULL")
+    funs = list(dbc::report_is_data.table,
+                dbc::report_is_NULL)
   )
   dbc::assert_is_integer_nonNA_vector(entities)
   dbc::assert_is_function(fun)
@@ -242,8 +243,9 @@ nordcanstat_by_entity <- function(
   dbc::assert_prod_input_is_data.table(arg_list[["x"]])
   dbc::assert_prod_input_is_one_of(
     x = arg_list[["by"]],
-    funs = c("report_is_NULL", "report_is_character_nonNA_vector",
-             "report_is_data.table")
+    funs = list(dbc::report_is_NULL, 
+                dbc::report_is_character_nonNA_vector,
+                dbc::report_is_data.table)
   )
   dbc::assert_prod_input_is_one_of(
     x = entities,
