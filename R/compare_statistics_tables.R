@@ -422,8 +422,7 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
       subset <- subset & dt[["full_years_since_entry"]] == "0 - 999"
     }
     dt_stratum_col_nms <- c("year", "observation_year", "yoi", "entity")
-    dt_stratum_col_nms <- dt_stratum_col_nms[dt_stratum_col_nms %in%
-                                               names(dt)]
+    dt_stratum_col_nms <- dt_stratum_col_nms[dt_stratum_col_nms %in% names(dt)]
     dt <- dt[i = subset, j = lapply(.SD, sum), .SDcols = "stat_value",
              keyby = eval(dt_stratum_col_nms)]
     pdf_file_path <- paste0(nordcancore::get_global_nordcan_settings()[["work_dir"]],
@@ -465,7 +464,7 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
     })
     graphics::par(omi = rep(0,4), mar = c(5, 5, 2, 2), mfrow = c(1,1), new = TRUE)
 
-    plot(0,0, xlab = x_col_nm, ylab = "stat_value", axes = FALSE, type = "n")
+    plot(0,0, xlab = "Year", ylab = "Difference", main = paste0(dataset_name, version_tag), axes = FALSE, type = "n")
 
     message("* saved plot grid of comparisons by entity for ",
             dataset_name, " to ", pdf_file_path)
