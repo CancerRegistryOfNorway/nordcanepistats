@@ -397,8 +397,7 @@ compare_rates <- function(
 plot_nordcan_statistics_table_comparisons <- function(x) {
   nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
   old_version <- x$version2compare
-  version_tag <- paste0("_v", nordcan_version, "_vs_v",
-                        old_version)
+  version_tag <- paste0("_v", nordcan_version, "_vs_v", old_version)
   dbc::assert_user_input_is_list(x)
   dbc::assert_user_input_has_names(x, required_names = c("comparisons"))
   dbc::assert_user_input_is_list(x[["comparisons"]])
@@ -420,11 +419,9 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
     subset <- dt[["region"]] == topregion_number
     is_prev <- dataset_name == "prevalent_patient_count_dataset"
     if (is_prev && "full_years_since_entry" %in% names(dt)) {
-      subset <- subset & dt[["full_years_since_entry"]] ==
-        "0 - 999"
+      subset <- subset & dt[["full_years_since_entry"]] == "0 - 999"
     }
-    dt_stratum_col_nms <- c("year", "observation_year",
-                            "yoi", "entity")
+    dt_stratum_col_nms <- c("year", "observation_year", "yoi", "entity")
     dt_stratum_col_nms <- dt_stratum_col_nms[dt_stratum_col_nms %in%
                                                names(dt)]
     dt <- dt[i = subset, j = lapply(.SD, sum), .SDcols = "stat_value",
@@ -460,11 +457,11 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
       for (i in 2:length(txt_1)) {
         n <- ifelse (length(which(txt_2 == "\n")) == 0, 1, max(which(txt_2 == "\n"))+1)
         tmp <- paste(paste(txt_1[n:i], txt_2[n:i], sep = ""), collapse = "")
-        if (strwidth(tmp) > 70) { txt_2[i-1] <- "\n"}
+        if (strwidth(tmp) > 60) { txt_2[i-1] <- "\n"}
       }
       txt_0 <- paste(paste(txt_1, txt_2, sep = ""), collapse = "")
 
-      title(main = txt_0, cex.main = 0.7)
+      title(main = txt_0, cex.main = 1)
     })
     graphics::par(omi = rep(0,4), mar = c(5, 5, 2, 2), mfrow = c(1,1), new = TRUE)
 
