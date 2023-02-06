@@ -397,96 +397,82 @@ compare_rates <- function(
 plot_nordcan_statistics_table_comparisons <- function(x) {
   nordcan_version <- nordcancore::nordcan_metadata_nordcan_version()
   old_version <- x$version2compare
-  version_tag <- paste0("_v",nordcan_version, "_vs_v", old_version)
-
+  version_tag <- paste0("_v", nordcan_version, "_vs_v",
+                        old_version)
   dbc::assert_user_input_is_list(x)
   dbc::assert_user_input_has_names(x, required_names = c("comparisons"))
   dbc::assert_user_input_is_list(x[["comparisons"]])
-
   x <- x$comparisons
   participant_info <- nordcancore::nordcan_metadata_participant_info()
   topregion_number <- participant_info$topregion_number
-  dataset_names <- c("cancer_death_count_dataset",
-                     "cancer_record_count_dataset",
+  dataset_names <- c("cancer_death_count_dataset", "cancer_record_count_dataset",
                      "prevalent_patient_count_dataset")
   dataset_names <- intersect(dataset_names, names(x))
+  stratum_col_nm_set <- nordcancore::nordcan_metadata_column_name_set("column_name_set_stratum_column_name_set")
 
-  stratum_col_nm_set <- nordcancore::nordcan_metadata_column_name_set(
-    "column_name_set_stratum_column_name_set"
-  )
+  entity_label <- nordcancore:::entity_label
+
   lapply(dataset_names, function(dataset_name) {
-    dbc::assert_user_input_is_data.table_with_required_names(
-      x = x[[dataset_name]],
-      x_nm = paste0("x$comparisons$", dataset_name),
-      required_names = c("sex", "entity", "stat_value")
-    )
+    dbc::assert_user_input_is_data.table_with_required_names(x = x[[dataset_name]],
+                                                             x_nm = paste0("x$comparisons$", dataset_name),
+                                                             required_names = c("sex", "entity", "stat_value"))
     dt <- x[[dataset_name]]
     subset <- dt[["region"]] == topregion_number
     is_prev <- dataset_name == "prevalent_patient_count_dataset"
     if (is_prev && "full_years_since_entry" %in% names(dt)) {
-      subset <- subset & dt[["full_years_since_entry"]] == "0 - 999"
+      subset <- subset & dt[["full_years_since_entry"]] ==
+        "0 - 999"
     }
-    # dt_stratum_col_nms <- intersect(
-    #   names(dt),
-    #   stratum_col_nm_set
-    # )
-    # dt_stratum_col_nms <- setdiff(
-    #   dt_stratum_col_nms,
-    #   c("new", "old", "stat_type", "stat_value",
-    #     "p_value", "column_name", "p_value_bh")
-    # )
-    # dt_stratum_col_nms <- setdiff(dt_stratum_col_nms, "sex")
-
-    dt_stratum_col_nms <- c("year", "observation_year", "yoi", "entity")
-    dt_stratum_col_nms <- dt_stratum_col_nms[dt_stratum_col_nms %in% names(dt)]
-
-    dt <- dt[
-      i = subset,
-      j = lapply(.SD, sum),
-      .SDcols = "stat_value",
-      keyby = eval(dt_stratum_col_nms)
-      ]
-
-    png_file_path <- paste0(
-      nordcancore::get_global_nordcan_settings()[["work_dir"]], "/",
-      dataset_name, version_tag, ".png"
-    )
-    png_file_path <- normalizePath(png_file_path, mustWork = FALSE)
-    grDevices::png(
-      png_file_path,
-      width = 1400, height = 1000, units="px"
-    )
+    dt_stratum_col_nms <- c("year", "observation_year",
+                            "yoi", "entity")
+    dt_stratum_col_nms <- dt_stratum_col_nms[dt_stratum_col_nms %in%
+                                               names(dt)]
+    dt <- dt[i = subset, j = lapply(.SD, sum), .SDcols = "stat_value",
+             keyby = eval(dt_stratum_col_nms)]
+    pdf_file_path <- paste0(nordcancore::get_global_nordcan_settings()[["work_dir"]],
+                            "/", dataset_name, version_tag, ".pdf")
+    pdf_file_path <- normalizePath(pdf_file_path, mustWork = FALSE)
+    grDevices::pdf(pdf_file_path, width = 11.7*1.5, height = 8.3*1.5)
     entity_no_set <- sort(unique(dt$entity))
     entity_no_set_size <- length(entity_no_set)
-
     old_mar <- graphics::par("mar")
     old_mfrow <- graphics::par("mfrow")
     on.exit({
       grDevices::dev.off()
       graphics::par(mar = old_mar, mfrow = old_mfrow)
     })
-    graphics::par(mar=rep(2.2,4))
-    graphics::par(mfrow = rep(ceiling(sqrt(entity_no_set_size)), 2L))
-    lapply(entity_no_set, function(entity_no) {
-      entity_subset <- dt$entity == entity_no
-      entity_dt <- dt[entity_subset, ]
-      x_col_nm <- intersect(names(dt), c("year", "observation_year", "yoi"))[1L]
-      plot(
-        x = entity_dt[[x_col_nm]],
-        y = entity_dt[["stat_value"]],
-        main = paste0("Entity number: ", entity_no),
-        xlab = x_col_nm,
-        ylab = "stat_value"
-      )
-    })
-    message(
-      "* saved plot grid of comparisons by entity for ",
-      dataset_name,
-      " to ",
-      png_file_path
-    )
-  })
+    x_col_nm <- intersect(names(dt), c("year", "observation_year", "yoi"))[1L]
 
+    graphics::par(omi = c(7,7,5, 3)/14, mar = c(3,2,3,1), mfrow = c(7, ceiling(entity_no_set_size/7)))
+
+    lapply(entity_no_set, function(entity_no) {
+      entity_dt <- dt[dt$entity == entity_no, ]
+      txt <- ifelse(entity_no %in% entity_label$value,
+                    paste(entity_label[entity_label$value == entity_no, c("value", "label")], collapse = ": "),
+                    entity_no)
+
+
+      plot(x = entity_dt[[x_col_nm]], y = entity_dt[["stat_value"]], cex = 0.5, lwd = 0.5,
+           xlab = "", ylab = "")
+      ## check if the title is too long, if it's too long, then break it into lines
+      txt_1 <- strsplit(txt, " ")[[1]]
+      txt_2 <- rep(" ", length(txt_1))
+      for (i in 2:length(txt_1)) {
+        n <- ifelse (length(which(txt_2 == "\n")) == 0, 1, max(which(txt_2 == "\n"))+1)
+        tmp <- paste(paste(txt_1[n:i], txt_2[n:i], sep = ""), collapse = "")
+        if (strwidth(tmp) > 70) { txt_2[i-1] <- "\n"}
+      }
+      txt_0 <- paste(paste(txt_1, txt_2, sep = ""), collapse = "")
+
+      title(main = txt_0, cex.main = 0.7)
+    })
+    graphics::par(omi = rep(0,4), mar = c(5, 5, 2, 2), mfrow = c(1,1), new = TRUE)
+
+    plot(0,0, xlab = x_col_nm, ylab = "stat_value", axes = FALSE, type = "n")
+
+    message("* saved plot grid of comparisons by entity for ",
+            dataset_name, " to ", pdf_file_path)
+  })
   return(invisible(NULL))
 
 }

@@ -249,7 +249,7 @@ nordcanstat_by_entity <- function(
   )
   dbc::assert_prod_input_is_one_of(
     x = entities,
-    funs = c("report_is_NULL", "report_is_integer_nonNA_vector")
+    funs = list(dbc::report_is_NULL, dbc::report_is_integer_nonNA_vector)
   )
   dbc::assert_prod_input_is_function(basicepistats_fun)
   if (is.null(entities)) {
