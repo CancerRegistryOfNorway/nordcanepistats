@@ -243,7 +243,7 @@ nordcanstat_by_entity <- function(
   dbc::assert_prod_input_is_data.table(arg_list[["x"]])
   dbc::assert_prod_input_is_one_of(
     x = arg_list[["by"]],
-    funs = list(dbc::report_is_NULL, 
+    funs = list(dbc::report_is_NULL,
                 dbc::report_is_character_nonNA_vector,
                 dbc::report_is_data.table)
   )
@@ -402,6 +402,138 @@ remove_regional_counts_before_start_year <- function(
   return(dt[])
 }
 
+
+
+#' @title Clean unused sensitive data.
+#' @description
+#' A function ask user if they want to remove unused sensitive data once they have finished all calculation.
+#' The function will find the unused sensitive data in current work directory.
+#' @export
+clean_results <- function(dir_result) {
+  msg <- "Do you want to permanently delete all these files?
+They are not needed if you have successfully finished the whole process.
+We recommend deleting these once you have submitted your data.
+These files and directories contain sensitive data. \n
+- cancer_record_dataset.rds
+- iarccrgtools/
+- survival/ \n
+press '1': yes, delete these permanently.
+press '0': no, don't delete anything yet."
+
+  message(msg)
+  input <- readline(prompt = ": ")
+
+  if (input == "1") {
+    if (file.exists("cancer_record_dataset.rds")) {
+      unlink("cancer_record_dataset.rds")
+      if (!file.exists("cancer_record_dataset.rds")) {
+        message("cancer_record_dataset.rds deleted!")
+      }
+    }
+    if (dir.exists("iarccrgtools")) {
+      unlink("iarccrgtools", recursive = TRUE)
+      if (!dir.exists("iarccrgtools")) {
+        message("folder 'iarccrgtools' deleted!")
+      }
+    }
+    if (dir.exists("survival")) {
+      unlink("survival", recursive = TRUE)
+      if (!dir.exists("survival")) {
+        message("folder 'survival' deleted!")
+      }
+    }
+  }
+}
+
+
+#' @title Checking whether the directory is empty.
+#'
+#' @export
+dir_check <- function(dir_result, dir_archive) {
+  dir_not_empty <- c(length(list.files(dir_result , recursive = TRUE)) > 0,
+                     length(list.files(dir_archive, recursive = TRUE)) > 0 )
+  if (all(dir_not_empty)) {
+    txt <- "'dir_result' (%s) and \n'dir_archive' (%s) are not empty.
+The following process will overwrite the contents of your folder!
+Users should take their own risk of conducting the following process!"
+    message(sprintf(txt, dir_result, dir_archive))
+  } else if (dir_not_empty[1]) {
+    txt <- "'dir_result' (%s) is not empty.
+The following process will overwrite the contents of your folder!
+Users should take their own risk of conducting the following process!"
+    message(sprintf(txt, dir_result))
+  } else if (dir_not_empty[2]) {
+    txt <- "'dir_archive' (%s) is not empty.
+The following process will overwrite the contents of your folder!
+Users should take their own risk of conducting the following process!"
+    message(sprintf(txt, dir_archive))
+  }
+}
+
+
+
+#' @title  Export undefined ICD version & codes
+#'
+#' @export
+export_undefined <- function() {
+  if (exists("._undefined")) {
+    write.table(._undefined,
+                file = "undefined_icd_version_and_codes.csv",
+                row.names = FALSE, sep = ";")
+    cat("save to 'undefined_icd_version_and_codes.csv' \n")
+
+    names_order <- names(unprocessed_cancer_death_count_dataset)
+    tmp <- merge(unprocessed_cancer_death_count_dataset, ._undefined,
+                 by = c("icd_version", "icd_code"), all.y = TRUE)
+    fn <- "unprocessed_cancer_death_count_dataset_with_undefined_icd_version_and_codes.csv"
+    write.table(tmp[, ..names_order], file = fn, row.names = FALSE, sep = ";")
+
+    cat("save to 'unprocessed_cancer_death_count_dataset_with_undefined_icd_version_and_codes.csv' \n")
+  }
+
+}
+
+
+#'
+#'
+#' @export
+evaluate_population_projection <- function(file_pop_proj) {
+  if (file.exists(file_pop_proj)) {
+    data_pop_proj <- data.table::fread(file_pop_proj)
+    if (all(c("year", "sex", "age", "region", "pop_midyear") %in% names(data_pop_proj))) {
+      if (all(names(data_pop_proj) %in% c("year", "sex", "age", "region", "pop_midyear") )) {
+        if (min(data_pop_proj$year) == max(general_population_size_dataset$year)+1) {
+          return(data_pop_proj)
+        } else {
+          stop("First year of population projection should be the 'last_year + 1' of the population file")
+        }
+      } else {
+        stop("Population_projection dataset can ONLY contain varaibles: 'year', 'sex', 'age', 'region', 'pop_midyear'" )
+      }
+    } else {
+      stop("Population_projection dataset MUST contain varaibles: 'year', 'sex', 'age', 'region', 'pop_midyear'")
+    }
+  } else {
+    message("'file_pop_proj' not exists!")
+    return(NULL)
+  }
+}
+
+#'
+#'
+#' @export
+move_statistic_tables_zip_to_dir_archive <- function(dir_result, dir_archive) {
+  tgt_file_name <- paste0("nordcan_", nordcan_version, "_statistics_tables.zip")
+  path_src_file <- paste0(dir_result,  ifelse(grepl("/$", dir_result), "", "/"), "nordcan_statistics_tables.zip")
+  path_tgt_file <- paste0(dir_archive, ifelse(grepl("/$", dir_archive), "", "/"), tgt_file_name)
+  ## move the zip file for archiving.
+  if (file.exists(path_tgt_file)) {
+    stop("File already exists: ", path_tgt_file, ". If you still want to update the archived file, please rename/remove it.")
+  } else {
+    file.rename(from = path_src_file, to = path_tgt_file)
+  }
+
+}
 
 
 

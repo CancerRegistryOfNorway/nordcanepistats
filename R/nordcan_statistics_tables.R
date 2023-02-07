@@ -274,9 +274,25 @@ nordcan_statistics_tables <- function(
 
   }
 
+
+  ## Checking whether there is any error in 'output'
+  message("*  started checking if there is any error in calculated result.")
+  for (elem_nm in names(output))  {
+    elem <- output[[elem_nm]]
+    if (inherits(elem, "error")) {
+      message("ERROR: could not produce result ", deparse(elem_nm), "; please ",
+              "report the error printed below to the NORDCAN R framework ",
+              "maintainers (unless you can see that you have made some mistake)")
+      str(elem)
+      NULL
+    }
+  }
+  message("*  finished checking if there is any error in calculated result.")
+
   # final touches --------------------------------------------------------------
   message("--- All processes finished. Total time used: ",
           gsub("elapsed.*", "", data.table::timetaken(t_start)))
+
   return(output)
 }
 
