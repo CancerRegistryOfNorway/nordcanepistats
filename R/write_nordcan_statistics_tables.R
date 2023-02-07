@@ -63,10 +63,10 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   })
 
   ## save metadata as csv file
-  metadata <- data.frame(name = c("nordcan_version", "nordcan_framework_version", names(Global_nordcan_settings) ), 
+  metadata <- data.frame(name = c("nordcan_version", "nordcan_framework_version", names(Global_nordcan_settings) ),
                         value = c(nordcancore::nordcan_metadata_nordcan_version(), as.character(utils::packageVersion("nordcancore")), as.character(unlist(Global_nordcan_settings))))
   write.csv2(metadata, file = sprintf("%s/metadata.csv", temp_dir), sep = ";")
-  
+
   ## zip files
   setwd(temp_dir)
   zip_file_path <- sprintf("%s/nordcan_statistics_tables.zip", work_dir)
@@ -299,9 +299,9 @@ write_maintainer_summary_zip <- function(x) {
   files_list <- c(
     log_file_name,
     sprintf("comparison_summary%s.csv", version_tag),
-    sprintf("cancer_death_count_dataset%s.png", version_tag),
-    sprintf("cancer_record_count_dataset%s.png", version_tag),
-    sprintf("prevalent_patient_count_dataset%s.png", version_tag)
+    sprintf("cancer_death_count_dataset%s.pdf", version_tag),
+    sprintf("cancer_record_count_dataset%s.pdf", version_tag),
+    sprintf("prevalent_patient_count_dataset%s.pdf", version_tag)
   )
   files_list <- intersect(files_list, dir(work_dir))
 

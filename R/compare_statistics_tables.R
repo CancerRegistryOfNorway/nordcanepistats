@@ -473,6 +473,42 @@ plot_nordcan_statistics_table_comparisons <- function(x) {
 
 }
 
+#' @title a wrapper for comparing current statistics with archived statistics
+#'
+#' @export
+compare_nordcan_statistics <- function(stats_current, stats_archived, ds_nms) {
 
+  if (!file.exists(stats_current)) {
+    stop(sprintf("'stats_current' (%s) not exist!", stats_current))
+  }
 
+  if (!file.exists(stats_archived)) {
+    stop(sprintf("'stats_archived' (%s) not exist!", stats_archived))
+  }
+
+  ## import old and new version of statistics tables
+  old_statistics <- nordcanepistats::read_nordcan_statistics_tables(stats_archived)
+
+  ## Read above saved results back into R.
+  statistics <- readRDS(stats_current)
+
+  ## Start the comparison
+  comparison <- nordcanepistats::compare_nordcan_statistics_table_lists(
+    current_stat_table_list = statistics[ds_nms],
+    old_stat_table_list = old_statistics[ds_nms]
+  )
+
+  ## Version number to compared
+  version2compare <- regmatches(stats_archived, regexec("[0-9]+[.][0-9]+", stats_archived))[[1]]
+  stopifnot(numeric_version(version2compare) >= "9.0", numeric_version(version2compare) <= "9.10")
+  comparison$version2compare <- version2compare
+
+  ## Including undefined ICD version & codes
+  if (file.exists("undefined_icd_version_and_codes.csv")) {
+    undefined_icd <- data.table::fread(file_population)
+    comparison$undefined_icd_version_and_codes <- undefined_icd
+  }
+
+  return(comparison)
+}
 
