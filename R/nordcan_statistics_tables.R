@@ -49,7 +49,10 @@ nordcan_statistics_tables <- function(
   general_population_size_dataset,
   national_population_life_table,
   stata_exe_path,
-  output_objects = NULL
+  output_objects = NULL,
+  subset = NULL,
+  survival_test_sample = FALSE,
+  survival_trace = FALSE
 ) {
   t_start <- proc.time()
 
@@ -139,8 +142,8 @@ nordcan_statistics_tables <- function(
             gsub("elapsed.*", "", data.table::timetaken(t)))
   }
   # imp_quality_statistics_dataset ---------------------------------------------
-  if ("imp_quality_statistics_dataset" %in% output_objects) {
-    message("*  started computing 'imp_quality_statistics_dataset' at ",
+  if ("imp_quality_general_statistics_dataset" %in% output_objects) {
+    message("*  started computing 'imp_quality_general_statistics_dataset' at ",
             as.character(Sys.time()), "...")
     t <- proc.time()
     cdcd <- data.table::copy(cancer_death_count_dataset)
@@ -160,15 +163,48 @@ nordcan_statistics_tables <- function(
       .SDcols = "cancer_death_count",
       keyby = c("sex", "period_5", "entity", "region")
     ]
-    output[["imp_quality_statistics_dataset"]] <- tryCatch(
+    output[["imp_quality_general_statistics_dataset"]] <- tryCatch(
       expr = nordcanstat_imp_quality(
         x = cancer_record_dataset,
         cancer_death_count_dataset = cdcd,
-        by = c("sex", "period_5", "entity", "region")
+        by = c("sex", "period_5", "entity", "region"), type = "general"
       ),
       error = function(e) e
     )
-    message("* finished computing 'imp_quality_statistics_dataset'; time used: ",
+    message("* finished computing 'imp_quality_general_statistics_dataset'; time used: ",
+            gsub("elapsed.*", "", data.table::timetaken(t)))
+  }
+
+  if ("imp_quality_exclusion_statistics_dataset" %in% output_objects) {
+    message("*  started computing 'imp_quality_exclusion_statistics_dataset' at ",
+            as.character(Sys.time()), "...")
+    t <- proc.time()
+    cdcd <- data.table::copy(cancer_death_count_dataset)
+    min_period_5 <- min(cancer_record_dataset$period_5, na.rm = TRUE)
+    max_period_5 <- max(cancer_record_dataset$period_5, na.rm = TRUE)
+    period_5_breaks <- c(seq(min_period_5, max_period_5, 5L), Inf)
+    cdcd[
+      j = "period_5" := cut(
+        x = cdcd$year, breaks = period_5_breaks, labels = FALSE, right = FALSE
+      )
+    ]
+    cdcd[j = "period_5" := period_5_breaks[cdcd$period_5]]
+    cdcd <- cdcd[!is.na(cdcd$period_5), ]
+    cdcd[, "year" := NULL]
+    cdcd <- cdcd[
+      j = lapply(.SD, sum),
+      .SDcols = "cancer_death_count",
+      keyby = c("sex", "period_5", "entity", "region")
+    ]
+    output[["imp_quality_exclusion_statistics_dataset"]] <- tryCatch(
+      expr = nordcanstat_imp_quality(
+        x = cancer_record_dataset,
+        cancer_death_count_dataset = cdcd,
+        by = c("sex", "period_5", "entity", "region"), type = "exclusion"
+      ),
+      error = function(e) e
+    )
+    message("* finished computing 'imp_quality_exclusion_statistics_dataset'; time used: ",
             gsub("elapsed.*", "", data.table::timetaken(t)))
   }
 
@@ -247,19 +283,24 @@ nordcan_statistics_tables <- function(
 
   }
 
-  surv_ds_nms <- c("survival_statistics_period_5_dataset",
-                   "survival_statistics_period_10_dataset")
 
-  if (any(surv_ds_nms %in% output_objects)) {
+  if (any(grepl("survivaltime", output_objects))) {
     message("*  started computing 'survival_statistics_period_5/10_dataset' at ",
             as.character(Sys.time()), "...")
+
+    surv_ds_nms <- output_objects[grepl("survivaltime", output_objects)]
+
     if(is.logical(stata_exist) ) {
       t <- proc.time()
       surv_output <- tryCatch(
         expr = nordcansurvival::nordcanstat_survival(
           cancer_record_dataset = cancer_record_dataset,
           national_population_life_table = national_population_life_table,
-          stata_exe_path = stata_exe_path
+          stata_exe_path = stata_exe_path,
+          surv_ds_nms = surv_ds_nms,
+          subset = subset,
+          survival_test_sample = survival_test_sample,
+          survival_trace = survival_trace
         ),
         error = function(e) e
       )
@@ -273,6 +314,7 @@ nordcan_statistics_tables <- function(
     } else {message(stata_exist)}
 
   }
+
 
 
   ## Checking whether there is any error in 'output'
@@ -327,7 +369,11 @@ nordcan_statistics_tables_output_object_space_summaries <- function() {
       "Dataset of prevalent cancer patients counts computed using ",
       "nordcanepistats::nordcanstat_year_based_prevalent_patient_count"
     ),
-    "imp_quality_statistics_dataset" = paste0(
+    "imp_quality_general_statistics_dataset" = paste0(
+      "Quality statistics computed using ",
+      "nordcanepistats::nordcanstat_imp_quality"
+    ),
+    "imp_quality_exclusion_statistics_dataset" = paste0(
       "Quality statistics computed using ",
       "nordcanepistats::nordcanstat_imp_quality"
     ),
@@ -342,14 +388,19 @@ nordcan_statistics_tables_output_object_space_summaries <- function() {
       "Results from nordcansurvival::survival_statistics using an example ",
       "dataset stored into the nordcansurvival package"
     ),
-    "survival_statistics_period_5_dataset" = paste0(
-      "Results from nordcansurvival::nordcanstat_survival using your datasets;",
-      " 5-year periods"
-    ),
-    "survival_statistics_period_10_dataset" = paste0(
-      "Results from nordcansurvival::nordcanstat_survival using your datasets;",
-      " 10-year periods"
-    )
+
+
+    "survival_statistics_standardised_survivaltime_05_period_05" = ' 5 year "age_standarized" survival statistics based on   5-year period;',
+    "survival_statistics_standardised_survivaltime_05_period_10" = ' 5 year "age_standarized" survival statistics based on  10-year period;',
+    "survival_statistics_standardised_survivaltime_10_period_05" = '10 year "age_standarized" survival statistics based on   5-year period;',
+    "survival_statistics_standardised_survivaltime_10_period_10" = '10 year "age_standarized" survival statistics based on  10-year period;',
+
+    "survival_statistics_agespecific_survivaltime_05_period_05" = ' 5 year "age_specific" survival statistics based on   5-year period;',
+    "survival_statistics_agespecific_survivaltime_05_period_10" = ' 5 year "age_specific" survival statistics based on  10-year period;',
+    "survival_statistics_agespecific_survivaltime_10_period_05" = '10 year "age_specific" survival statistics based on   5-year period;',
+    "survival_statistics_agespecific_survivaltime_10_period_10" = '10 year "age_specific" survival statistics based on  10-year period;'
+
+
   )
 }
 

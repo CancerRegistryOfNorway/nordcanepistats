@@ -11,7 +11,10 @@ nordcan_statistics_tables(
   general_population_size_dataset,
   national_population_life_table,
   stata_exe_path,
-  output_objects = NULL
+  output_objects = NULL,
+  subset = NULL,
+  survival_test_sample = FALSE,
+  survival_trace = FALSE
 )
 
 nordcan_statistics_tables_output_object_space()
@@ -53,12 +56,19 @@ The output is a list with elements:
 \item \code{"general_population_size_dataset"}: The same dataset returned as-is as given to arg general_population_size_dataset
 \item \code{"cancer_record_count_dataset"}: Dataset of cancer record counts computed using nordcanepistats::nordcanstat_count
 \item \code{"prevalent_patient_count_dataset"}: Dataset of prevalent cancer patients counts computed using nordcanepistats::nordcanstat_year_based_prevalent_patient_count
-\item \code{"imp_quality_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_imp_quality
+\item \code{"imp_quality_general_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_imp_quality
+\item \code{"imp_quality_exclusion_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_imp_quality
 \item \code{"survival_quality_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_survival_quality
 \item \code{"stata_info"}: Info about stata as returned by nordcansurvival::get_stata_info
 \item \code{"survival_statistics_example"}: Results from nordcansurvival::survival_statistics using an example dataset stored into the nordcansurvival package
-\item \code{"survival_statistics_period_5_dataset"}: Results from nordcansurvival::nordcanstat_survival using your datasets; 5-year periods
-\item \code{"survival_statistics_period_10_dataset"}: Results from nordcansurvival::nordcanstat_survival using your datasets; 10-year periods
+\item \code{"survival_statistics_standardised_survivaltime_05_period_05"}:  5 year "age_standarized" survival statistics based on   5-year period;
+\item \code{"survival_statistics_standardised_survivaltime_05_period_10"}:  5 year "age_standarized" survival statistics based on  10-year period;
+\item \code{"survival_statistics_standardised_survivaltime_10_period_05"}: 10 year "age_standarized" survival statistics based on   5-year period;
+\item \code{"survival_statistics_standardised_survivaltime_10_period_10"}: 10 year "age_standarized" survival statistics based on  10-year period;
+\item \code{"survival_statistics_agespecific_survivaltime_05_period_05"}:  5 year "age_specific" survival statistics based on   5-year period;
+\item \code{"survival_statistics_agespecific_survivaltime_05_period_10"}:  5 year "age_specific" survival statistics based on  10-year period;
+\item \code{"survival_statistics_agespecific_survivaltime_10_period_05"}: 10 year "age_specific" survival statistics based on   5-year period;
+\item \code{"survival_statistics_agespecific_survivaltime_10_period_10"}: 10 year "age_specific" survival statistics based on  10-year period;
 }
 
 unless argument \code{output_objects} is used to limit the output elements.

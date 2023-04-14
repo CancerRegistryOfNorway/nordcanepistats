@@ -9,6 +9,7 @@ nordcanstat_imp_quality(
   cancer_death_count_dataset,
   by = NULL,
   subset = NULL,
+  type = c("general", "exclusion")[1],
   subset_style = "zeros"
 )
 }

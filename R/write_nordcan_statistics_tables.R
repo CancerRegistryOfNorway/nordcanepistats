@@ -65,7 +65,7 @@ write_nordcan_statistics_tables <- function(x, purpose = "archive") {
   ## save metadata as csv file
   metadata <- data.frame(name = c("nordcan_version", "nordcan_framework_version", names(Global_nordcan_settings) ),
                         value = c(nordcancore::nordcan_metadata_nordcan_version(), as.character(utils::packageVersion("nordcancore")), as.character(unlist(Global_nordcan_settings))))
-  write.csv2(metadata, file = sprintf("%s/metadata.csv", temp_dir), sep = ";")
+  write.csv2(metadata, file = sprintf("%s/metadata.csv", temp_dir))
 
   ## zip files
   setwd(temp_dir)

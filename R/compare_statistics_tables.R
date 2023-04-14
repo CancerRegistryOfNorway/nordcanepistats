@@ -4,7 +4,8 @@ nordcan_statistics_table_names_for_comparison <- function() {
   c("cancer_record_count_dataset",
     "cancer_death_count_dataset",
     "prevalent_patient_count_dataset",
-    "imp_quality_statistics_dataset",
+    "imp_quality_general_statistics_dataset",
+    "imp_quality_exclusion_statistics_dataset",
     "survival_quality_statistics_dataset",
     "survival_statistics_dataset")
 }
@@ -172,7 +173,12 @@ compare_tables <- function(
     prevalent_patient_count_dataset = compare_count_tables(
       new = new, old = old, count_col_nm = "prevalent_patient_count"
     ),
-    imp_quality_statistics_dataset = compare_imp_quality_statistics_tables(
+    imp_quality_general_statistics_dataset = compare_imp_quality_general_statistics_tables(
+      new = new, old = old,
+      prop_col_nms = names(new)[grepl("percent", names(new))],
+      count_col_nm = "cancer_record_count"
+    ),
+    imp_quality_exclusion_statistics_dataset = compare_imp_quality_exclusion_statistics_tables(
       new = new, old = old,
       prop_col_nms = names(new)[grepl("percent", names(new))],
       count_col_nm = "cancer_record_count"
@@ -195,21 +201,30 @@ compare_tables <- function(
 }
 
 
-compare_imp_quality_statistics_tables <- function(
+compare_imp_quality_general_statistics_tables <- function(
   new, old, prop_col_nms, count_col_nm
 ) {
   dt <- data.table::rbindlist(lapply(prop_col_nms, function(prop_col_nm) {
-    compare_proportion_tables(
-      new = new, old = old, prop_col_nm = prop_col_nm
-    )
+    compare_proportion_tables(new = new, old = old, prop_col_nm = prop_col_nm)
   }))
-  dt <- rbind(
-    dt,
-    compare_rate_tables(new = new, old = old, rate_col_nm = "mi_ratio",
-                        count_col_nm = count_col_nm)
-  )
+  dt <- rbind(dt, compare_rate_tables(new = new, old = old,
+                                      rate_col_nm = "mi_ratio",
+                                      count_col_nm = count_col_nm))
   return(dt[])
 }
+
+compare_imp_quality_exclusion_statistics_tables <- function(
+    new, old, prop_col_nms, count_col_nm
+) {
+  dt <- data.table::rbindlist(lapply(prop_col_nms, function(prop_col_nm) {
+    compare_proportion_tables(new = new, old = old, prop_col_nm = prop_col_nm)
+  }))
+  dt <- rbind(dt, compare_rate_tables(new = new, old = old,
+                        rate_col_nm = "mi_ratio",
+                        count_col_nm = count_col_nm))
+  return(dt[])
+}
+
 
 compare_survival_quality_statistics_tables <- function(
   new, old, prop_col_nms, count_col_nm
