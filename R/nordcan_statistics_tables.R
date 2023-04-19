@@ -81,8 +81,7 @@ nordcan_statistics_tables <- function(
       dataset_name = "processed_cancer_death_count_dataset"
     )
   }
-  if ("survival_statistics_period_5_dataset" %in% output_objects |
-      "survival_statistics_period_10_dataset" %in% output_objects) {
+  if (any(grepl("survival_statistics", output_objects))) {
     nordcanpreprocessing::assert_dataset_is_valid(
       national_population_life_table,
       dataset_name = "national_population_life_table"
@@ -384,10 +383,10 @@ nordcan_statistics_tables_output_object_space_summaries <- function() {
     "stata_info" = c(
       "Info about stata as returned by nordcansurvival::get_stata_info"
     ),
-    "survival_statistics_example" = paste0(
-      "Results from nordcansurvival::survival_statistics using an example ",
-      "dataset stored into the nordcansurvival package"
-    ),
+    # "survival_statistics_example" = paste0(
+    #   "Results from nordcansurvival::survival_statistics using an example ",
+    #   "dataset stored into the nordcansurvival package"
+    # ),
 
 
     "survival_statistics_standardised_survivaltime_05_period_05" = ' 5 year "age_standarized" survival statistics based on   5-year period;',

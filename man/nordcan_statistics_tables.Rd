@@ -60,7 +60,6 @@ The output is a list with elements:
 \item \code{"imp_quality_exclusion_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_imp_quality
 \item \code{"survival_quality_statistics_dataset"}: Quality statistics computed using nordcanepistats::nordcanstat_survival_quality
 \item \code{"stata_info"}: Info about stata as returned by nordcansurvival::get_stata_info
-\item \code{"survival_statistics_example"}: Results from nordcansurvival::survival_statistics using an example dataset stored into the nordcansurvival package
 \item \code{"survival_statistics_standardised_survivaltime_05_period_05"}:  5 year "age_standarized" survival statistics based on   5-year period;
 \item \code{"survival_statistics_standardised_survivaltime_05_period_10"}:  5 year "age_standarized" survival statistics based on  10-year period;
 \item \code{"survival_statistics_standardised_survivaltime_10_period_05"}: 10 year "age_standarized" survival statistics based on   5-year period;
