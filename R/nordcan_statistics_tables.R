@@ -1,15 +1,14 @@
 
 
 #' @title NORDCAN Statistics Tables
+#'
 #' @description
 #' Compute all necessary statistics for NORDCAN into a single list of tables.
 #' @param cancer_record_dataset `[data.table]` (mandatory, no default)
-#'
-#' as output by
-#' [nordcanpreprocessing::nordcan_processed_cancer_record_dataset]
+#'   as output by [nordcanpreprocessing::nordcan_processed_cancer_record_dataset]
 #'
 #' @param general_population_size_dataset `[data.table]` (mandatory, no default)
-#' the dataset of population sizes as per the call for data
+#'   the dataset of population sizes as per the call for data
 #'
 #' @param national_population_life_table `[data.table]` (mandatory, no default)
 #' the life table as per the call for data
@@ -18,11 +17,11 @@
 #' dataset containing numbers of cancer deaths; see Details
 #'
 #' @param stata_exe_path `[character]` (mandatory, no default)
+#'   pased of Stata for conducting survival analysis
 #'
-#' pased to [nordcansurvival::nordcanstat_survival]
 #' @param output_objects `[NULL, character]` (optional, default `NULL`)
-#' this argument can be used to select which elements of the output list to
-#' produce in this function.
+#'   this argument can be used to select which elements of the output list to
+#'   produce in this function.
 #'
 #' - `NULL`: no limit, i.e. produce everything
 #' - `character`: vector of element names to produce (only); see section
@@ -389,10 +388,10 @@ nordcan_statistics_tables_output_object_space_summaries <- function() {
     # ),
 
 
-    "survival_statistics_standardised_survivaltime_05_period_05" = ' 5 year "age_standarized" survival statistics based on   5-year period;',
-    "survival_statistics_standardised_survivaltime_05_period_10" = ' 5 year "age_standarized" survival statistics based on  10-year period;',
-    "survival_statistics_standardised_survivaltime_10_period_05" = '10 year "age_standarized" survival statistics based on   5-year period;',
-    "survival_statistics_standardised_survivaltime_10_period_10" = '10 year "age_standarized" survival statistics based on  10-year period;',
+    "survival_statistics_agestandardised_survivaltime_05_period_05" = ' 5 year "age_standarized" survival statistics based on   5-year period;',
+    "survival_statistics_agestandardised_survivaltime_05_period_10" = ' 5 year "age_standarized" survival statistics based on  10-year period;',
+    "survival_statistics_agestandardised_survivaltime_10_period_05" = '10 year "age_standarized" survival statistics based on   5-year period;',
+    "survival_statistics_agestandardised_survivaltime_10_period_10" = '10 year "age_standarized" survival statistics based on  10-year period;',
 
     "survival_statistics_agespecific_survivaltime_05_period_05" = ' 5 year "age_specific" survival statistics based on   5-year period;',
     "survival_statistics_agespecific_survivaltime_05_period_10" = ' 5 year "age_specific" survival statistics based on  10-year period;',
