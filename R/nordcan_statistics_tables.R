@@ -129,9 +129,7 @@ nordcan_statistics_tables <- function(
             as.character(Sys.time()), "...")
     t <- proc.time()
     ## Re-generate agegroup based only last year
-    gns <- nordcancore::get_global_nordcan_settings()
-    last_year <- gns$last_year_incidence
-    cancer_record_dataset[, agegroup := floor((last_year-yob)/5)+1]
+    cancer_record_dataset[, agegroup := floor((yof-yob)/5)+1]
     
     output[["prevalent_patient_count_dataset"]] <- tryCatch(
       expr = nordcanstat_year_based_prevalent_patient_count(
