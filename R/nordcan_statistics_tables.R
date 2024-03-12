@@ -128,9 +128,7 @@ nordcan_statistics_tables <- function(
     message("*  started computing 'prevalent_patient_count_dataset' at ",
             as.character(Sys.time()), "...")
     t <- proc.time()
-    ## Re-generate agegroup based only last year
-    cancer_record_dataset[, agegroup := floor((yof-yob)/5)+1]
-    
+
     output[["prevalent_patient_count_dataset"]] <- tryCatch(
       expr = nordcanstat_year_based_prevalent_patient_count(
         x = cancer_record_dataset,
@@ -139,9 +137,7 @@ nordcan_statistics_tables <- function(
       ),
       error = function(e) e
     )
-    # set the agegroup back to age at diagnosis
-    cancer_record_dataset[, agegroup := floor(age/5)+1]
-    
+
     message("* finished computing 'prevalent_patient_count_dataset'; time used: ",
             gsub("elapsed.*", "", data.table::timetaken(t)))
   }
