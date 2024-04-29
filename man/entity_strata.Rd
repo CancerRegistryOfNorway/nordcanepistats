@@ -26,7 +26,7 @@ nordcanstat_by_entity(
 \arguments{
 \item{participant_name}{\verb{[character]} (optional, default taken from settings)
 
-see \link[nordcancore:global_nordcan_settings]{nordcancore::set_global_nordcan_settings}}
+see \link[nordcancore:set_global_nordcan_settings]{nordcancore::set_global_nordcan_settings}}
 
 \item{x}{\verb{[data.table]} (mandatory, no default)
 

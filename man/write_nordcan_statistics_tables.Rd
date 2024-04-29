@@ -31,14 +31,14 @@ Write the output of \link{nordcan_statistics_tables} into a .zip file.
 \item \code{write_nordcan_statistics_tables_for_archive} writes data.tables as .csv
 character vectors as .txt files and compresses them into
 \code{nordcan_statistics_tables.zip} in the current working directory
-set using \link[nordcancore:global_nordcan_settings]{nordcancore::set_global_nordcan_settings}
+set using \link[nordcancore:set_global_nordcan_settings]{nordcancore::set_global_nordcan_settings}
 }
 
 \itemize{
 \item \code{write_nordcan_statistics_tables_for_sending} writes data.tables as .csv
 and compresses them into
 \code{nordcan_statistics_tables.zip} in the current working directory
-set using \link[nordcancore:global_nordcan_settings]{nordcancore::set_global_nordcan_settings}; does NOT
+set using \link[nordcancore:set_global_nordcan_settings]{nordcancore::set_global_nordcan_settings}; does NOT
 save any logs (character vectors in \code{x}) as .txt files
 }
 

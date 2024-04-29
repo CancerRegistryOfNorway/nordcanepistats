@@ -129,14 +129,29 @@ nordcan_statistics_tables <- function(
             as.character(Sys.time()), "...")
     t <- proc.time()
 
-    output[["prevalent_patient_count_dataset"]] <- tryCatch(
-      expr = nordcanstat_year_based_prevalent_patient_count(
+    output[["prevalent_patient_count_dataset_new"]] <- tryCatch({
+      tmp <- nordcanepistats::nordcanstat_year_based_prevalent_patient_count(
         x = cancer_record_dataset,
-        by = c("sex", "region", "agegroup", "entity"),
+        by = c("sex", "region", "yob", "entity"),
         subset = cancer_record_dataset[["excl_imp_total"]] == 0L
-      ),
-      error = function(e) e
-    )
+      )
+      tmp[, agegroup := floor((observation_year - yob)/5)+1]
+      tmp[agegroup >= 18, agegroup := 18]
+      tmp[, .(prevalent_patient_count = sum(prevalent_patient_count)), by = .(
+        sex, region, agegroup, entity, observation_year, full_years_since_entry
+      )]
+      tmp <- tmp[agegroup >= 1, ]
+      tmp
+    }, error = function(e) e )
+
+    # output[["prevalent_patient_count_dataset"]] <- tryCatch(
+    #   expr = nordcanstat_year_based_prevalent_patient_count(
+    #     x = cancer_record_dataset,
+    #     by = c("sex", "region", "agegroup", "entity"),
+    #     subset = cancer_record_dataset[["excl_imp_total"]] == 0L
+    #   ),
+    #   error = function(e) e
+    # )
 
     message("* finished computing 'prevalent_patient_count_dataset'; time used: ",
             gsub("elapsed.*", "", data.table::timetaken(t)))
