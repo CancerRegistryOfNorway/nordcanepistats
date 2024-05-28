@@ -129,7 +129,7 @@ nordcan_statistics_tables <- function(
             as.character(Sys.time()), "...")
     t <- proc.time()
 
-    output[["prevalent_patient_count_dataset_new"]] <- tryCatch({
+    output[["prevalent_patient_count_dataset"]] <- tryCatch({
       tmp <- nordcanepistats::nordcanstat_year_based_prevalent_patient_count(
         x = cancer_record_dataset,
         by = c("sex", "region", "yob", "entity"),
