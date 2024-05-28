@@ -137,7 +137,7 @@ nordcan_statistics_tables <- function(
       )
       tmp[, agegroup := floor((observation_year - yob)/5)+1]
       tmp[agegroup >= 18, agegroup := 18]
-      tmp[, .(prevalent_patient_count = sum(prevalent_patient_count)), by = .(
+      tmp <- tmp[, .(prevalent_patient_count = sum(prevalent_patient_count)), by = .(
         sex, region, agegroup, entity, observation_year, full_years_since_entry
       )]
       tmp <- tmp[agegroup >= 1, ]
